@@ -15,4 +15,8 @@ const AWS_S3_BUCKET: StringMap = {
   BUCKET: process.env.AWS_BUCKET as string,
 };
 
-export { FILE_PATHS, AWS_S3_BUCKET };
+const OS_KEYS: StringMap = {
+  PYTHON_VERSION: process.env.PYTHON_VERSION as string,
+};
+
+export { FILE_PATHS, AWS_S3_BUCKET, OS_KEYS };

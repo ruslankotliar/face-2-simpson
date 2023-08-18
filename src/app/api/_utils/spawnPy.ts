@@ -1,10 +1,13 @@
 import { spawn } from 'child_process';
 
-import { FILE_PATHS } from '../_constants';
+import { FILE_PATHS, OS_KEYS } from '../_constants';
 
 export let spawnPy = async (img: string): Promise<any> =>
   new Promise(function (success, error) {
-    const pyProg = spawn('python3', [FILE_PATHS.PREDICT_MODEL, img]);
+    const pyProg = spawn(OS_KEYS.PYTHON_VERSION, [
+      FILE_PATHS.PREDICT_MODEL,
+      img,
+    ]);
 
     console.log(`Predicting: ${img}`);
 
