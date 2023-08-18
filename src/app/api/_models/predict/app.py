@@ -39,6 +39,5 @@ img = Image.open(img_path).convert('RGB')  # accessing img
 
 pred_labels_and_probs, pred_time = predict(img)
 
-
 print(pred_labels_and_probs, pred_time)
 sys.stdout.flush()

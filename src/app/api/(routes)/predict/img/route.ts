@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getStatusText, spawnPy, uploadFile } from '@/app/api/_utils';
+import { getStatusText, spawnPy, unlinkFile, uploadFile } from '@/app/api/_utils';
 import { PREDICT_SIMP_FILENAME, StatusCodes } from '@/app/_constants';
 
 export async function POST(req: NextRequest) {
@@ -23,13 +23,17 @@ export async function POST(req: NextRequest) {
 
     const pathname = await uploadFile(file);
 
-    spawnPy(pathname)
+    if (!pathname) throw Error('File upload failed. Pathname is missing.');
+
+    await spawnPy(pathname)
       .then(function (fromRunpy) {
         console.log(fromRunpy.toString());
       })
       .catch(function (error) {
         console.log(error.toString());
       });
+
+    await unlinkFile(pathname);
     return NextResponse.json(null);
   } catch (e) {
     console.error(e);
