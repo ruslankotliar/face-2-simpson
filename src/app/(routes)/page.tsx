@@ -21,7 +21,7 @@ const predictSimpson = async (img: File): Promise<void> => {
       formData
     );
 
-    console.log(response);
+    alert(response.data);
   } catch (e) {
     console.error(e);
   }
