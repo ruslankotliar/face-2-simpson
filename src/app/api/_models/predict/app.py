@@ -9,13 +9,13 @@ from typing import Tuple, Dict
 
 cwd = os.getcwd()
 
-with open(os.path.join(cwd,"class_names.txt"), "r") as f:
+with open(os.path.join(cwd,"src/app/api/_models/predict/class_names.txt"), "r") as f:
   class_names = [food_name.strip() for food_name in f.readlines()]
 
 model, transformer = create_resnet(num_classes=len(class_names))
 
 model.load_state_dict(
-    torch.load(f=os.path.join(cwd,"BEST_MODEL"),
+    torch.load(f=os.path.join(cwd,"src/app/api/_models/predict/BEST_MODEL"),
                map_location=torch.device("cpu"))
 )
 

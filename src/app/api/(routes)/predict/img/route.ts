@@ -31,9 +31,8 @@ export async function POST(req: NextRequest) {
     if (!pathname) throw Error('File upload failed. Pathname is missing.');
 
     return await spawnPy(pathname)
-      .then(async function (data) {
+      .then(function (data) {
         console.log(data.toString());
-        await unlinkFile(pathname);
         return NextResponse.json(data.toString());
       })
       .catch(function (error) {
@@ -42,6 +41,9 @@ export async function POST(req: NextRequest) {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
         });
+      })
+      .finally(async function () {
+        await unlinkFile(pathname);
       });
   } catch (e) {
     console.error(e);
