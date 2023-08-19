@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: process.env.NODE_ENV === 'development' ? undefined : 'standalone',
 };
 
 module.exports = nextConfig;

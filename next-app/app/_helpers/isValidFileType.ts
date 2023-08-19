@@ -1,4 +1,4 @@
-import { VALID_FILE_EXTENSIONS } from '@app/_constants';
+import { VALID_FILE_EXTENSIONS } from '../_constants';
 
 export const isValidFileType = (fileName: string, fileType: string): boolean =>
   !!fileName &&

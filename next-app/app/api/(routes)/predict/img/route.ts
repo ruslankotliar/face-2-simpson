@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { PREDICT_SIMP_FILENAME, StatusCodes } from '@app/_constants';
-import { getStatusText, uploadFile } from '@api/_utils';
+import { PREDICT_SIMP_FILENAME, StatusCodes } from '../../../../_constants';
+import { getStatusText, uploadFile } from '../../../_utils';
 
 export async function POST(req: NextRequest) {
   try {

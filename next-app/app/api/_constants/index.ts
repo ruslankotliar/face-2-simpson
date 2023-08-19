@@ -1,4 +1,4 @@
-import { StringMap } from '@app/_types';
+import { StringMap } from '../../_types';
 
 const AWS_S3_BUCKET: StringMap = {
   ACCESS_KEY: process.env.AWS_ACCESS_KEY as string,

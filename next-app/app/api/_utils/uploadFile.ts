@@ -2,10 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { Upload } from '@aws-sdk/lib-storage';
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 
-import { s3client } from '@api/_aws';
-import { AWS_S3_BUCKET } from '@api/_constants';
+import { s3client } from '../_aws';
+import { AWS_S3_BUCKET } from '../_constants';
 
-import { PREDICT_SIMP_FILENAME } from '@app/_constants';
+import { PREDICT_SIMP_FILENAME } from '../../_constants';
 
 export const uploadFile = async function (
   file: File

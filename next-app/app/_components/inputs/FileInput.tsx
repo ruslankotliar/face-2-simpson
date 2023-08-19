@@ -1,4 +1,4 @@
-import { PredictInitialValues } from '@app/_types';
+import { PredictInitialValues } from '../../_types';
 import { ErrorMessage, FormikErrors } from 'formik';
 
 interface IUploadFile {

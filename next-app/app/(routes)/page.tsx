@@ -3,10 +3,14 @@
 import * as Yup from 'yup';
 import axios from 'axios';
 import { Form, Formik, FormikHelpers } from 'formik';
-import { FORM_CONSTANTS, PREDICT_SIMP_FILENAME, REQUEST_URL_KEYS } from '@app/_constants';
-import { FileInput, SubmitButton } from '@app/_components';
-import { isValidFileType } from '@app/_helpers';
-import { PredictInitialValues } from '@app/_types';
+import {
+  FORM_CONSTANTS,
+  PREDICT_SIMP_FILENAME,
+  REQUEST_URL_KEYS,
+} from '../_constants';
+import { FileInput, SubmitButton } from '../_components';
+import { isValidFileType } from '../_helpers';
+import { PredictInitialValues } from '../_types';
 
 const predictSimpson = async (img: File): Promise<void> => {
   try {
