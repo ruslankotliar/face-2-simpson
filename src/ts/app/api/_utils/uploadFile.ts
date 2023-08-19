@@ -30,7 +30,7 @@ export const uploadFile = async function (
   });
 
   parallelUploads3.on('httpUploadProgress', ({ Key }) => {
-    console.log(`Upload: ${Key}`);
+    console.log(`Uploading: ${Key}`);
   });
 
   const data =

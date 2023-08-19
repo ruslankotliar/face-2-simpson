@@ -50,7 +50,7 @@ export default function Home() {
     { personImg }: any,
     { resetForm, setSubmitting }: FormikHelpers<any>
   ) => {
-    console.log('Uploading: ', personImg);
+    console.log('Submitting...');
     await predictSimpson(personImg);
     setSubmitting(false);
     resetForm();
