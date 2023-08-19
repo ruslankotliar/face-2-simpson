@@ -1,6 +1,5 @@
+import { AWS_S3_BUCKET } from '@api/_constants';
 import { S3Client } from '@aws-sdk/client-s3';
-
-import { AWS_S3_BUCKET } from '../_constants';
 
 export const s3client = new S3Client({
   credentials: {

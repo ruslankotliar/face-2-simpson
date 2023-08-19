@@ -4,7 +4,7 @@ import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3';
 
 import { s3client } from '@api/_aws';
 import { AWS_S3_BUCKET } from '@api/_constants';
-import { getBucketObject } from '@api/_utils';
+
 import { PREDICT_SIMP_FILENAME } from '@app/_constants';
 
 export const uploadFile = async function (
@@ -30,13 +30,11 @@ export const uploadFile = async function (
   });
 
   parallelUploads3.on('httpUploadProgress', ({ Key }) => {
-    console.log(`Uploading to aws: ${Key}`);
+    console.log(`Upload: ${Key}`);
   });
 
   const data =
     (await parallelUploads3.done()) as CompleteMultipartUploadCommandOutput;
 
-  const pathname = await getBucketObject(data.Key);
-
-  return pathname;
+  return data.Location;
 };

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { PREDICT_SIMP_FILENAME, StatusCodes } from '@app/_constants';
-import { getStatusText, uploadFile, spawnPy, unlinkFile } from '@api/_utils';
-
+import { getStatusText, uploadFile } from '@api/_utils';
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,40 +11,26 @@ export async function POST(req: NextRequest) {
       PREDICT_SIMP_FILENAME
     ) as unknown as File;
 
-    if (!file) {
-      return NextResponse.json(
-        { success: 'No image uploaded. Please, try again.' },
-        {
-          status: StatusCodes.BAD_REQUEST,
-          statusText: getStatusText(StatusCodes.BAD_REQUEST),
-        }
-      );
-    }
+    if (!file) throw Error('No image found. Please, try again.');
 
-    const pathname = await uploadFile(file);
+    const url = await uploadFile(file);
 
-    if (!pathname) throw Error('File upload failed. Pathname is missing.');
+    if (!url) throw Error('File upload failed. URL is missing.');
 
-    return await spawnPy(pathname)
-      .then(function (data) {
-        console.log(data.toString());
-        return NextResponse.json(data.toString());
-      })
-      .catch(function (error) {
-        console.log(error.toString());
-        return NextResponse.json(null, {
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
-        });
-      })
-      .finally(async function () {
-        await unlinkFile(pathname);
-      });
+    // send request to model here
+
+    return NextResponse.json({
+      message: 'Successfully predicted',
+    });
   } catch (e) {
     console.error(e);
-    return NextResponse.json(null, {
-      status: StatusCodes.INTERNAL_SERVER_ERROR,
-      statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
-    });
+    if (e instanceof Error)
+      return NextResponse.json(
+        { message: e.message },
+        {
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
+        }
+      );
   }
 }
