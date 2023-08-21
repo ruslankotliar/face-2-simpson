@@ -14,12 +14,29 @@ services:
     ports:
       - 3000:3000
     networks:
-      - my_network
+      - face-2-simpson-network
+
+  python-server:
+      container_name: python-server
+      build:
+        context: ./python-server
+        dockerfile: Dockerfile
+
+      volumes:
+        - ./python-server/models:/app/models
+      restart: always
+      ports:
+        - 8000:8000
+      environment:
+        - ENVIRONMENT=development
+      networks:
+        - face-2-simpson-network
 
   # Add more containers below (nginx, postgres, etc.)
 
 # Define a network, which allows containers to communicate
 # with each other, by using their container name as a hostname
 networks:
-  my_network:
+  face-2-simpson-network:
     external: true
+    

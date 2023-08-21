@@ -3,19 +3,19 @@ import torch
 import sys
 from PIL import Image
 
-from model import create_resnet
+from .model import create_resnet
 from timeit import default_timer as timer
 from typing import Tuple, Dict
 
 cwd = os.getcwd()
 
-with open(os.path.join(cwd,"src/app/api/_models/predict/class_names.txt"), "r") as f:
+with open(os.path.join(cwd,"models/predict/class_names.txt"), "r") as f:
   class_names = [food_name.strip() for food_name in f.readlines()]
 
 model, transformer = create_resnet(num_classes=len(class_names))
 
 model.load_state_dict(
-    torch.load(f=os.path.join(cwd,"src/app/api/_models/predict/BEST_MODEL"),
+    torch.load(f=os.path.join(cwd,"models/predict/BEST_MODEL.pth"),
                map_location=torch.device("cpu"))
 )
 
@@ -34,13 +34,3 @@ def predict(img) -> Tuple[Dict, float]:
   pred_time = round(end_time - start_time, 4)
 
   return pred_labels_and_probs, pred_time
-
-
-
-img_path = sys.argv[1] # accessing args
-img = Image.open(img_path).convert('RGB')  # accessing img
-
-pred_labels_and_probs, pred_time = predict(img)
-
-print(pred_labels_and_probs, pred_time)
-sys.stdout.flush()

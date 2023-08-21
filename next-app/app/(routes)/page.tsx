@@ -17,12 +17,13 @@ const predictSimpson = async (img: File): Promise<void> => {
     const formData = new FormData();
     formData.append(PREDICT_SIMP_FILENAME, img);
 
-    const response = await axios.post(
+    const { data } = await axios.post(
       REQUEST_URL_KEYS.PREDICT_PERSON_IMG,
       formData
     );
 
-    alert(response.data);
+    alert(JSON.stringify(data));
+    return data;
   } catch (e) {
     console.error(e);
   }
