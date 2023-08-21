@@ -29,7 +29,7 @@ First, run the production server (Final image approximately 110 MB).
 ```bash
 # Create a network, which allows containers to communicate
 # with each other, by using their container name as a hostname
-docker network create my_network
+docker network create face-2-simpson-network
 
 # Build prod
 docker compose -f docker-compose.prod.yml build
@@ -43,7 +43,7 @@ Alternatively, run the production server without without multistage builds (Fina
 ```bash
 # Create a network, which allows containers to communicate
 # with each other, by using their container name as a hostname
-docker network create my_network
+docker network create face-2-simpson-network
 
 # Build prod without multistage
 docker compose -f docker-compose.prod-without-multistage.yml build
