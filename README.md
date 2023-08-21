@@ -9,7 +9,7 @@ First, run the development server:
 ```bash
 # Create a network, which allows containers to communicate
 # with each other, by using their container name as a hostname
-docker network create my_network
+docker network create face-2-simpson-network
 
 # Build dev
 docker compose -f docker-compose.dev.yml build

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { PREDICT_SIMP_FILENAME, StatusCodes } from '../../../../_constants';
 import { getStatusText, uploadFile } from '../../../_utils';
+import { predictSimpson } from '@app/api/_rest';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,15 +14,16 @@ export async function POST(req: NextRequest) {
 
     if (!file) throw Error('No image found. Please, try again.');
 
-    const url = await uploadFile(file);
+    const key = await uploadFile(file);
 
-    if (!url) throw Error('File upload failed. URL is missing.');
+    if (!key) throw Error('File upload failed. Key is missing.');
 
     // send request to model here
+    const predictedData = await predictSimpson(key);
 
-    return NextResponse.json({
-      message: 'Successfully predicted',
-    });
+    console.log(predictedData);
+
+    return NextResponse.json(predictedData);
   } catch (e) {
     console.error(e);
     if (e instanceof Error)

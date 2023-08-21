@@ -36,5 +36,5 @@ export const uploadFile = async function (
   const data =
     (await parallelUploads3.done()) as CompleteMultipartUploadCommandOutput;
 
-  return data.Location;
+  return data.Key;
 };
