@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { PREDICT_SIMP_FILENAME, StatusCodes } from '../../../../_constants';
-import { getStatusText, uploadFile } from '../../../_utils';
+import {
+  getStatusText,
+  setBucketObjectTag,
+  putBucketObject,
+} from '../../../_utils';
 import { predictSimpson } from '@app/api/_rest';
+import { getMaxSimilarChar } from '@app/api/_helpers';
+import { AWS_S3_TAGS } from '@app/api/_constants';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,16 +20,26 @@ export async function POST(req: NextRequest) {
 
     if (!file) throw Error('No image found. Please, try again.');
 
-    const key = await uploadFile(file);
+    const key = await putBucketObject(file);
 
     if (!key) throw Error('File upload failed. Key is missing.');
 
     // send request to model here
-    const predictedData = await predictSimpson(key);
+    const { predict_data: predictData, predict_time: predictTime } =
+      await predictSimpson(key);
 
-    console.log(predictedData);
+    console.log(predictData, predictTime);
 
-    return NextResponse.json(predictedData);
+    await setBucketObjectTag(
+      key,
+      AWS_S3_TAGS.CLASS_NAME,
+      getMaxSimilarChar(predictData)
+    );
+
+    return NextResponse.json({
+      predictData,
+      key,
+    });
   } catch (e) {
     console.error(e);
     if (e instanceof Error)

@@ -9,6 +9,10 @@ const AWS_S3_BUCKET: StringMap = {
   BUCKET: process.env.AWS_BUCKET as string,
 };
 
+const AWS_S3_TAGS: StringMap = {
+  CLASS_NAME: 'class_name',
+};
+
 let PYTHON_API_ROUTES: StringMap = {
   PREDICT_SIMPSON: '/predict/simpson',
 };
@@ -18,4 +22,4 @@ PYTHON_API_ROUTES = Object.keys(PYTHON_API_ROUTES).reduce(
   {}
 );
 
-export { AWS_S3_BUCKET, PYTHON_API_ROUTES };
+export { AWS_S3_BUCKET, PYTHON_API_ROUTES, AWS_S3_TAGS };

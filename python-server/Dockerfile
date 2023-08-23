@@ -5,12 +5,11 @@ FROM python:3.10
 WORKDIR /app 
 #Installing python packages pandas, scikit-learn and gunicorn
 COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir --upgrade -r requirements.txt
 
-# Copy the models directory and app.py files
-COPY models ./models
-COPY main.py main.py
-COPY .env .
+ENV PYTHONPATH="$PYTHONPATH:/app"
+
+COPY . ./
 
 #Starting the python application
-CMD [ "python3", "main.py"]
+CMD ["uvicorn", "main:asgi_app", "--reload", "--host", "0.0.0.0", "--port", "8000"]

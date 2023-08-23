@@ -6,4 +6,13 @@ interface StringArrayMap {
   [key: string]: string[];
 }
 
-export type { StringMap, StringArrayMap };
+interface NumberMap {
+  [key: string]: number;
+}
+
+interface PredictSimpsonData {
+  predictData: NumberMap;
+  key: string;
+}
+
+export type { StringMap, StringArrayMap, PredictSimpsonData, NumberMap };
