@@ -1,2 +1,4 @@
 export * from './getStatusText';
-export * from './uploadFile';
+export * from './putBucketObject';
+export * from './setBucketObjectTag';
+export * from './deleteBucketObject';

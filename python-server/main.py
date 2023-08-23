@@ -1,24 +1,12 @@
-import os
-import boto3
-
+from asgiref.wsgi import WsgiToAsgi
 from flask import Flask, jsonify, request
-from dotenv import load_dotenv
-from models import predict
 from PIL import Image
 
-load_dotenv()
-AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
-AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
-AWS_REGION = os.getenv('AWS_REGION')
-AWS_BUCKET = os.getenv('AWS_BUCKET')
+from models import predict
+
+from utils import S3Client
 
 app = Flask(__name__)
-
-s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, region_name=AWS_REGION)
-
-def get_s3_object(key):
-    obj = s3.get_object(Bucket=AWS_BUCKET, Key=key)
-    return obj['Body']
 
 @app.route('/predict/simpson', methods=['POST'])
 def predict_image():
@@ -27,14 +15,14 @@ def predict_image():
     if not key:
         return jsonify({"error": "No key found"}), 400
 
-    file_stream = get_s3_object(key)
+    s3_client = S3Client()
+    file_stream = s3_client.get_s3_object(key)
     img = Image.open(file_stream)
     
-    result = predict(img)
+    predict_data, predict_time = predict(img)
 
-    return jsonify(result)
+    response = { 'predict_data': predict_data, 'predict_time': predict_time}
 
+    return jsonify(response)
 
-if __name__ == "__main__":
-    port = 8000 #the custom port you want
-    app.run(host='0.0.0.0', port=port, debug=True)
+asgi_app = WsgiToAsgi(app)

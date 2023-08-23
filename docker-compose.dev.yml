@@ -23,7 +23,7 @@ services:
         dockerfile: Dockerfile
 
       volumes:
-        - ./python-server/models:/app/models
+        - ./python-server:/app
       restart: always
       ports:
         - 8000:8000
@@ -39,4 +39,5 @@ services:
 networks:
   face-2-simpson-network:
     external: true
+    driver: bridge
     
