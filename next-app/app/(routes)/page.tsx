@@ -3,11 +3,7 @@
 import * as Yup from 'yup';
 import axios from 'axios';
 import { Form, Formik, FormikHelpers } from 'formik';
-import {
-  FORM_CONSTANTS,
-  PREDICT_SIMP_FILENAME,
-  REQUEST_URL_KEYS,
-} from '../_constants';
+import { FORM_CONSTANTS, BUCKET_KEYS, REQUEST_URL_KEYS } from '../_constants';
 import { FileInput, SubmitButton } from '../_components';
 import { isValidFileType } from '../_helpers';
 import { PredictInitialValues, PredictSimpsonData } from '../_types';
@@ -34,7 +30,7 @@ const predictSimpson = async function (
 ): Promise<PredictSimpsonData | undefined> {
   try {
     const formData = new FormData();
-    formData.append(PREDICT_SIMP_FILENAME, img);
+    formData.append(BUCKET_KEYS.TRAIN, img);
 
     const {
       data: { predictData, key },

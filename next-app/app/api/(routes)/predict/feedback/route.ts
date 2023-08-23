@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { StatusCodes } from '../../../../_constants';
-import { deleteBucketObject, getStatusText } from '../../../_utils';
+import { s3Bucket, getStatusText } from '../../../_utils';
 
 export async function POST(req: NextRequest) {
   try {
     const { feedback, key } = await req.json();
-    if (feedback === false) deleteBucketObject(key);
+    if (feedback === false) s3Bucket.deleteObject(key);
     return NextResponse.json(null);
   } catch (e) {
     console.error(e);
