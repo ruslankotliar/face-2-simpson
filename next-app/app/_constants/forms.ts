@@ -9,6 +9,24 @@ const VALID_FILE_EXTENSIONS: StringArrayMap = {
   personImg: ['png', 'jpeg'],
 };
 
-const PREDICT_SIMP_FILENAME: string = 'predictSimpson';
+const BUCKET_KEYS: StringMap = {
+  TRAIN: 'train',
+  TEST: 'test',
+};
 
-export { FORM_CONSTANTS, VALID_FILE_EXTENSIONS, PREDICT_SIMP_FILENAME };
+const BUCKET_OBJ_TAG_VALUES: StringMap = {
+  // simpsons
+  BART: 'bart_simpson',
+  HOMER: 'homer_simpson',
+  LISA: 'lisa_simpson',
+  MARGE: 'marge_simpson',
+  // purpose
+  ...BUCKET_KEYS,
+};
+
+export {
+  FORM_CONSTANTS,
+  VALID_FILE_EXTENSIONS,
+  BUCKET_KEYS,
+  BUCKET_OBJ_TAG_VALUES,
+};

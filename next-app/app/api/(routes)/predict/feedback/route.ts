@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { StatusCodes } from '../../../../_constants';
-import { deleteBucketObject, getStatusText } from '../../../_utils';
+import { s3Bucket, getStatusText } from '../../../_utils';
 
 export async function POST(req: NextRequest) {
   try {
-    const { feedback, key } = await req.json();
-    if (feedback === false) deleteBucketObject(key);
+    const { feedback, permission, key } = await req.json();
+    
+    console.log('Feedback: ', feedback ? 'positive' : 'negative');
+    console.log(
+      'Permission to store files: ',
+      feedback ? 'positive' : 'negative'
+    );
+    if (permission === false) s3Bucket.deleteObject(key);
+
     return NextResponse.json(null);
   } catch (e) {
     console.error(e);

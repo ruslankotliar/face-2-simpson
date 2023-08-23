@@ -9,8 +9,9 @@ const AWS_S3_BUCKET: StringMap = {
   BUCKET: process.env.AWS_BUCKET as string,
 };
 
-const AWS_S3_TAGS: StringMap = {
+const BUCKET_OBJ_TAG_KEYS: StringMap = {
   CLASS_NAME: 'class_name',
+  PURPOSE: 'purpose',
 };
 
 let PYTHON_API_ROUTES: StringMap = {
@@ -22,4 +23,4 @@ PYTHON_API_ROUTES = Object.keys(PYTHON_API_ROUTES).reduce(
   {}
 );
 
-export { AWS_S3_BUCKET, PYTHON_API_ROUTES, AWS_S3_TAGS };
+export { AWS_S3_BUCKET, PYTHON_API_ROUTES, BUCKET_OBJ_TAG_KEYS };

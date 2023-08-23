@@ -1,4 +1,2 @@
 export * from './getStatusText';
-export * from './putBucketObject';
-export * from './setBucketObjectTag';
-export * from './deleteBucketObject';
+export * from './s3Bucket';

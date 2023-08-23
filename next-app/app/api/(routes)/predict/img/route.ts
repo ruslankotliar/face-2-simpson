@@ -1,40 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
 
-import { PREDICT_SIMP_FILENAME, StatusCodes } from '../../../../_constants';
+import fs from 'fs';
+import path from 'path';
+
 import {
-  getStatusText,
-  setBucketObjectTag,
-  putBucketObject,
-} from '../../../_utils';
+  BUCKET_KEYS,
+  BUCKET_OBJ_TAG_VALUES,
+  StatusCodes,
+} from '../../../../_constants';
+import { getStatusText, s3Bucket } from '../../../_utils';
 import { predictSimpson } from '@app/api/_rest';
 import { getMaxSimilarChar } from '@app/api/_helpers';
-import { AWS_S3_TAGS } from '@app/api/_constants';
+import { BUCKET_OBJ_TAG_KEYS } from '@app/api/_constants';
 
 export async function POST(req: NextRequest) {
   try {
     const data = await req.formData();
-
-    const file: File | null = data.get(
-      PREDICT_SIMP_FILENAME
-    ) as unknown as File;
-
+    const file: File | null = data.get(BUCKET_KEYS.TRAIN) as unknown as File;
     if (!file) throw Error('No image found. Please, try again.');
 
-    const key = await putBucketObject(file);
+    const key = `${BUCKET_KEYS.TRAIN}/${uuidv4()}`;
+    await s3Bucket.putObject(file, key);
 
-    if (!key) throw Error('File upload failed. Key is missing.');
-
-    // send request to model here
     const { predict_data: predictData, predict_time: predictTime } =
       await predictSimpson(key);
-
     console.log(predictData, predictTime);
 
-    await setBucketObjectTag(
-      key,
-      AWS_S3_TAGS.CLASS_NAME,
-      getMaxSimilarChar(predictData)
-    );
+    await s3Bucket.putTagging(key, [
+      {
+        Key: BUCKET_OBJ_TAG_KEYS.CLASS_NAME,
+        Value: getMaxSimilarChar(predictData),
+      },
+      {
+        Key: BUCKET_OBJ_TAG_KEYS.PURPOSE,
+        Value: BUCKET_OBJ_TAG_VALUES.TRAIN,
+      },
+    ]);
 
     return NextResponse.json({
       predictData,
