@@ -10,6 +10,7 @@ export const predictSimpson = async function (key: string) {
 
     return data;
   } catch (e) {
-    console.log(e);
+    if (e instanceof Error) console.error(e.message);
+    else console.error(e);
   }
 };

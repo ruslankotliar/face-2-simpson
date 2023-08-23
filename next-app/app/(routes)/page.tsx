@@ -11,10 +11,12 @@ import { useEffect, useState } from 'react';
 
 const sendFeedback = async function (
   feedback: boolean,
+  permission: boolean,
   { key }: PredictSimpsonData
 ): Promise<void> {
   try {
     const { data } = await axios.post(REQUEST_URL_KEYS.DELETE_PERSON_IMG, {
+      permission,
       feedback,
       key,
     });
@@ -65,6 +67,7 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 
 export default function Home() {
   const [feedback, setFeedback] = useState<boolean | undefined>(undefined);
+  const [permission, setPermission] = useState<boolean | undefined>(undefined);
   const [predictSimpsonData, setPredictSimpsonData] = useState<
     PredictSimpsonData | undefined
   >(undefined);
@@ -72,6 +75,7 @@ export default function Home() {
   const receiveFeedback = function ({ predictData }: PredictSimpsonData) {
     console.log('Waiting for user feedback...');
     setFeedback(confirm(JSON.stringify(predictData)));
+    setPermission(confirm('Can we use your data?'));
   };
 
   const handleSubmit = async function (
@@ -91,10 +95,11 @@ export default function Home() {
 
   useEffect(() => {
     feedback !== undefined &&
+      permission !== undefined &&
       predictSimpsonData &&
-      sendFeedback(feedback, predictSimpsonData);
+      sendFeedback(feedback, permission, predictSimpsonData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [feedback]);
+  }, [permission]);
 
   return (
     <div className='flex items-center justify-center min-h-screen bg-white'>
