@@ -17,7 +17,7 @@ def predict(img) -> Tuple[Dict, float]:
     model, transformer = create_resnet(num_classes=len(class_names))
 
     model.load_state_dict(
-        torch.load(f=os.path.join(cwd,"models/predict/BEST_MODEL.pth"),
+        torch.load(f=os.path.join(cwd,"models/predict/simpsons_model.pth"),
                   map_location=torch.device("cpu"))
     )
   start_time = timer()
