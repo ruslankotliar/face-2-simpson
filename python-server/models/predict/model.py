@@ -5,8 +5,6 @@ from torch import nn
 def create_mobilenet(num_classes,
                      seed=42):
 
-  torch.manual_seed(seed)
-
   weights = torchvision.models.MobileNet_V2_Weights.DEFAULT
 
   model = torchvision.models.mobilenet_v2(weights=weights)

@@ -2,12 +2,14 @@
 
 import * as Yup from 'yup';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { Form, Formik, FormikHelpers } from 'formik';
+
 import { FORM_CONSTANTS, BUCKET_KEYS, REQUEST_URL_KEYS } from '../_constants';
 import { FileInput, SubmitButton } from '../_components';
 import { isValidFileType } from '../_helpers';
 import { PredictInitialValues, PredictSimpsonData } from '../_types';
-import { useEffect, useState } from 'react';
+import Loader from './loading';
 
 const sendFeedback = async function (
   feedback: boolean,
@@ -73,20 +75,18 @@ export default function Home() {
   >(undefined);
 
   const receiveFeedback = function ({ predictData }: PredictSimpsonData) {
-    console.log('Waiting for user feedback...');
     setFeedback(confirm(JSON.stringify(predictData)));
     setPermission(confirm('Can we use your data?'));
   };
 
   const handleSubmit = async function (
     { personImg }: any,
-    { resetForm, setSubmitting }: FormikHelpers<any>
+    { resetForm }: FormikHelpers<any>
   ) {
     console.log('Submitting...');
     const data = await predictSimpson(personImg);
     setPredictSimpsonData(data);
-    setSubmitting(false);
-    resetForm();
+    // resetForm();
   };
 
   useEffect(() => {
@@ -108,15 +108,18 @@ export default function Home() {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ setFieldValue }) => (
-          <Form className='w-full max-w-sm space-y-6'>
-            <FileInput
-              name={'personImg'}
-              accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
-              setFieldValue={setFieldValue}
-            />
-            <SubmitButton />
-          </Form>
+        {({ setFieldValue, isSubmitting }) => (
+          <>
+            {isSubmitting && <Loader />}
+            <Form className='w-full max-w-sm space-y-6'>
+              <FileInput
+                name={'personImg'}
+                accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
+                setFieldValue={setFieldValue}
+              />
+              <SubmitButton />
+            </Form>
+          </>
         )}
       </Formik>
     </div>
