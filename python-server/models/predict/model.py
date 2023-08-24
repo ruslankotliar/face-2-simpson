@@ -1,9 +1,8 @@
 import torch
 import torchvision
-
 from torch import nn
 
-def create_resnet(num_classes,
+def create_mobilenet(num_classes,
                      seed=42):
 
   weights = torchvision.models.MobileNet_V2_Weights.DEFAULT
