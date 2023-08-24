@@ -4,10 +4,10 @@ from torch.optim import Adam
 from torch.optim.lr_scheduler import StepLR
 from sklearn.model_selection import train_test_split
 
-from model import create_mobilenet
+from .model import create_mobilenet
 from utils import set_seeds
-from retrain_functions import *
-from early_stopper import EarlyStopper
+from .retrain_functions import *
+from .early_stopper import EarlyStopper
 
 import numpy as np
 import os
@@ -55,7 +55,7 @@ def build_and_retrain_model(images, class_idx, new_test):
   # Set random seeds
   set_seeds(RANDOM_SEED)
 
-  train_arr, test_arr = train_test_split(images, test_size=TEST_SIZE, random_state=RANDOM_SEED, stratify=images[:,1])
+  train_arr, test_arr = train_test_split(images[:,0], images[:,1], test_size=TEST_SIZE, random_state=RANDOM_SEED, stratify=images[:,1])
 
   # Add previous test files to test_arr
   test_arr = np.array([test_arr, new_test])

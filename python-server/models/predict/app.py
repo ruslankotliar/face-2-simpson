@@ -43,6 +43,7 @@ def predict(img) -> Tuple[Dict, float]:
 
 
 def retrain_model(images, new_test):
+  print('Retraining model...')
   with open(CLASS_NAMES_PATH, "r") as f:
     class_names = [food_name.strip() for food_name in f.readlines()]
 
@@ -64,10 +65,12 @@ def retrain_model(images, new_test):
   new_state_dict, new_model_results = build_and_retrain_model(images, class_idx, new_test)
 
   if new_model_results['test_acc'] > model_results:
+    print('Replacing with new model')
     os.remove(MODEL_PATH)
     torch.save(new_state_dict, MODEL_PATH)
     with open(MODEL_ACC_PATH, 'w') as f:
       f.write(new_model_results['test_acc'])
-  else:
     # Remove images from aws.
+  else:
+    # shift retrain date
     pass

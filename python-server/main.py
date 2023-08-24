@@ -27,13 +27,9 @@ def predict_image():
 
     return jsonify(response)
 
+
 @app.route('/predict/retrain', methods=['POST'])
 def retrain_function():
-    key = request.json.get('key')
-    print('Request:', key)
-    if not key:
-        return jsonify({"error": "No key found"}), 400
-
     IMAGE_SIZE = (224,224)
 
     s3_client = S3Client()
@@ -41,13 +37,20 @@ def retrain_function():
 
     train, test = [], []
     dct = {'train':[], 'test':[]}
-    for key in files:
+    
+    for i, file in enumerate(files):
+        key = file['Key']
+        print(i, key)
         dict_object = s3_client.get_s3_object_tagging(key)
+        print(dict_object)
+
+        purpose, class_name = dict_object
 
         image = Image.open(s3_client.get_s3_object(key)).resize(IMAGE_SIZE)
-        dct[dict_object['purpose']].append((image, dict_object['class_name']))
+        dct[purpose['Value']].append((image, class_name['Value']))
 
     retrain_model(np.array(dct['train']), np.array(dct['test']))
+    return jsonify(None)
 
 asgi_app = WsgiToAsgi(app)
 

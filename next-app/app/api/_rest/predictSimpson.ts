@@ -8,6 +8,8 @@ export const predictSimpson = async function (key: string) {
       key,
     });
 
+    
+
     return data;
   } catch (e) {
     if (e instanceof Error) console.error(e.message);
