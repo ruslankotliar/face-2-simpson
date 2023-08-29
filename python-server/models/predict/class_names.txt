@@ -1,4 +1,4 @@
-Bart Simpson
-Homer Simpson
-Liza Simpson
-Marge Simpson
+bart_simpson
+homer_simpson
+lisa_simpson
+marge_simpson

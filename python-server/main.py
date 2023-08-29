@@ -16,12 +16,13 @@ def predict_image():
     print('Request:', key)
     if not key:
         return jsonify({"error": "No key found"}), 400
-
     s3_client = S3Client()
     file_stream = s3_client.get_s3_object(key)
     img = Image.open(file_stream)
     
     predict_data, predict_time = predict(img)
+
+    predict_data = dict(sorted(predict_data.items(), key=lambda x: x[1], reverse=True))
 
     response = { 'predict_data': predict_data, 'predict_time': predict_time}
 
@@ -46,8 +47,8 @@ def retrain_function():
 
         purpose, class_name = dict_object
 
-        image = Image.open(s3_client.get_s3_object(key)).resize(IMAGE_SIZE)
-        dct[purpose['Value']].append((image, class_name['Value']))
+        image = Image.open(s3_client.get_s3_object(key)).convert('RGB').resize(IMAGE_SIZE)
+        dct[purpose['Value']].append((np.asarray(image), class_name['Value']))
 
     retrain_model(np.array(dct['train']), np.array(dct['test']))
     return jsonify(None)

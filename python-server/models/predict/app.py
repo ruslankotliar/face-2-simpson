@@ -37,8 +37,6 @@ def predict(img) -> Tuple[Dict, float]:
   end_time = timer()
   pred_time = round(end_time - start_time, 4)
 
-  pred_labels_and_probs = dict(sorted(pred_labels_and_probs.items(), key=lambda x:x[1], reverse=True))
-
   return pred_labels_and_probs, pred_time
 
 
@@ -47,12 +45,12 @@ def retrain_model(images, new_test):
   with open(CLASS_NAMES_PATH, "r") as f:
     class_names = [food_name.strip() for food_name in f.readlines()]
 
-    model, transformer = create_mobilenet(num_classes=len(class_names))
+  model, transformer = create_mobilenet(num_classes=len(class_names))
 
-    model.load_state_dict(
-      torch.load(f=MODEL_PATH,
-                 map_location=torch.device("cpu"))
-    )
+  model.load_state_dict(
+    torch.load(f=MODEL_PATH,
+               map_location=torch.device("cpu"))
+  )
 
   with open(MODEL_ACC_PATH, 'r') as f:
     model_results = float(f.read())
@@ -63,8 +61,9 @@ def retrain_model(images, new_test):
     class_idx[name] = idx
 
   new_state_dict, new_model_results = build_and_retrain_model(images, class_idx, new_test)
+  print('Model results:\n', new_model_results)
 
-  if new_model_results['test_acc'] > model_results:
+  if new_model_results['test_acc'][-1] > model_results:
     print('Replacing with new model')
     os.remove(MODEL_PATH)
     torch.save(new_state_dict, MODEL_PATH)
