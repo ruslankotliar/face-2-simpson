@@ -22,6 +22,8 @@ def numpy_to_tensor(array):
   for image in array[:,0]:
       # Convert to numpy array and normalize pixel values
       image_array = np.array(image) / 255.0
+      print('IMAGE_ARRAY_SHAPE',image_array.shape)
+      print('IMAGE_ARRAY',image_array)
 
       # Transpose the dimensions to (channels, height, width)
       image_array = np.transpose(image_array, (2, 0, 1))
@@ -55,10 +57,10 @@ def build_and_retrain_model(images, class_idx, new_test):
   # Set random seeds
   set_seeds(RANDOM_SEED)
 
-  train_arr, test_arr = train_test_split(images[:,0], images[:,1], test_size=TEST_SIZE, random_state=RANDOM_SEED, stratify=images[:,1])
+  train_arr, test_arr = train_test_split(images, test_size=TEST_SIZE, random_state=RANDOM_SEED, stratify=images[:,1])
 
   # Add previous test files to test_arr
-  test_arr = np.array([test_arr, new_test])
+  test_arr = np.vstack([test_arr, new_test])
 
   train_classes = train_arr[:,1]
   test_classes = test_arr[:,1]
