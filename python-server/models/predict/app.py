@@ -40,12 +40,12 @@ def predict(img) -> Tuple[Dict, float]:
   return pred_labels_and_probs, pred_time
 
 
-def retrain_model(images, new_test):
+def retrain_model(images, old_test):
   print('Retraining model...')
   with open(CLASS_NAMES_PATH, "r") as f:
     class_names = [food_name.strip() for food_name in f.readlines()]
 
-  model, transformer = create_mobilenet(num_classes=len(class_names))
+  model, transformer = create_mobilenet(num_classes=len(class_names), seed=42)
 
   model.load_state_dict(
     torch.load(f=MODEL_PATH,
@@ -60,16 +60,27 @@ def retrain_model(images, new_test):
     idx_class[idx] = name
     class_idx[name] = idx
 
-  new_state_dict, new_model_results = build_and_retrain_model(images, class_idx, new_test)
+  new_state_dict, new_model_results = build_and_retrain_model(images, class_idx, old_test)
   print('Model results:\n', new_model_results)
 
   if new_model_results['test_acc'][-1] > model_results:
     print('Replacing with new model')
-    os.remove(MODEL_PATH)
-    torch.save(new_state_dict, MODEL_PATH)
-    with open(MODEL_ACC_PATH, 'w') as f:
-      f.write(new_model_results['test_acc'])
+    print(f'The previous model test accuracy equal {model_results}\nNew model test accuracy equal {new_model_results["test_acc"][-1]}')
+    # DO NOT UNCOMMENT THIS UNTIL THE WHOLE PROJECT IS DONE
+    # ----------------------------------------------------------
+    # os.remove(MODEL_PATH)
+    # torch.save(new_state_dict, MODEL_PATH)
+    # with open(MODEL_ACC_PATH, 'w') as f:
+    #   f.write(new_model_results['test_acc'])
+    # ----------------------------------------------------------
+
+    # TASK
     # Remove images from aws.
   else:
-    # shift retrain date
+    print('-'*30)
+    print('The previous model is better.\nKeep it.')
+    print(f'The previous model test accuracy equal {model_results}\nNew model test accuracy equal {new_model_results["test_acc"][-1]}')
+
+    # TASK
+    # Shift retrain date
     pass

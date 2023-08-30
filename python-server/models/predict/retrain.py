@@ -11,8 +11,10 @@ from .early_stopper import EarlyStopper
 
 import numpy as np
 import os
+import random
 
 cwd = os.getcwd()
+MODEL_PATH = os.path.join(cwd, "models/predict/simpsons_model.pth")
 
 def numpy_to_tensor(array):
   """
@@ -22,8 +24,7 @@ def numpy_to_tensor(array):
   for image in array[:,0]:
       # Convert to numpy array and normalize pixel values
       image_array = np.array(image) / 255.0
-      print('IMAGE_ARRAY_SHAPE',image_array.shape)
-      print('IMAGE_ARRAY',image_array)
+      # print('IMAGE_ARRAY_SHAPE',image_array.shape)
 
       # Transpose the dimensions to (channels, height, width)
       image_array = np.transpose(image_array, (2, 0, 1))
@@ -35,24 +36,25 @@ def numpy_to_tensor(array):
 
   return image_tensor
 
-def build_and_retrain_model(images, class_idx, new_test):
+def build_and_retrain_model(images, class_idx, old_test, num_epochs=10):
   """The function, that retrain a model.
 
   Args:
-    images: numpy.array
-    class_idx: Dict()
-    new_test: numpy.array
+    images: numpy.array | Images
+    class_idx: Dict() | Dictionary, where "class" is a key and "index" is a value.
+    old_test: numpy.array | Array of test images
+    num_epochs: int | Number of epochs to train | Default = 10
 
   Return:
-    model.state_dict(): Tensor()
-    model_results: Dict(train_loss, test_loss, train_acc, test_acc)
+    model.state_dict(): Tensor() | State dict of the model
+    model_results: Dict(train_loss, test_loss, train_acc, test_acc) | Dictionary with results of the model for each epoch
   """
   # Constants
   RANDOM_SEED = 42
   IMAGE_SIZE = 224
   BATCH_SIZE = 4
   TEST_SIZE = 0.2
-  NUM_OF_CLASSES = 4
+  NUM_OF_CLASSES = len(class_idx.keys())
 
   # Set random seeds
   set_seeds(RANDOM_SEED)
@@ -60,7 +62,7 @@ def build_and_retrain_model(images, class_idx, new_test):
   train_arr, test_arr = train_test_split(images, test_size=TEST_SIZE, random_state=RANDOM_SEED, stratify=images[:,1])
 
   # Add previous test files to test_arr
-  test_arr = np.vstack([test_arr, new_test])
+  test_arr = np.vstack([test_arr, old_test])
 
   train_classes = train_arr[:,1]
   test_classes = test_arr[:,1]
@@ -88,13 +90,17 @@ def build_and_retrain_model(images, class_idx, new_test):
                                                                                             train_transformer=train_transforms,
                                                                                             test_transformer=test_transforms,
                                                                                             batch_size=BATCH_SIZE)
-  # Create the model and optimizer
-  model, transformer = create_mobilenet(NUM_OF_CLASSES)
+
+  # Build a model
+  model, transformer = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
+
+  # Load a state dict of the previous model
   model.load_state_dict(
-    torch.load(f=os.path.join(cwd,"models/predict/simpsons_model.pth"),
-               map_location=torch.device("cpu"))
+      torch.load(f=MODEL_PATH,
+                 map_location=torch.device("cpu"))
   )
 
+  # Set an optimizer
   optimizer = Adam(params=model.parameters(), lr=0.001, weight_decay=1e-5)
 
   # Use learning rate scheduler
@@ -118,7 +124,55 @@ def build_and_retrain_model(images, class_idx, new_test):
                         loss_fn=loss_fn,
                         scheduler=scheduler,
                         early_stopper=early_stopper,
-                        epochs=10,
+                        epochs=num_epochs,
                         device='cpu')
+  # TASK (ongoing) ↓
+  # Think about "model_results['train_acc'][-1] >= (model_results['test_acc'][-1] * 0.9)"
+  # If at any epoch model's test accuracy == MAX(test_acc) AND train accuracy >= test accuracy * 0.9
+  # THEN
+  # retrain for this epoch
+  #
+  # Left:
+  # and model_results['train_acc'][-1] >= (model_results['test_acc'][-1] * 0.9)
+  if model_results['test_acc'][-1] == max(model_results['test_acc']):
+      return model.state_dict(), model_results
+  else:
+      set_seeds(RANDOM_SEED)
+      print("Let's pick the best epoch for our model")
+      best_epoch = np.argmax(model_results['test_acc']) + 1
+      print("The best epoch is ", best_epoch)
 
-  return model.state_dict(), model_results
+      model, transformer = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
+
+      model.load_state_dict(
+          torch.load(f=MODEL_PATH,
+                     map_location=torch.device("cpu"))
+      )
+
+      optimizer = Adam(params=model.parameters(), lr=0.001, weight_decay=1e-5)
+
+      # Use learning rate scheduler
+      scheduler = StepLR(optimizer=optimizer,
+                         step_size=3,
+                         gamma=0.1,
+                         last_epoch=-1,
+                         verbose=True)
+
+      # Use label smoothing in the loss function
+      loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1)
+
+      # Set early stopper to prevent overfitting
+      early_stopper = EarlyStopper(patience=3, min_delta=0.1)
+
+      # Train the model
+      model_results = train(model=model,
+                            train_dataloader=train_dataloader,
+                            test_dataloader=test_dataloader,
+                            optimizer=optimizer,
+                            loss_fn=loss_fn,
+                            scheduler=scheduler,
+                            early_stopper=early_stopper,
+                            epochs=best_epoch,
+                            device='cpu')
+
+      return model.state_dict(), model_results
