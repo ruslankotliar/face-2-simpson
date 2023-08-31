@@ -30,7 +30,7 @@ def predict_image():
     return jsonify(response)
 
 
-@app.route('/predict/retrain', methods=['POST'])
+@app.route('/cron/retrain', methods=['POST'])
 def retrain_function():
     IMAGE_SIZE = (224,224)
     MIN_NUM_OF_IMAGES = 6
