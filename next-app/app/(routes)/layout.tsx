@@ -17,26 +17,26 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <header className='bg-black p-4'>
-        <nav>
-          <ul className='flex space-x-4'>
-            <li>
-              <Link href={'/'} className='text-white hover:text-gray-400'>
-                Main
-              </Link>
-            </li>
-            <li>
-              <Link
-                href={'/retrain'}
-                className='text-white hover:text-gray-400'
-              >
-                Retrain
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </header>
       <body className={inter.className}>
+        <header className='bg-black p-4'>
+          <nav>
+            <ul className='flex space-x-4'>
+              <li>
+                <Link href={'/'} className='text-white hover:text-gray-400'>
+                  Main
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={'/retrain'}
+                  className='text-white hover:text-gray-400'
+                >
+                  Retrain
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </header>
         <main>{children}</main>
       </body>
     </html>

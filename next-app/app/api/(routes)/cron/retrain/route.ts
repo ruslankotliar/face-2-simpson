@@ -3,7 +3,7 @@ import { getStatusText } from '@app/api/_utils';
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     await axios.post(process.env.PYTHON_API + '/cron/retrain');
     
