@@ -10,7 +10,6 @@ import { getStatusText, s3Bucket } from '../../../_utils';
 import { predictSimpson } from '@app/api/_rest';
 import { getMaxSimilarChar } from '@app/api/_helpers';
 import { BUCKET_OBJ_TAG_KEYS } from '@app/api/_constants';
-import axios from 'axios';
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,8 +35,6 @@ export async function POST(req: NextRequest) {
         Value: BUCKET_OBJ_TAG_VALUES.TRAIN,
       },
     ]);
-
-    await axios.post(process.env.PYTHON_API + '/predict/retrain');
 
     console.log('Waiting for user feedback...');
     return NextResponse.json({
