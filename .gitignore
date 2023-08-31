@@ -2,19 +2,20 @@
 
 # dependencies
 node_modules
-/.pnp
+/next-app/.pnp
 .pnp.js
 next-app/node_modules
 # testing
-/coverage
+/next-app/coverage
 .vscode
 # next.js
-/.next/
+/next-app/.next/
 .next
-/out/
+/next-app/out/
+.idea
 
 # production
-/build
+/next-app/build
 
 # misc
 .DS_Store
