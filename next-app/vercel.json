@@ -2,7 +2,7 @@
     "crons": [
         {
             "path": "/api/cron/retrain",
-            "schedule": "@weekly"
+            "schedule": "* * * * */3"
         }
     ]
 }
