@@ -6,7 +6,6 @@ export default function Loader({
   wrapperStyle = {},
   ariaLabel = 'dna-loading',
 }) {
-  console.log('loading');
   return !visible ? null : (
     <svg
       xmlns='http://www.w3.org/2000/svg'

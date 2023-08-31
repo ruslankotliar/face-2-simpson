@@ -23,4 +23,19 @@ PYTHON_API_ROUTES = Object.keys(PYTHON_API_ROUTES).reduce(
   {}
 );
 
-export { AWS_S3_BUCKET, PYTHON_API_ROUTES, BUCKET_OBJ_TAG_KEYS };
+const DB_COUNTER_CHARS: string[] = [
+  'bart_simpson',
+  'homer_simpson',
+  'lisa_simpson',
+  'marge_simpson',
+];
+
+const ENOUGH_TRAIN_DATA: number = 8;
+
+export {
+  AWS_S3_BUCKET,
+  PYTHON_API_ROUTES,
+  BUCKET_OBJ_TAG_KEYS,
+  DB_COUNTER_CHARS,
+  ENOUGH_TRAIN_DATA,
+};
