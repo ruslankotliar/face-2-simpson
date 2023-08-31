@@ -14,13 +14,14 @@ import Loader from './loading';
 const sendFeedback = async function (
   feedback: boolean,
   permission: boolean,
-  { key }: PredictSimpsonData
+  { key, predictData }: PredictSimpsonData
 ): Promise<void> {
   try {
     const { data } = await axios.post(REQUEST_URL_KEYS.DELETE_PERSON_IMG, {
       permission,
       feedback,
       key,
+      predictData,
     });
 
     return data;
@@ -90,7 +91,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    predictSimpsonData && receiveFeedback(predictSimpsonData);
+    predictSimpsonData !== undefined && receiveFeedback(predictSimpsonData);
   }, [predictSimpsonData]);
 
   useEffect(() => {
