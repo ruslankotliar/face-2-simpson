@@ -16,6 +16,8 @@ const BUCKET_OBJ_TAG_KEYS: StringMap = {
 
 let PYTHON_API_ROUTES: StringMap = {
   PREDICT_SIMPSON: '/predict/simpson',
+  REQUEST_STATISTICS: '/predict/statistics',
+  RETRAIN_MODEL: '/cron/retrain',
 };
 
 PYTHON_API_ROUTES = Object.keys(PYTHON_API_ROUTES).reduce(

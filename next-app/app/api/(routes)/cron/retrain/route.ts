@@ -1,8 +1,8 @@
 import { StatusCodes } from '@app/_constants';
 import { DB_COUNTER_CHARS, ENOUGH_TRAIN_DATA } from '@app/api/_constants';
 import { ImageCounter } from '@app/api/_models';
+import { retrainModel } from '@app/api/_rest';
 import { connectToDB, getStatusText } from '@app/api/_utils';
-import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
       data.every((char) => char.seq >= ENOUGH_TRAIN_DATA);
 
     if (isEnoughData) {
-      await axios.post(process.env.PYTHON_API + '/cron/retrain');
+      const { model_accuracy: modelAccuracy } = await retrainModel();
+      console.log('Model accuracy: ', modelAccuracy);
     } else {
       console.log('Not enough data to retrain the model.');
       const state = DB_COUNTER_CHARS.reduce(
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
         }),
         {}
       );
+
       console.log('Data: ', state);
     }
 

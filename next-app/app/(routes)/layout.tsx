@@ -28,6 +28,14 @@ export default function RootLayout({
               </li>
               <li>
                 <Link
+                  href={'/dashboard'}
+                  className='text-white hover:text-gray-400'
+                >
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link
                   href={'/retrain'}
                   className='text-white hover:text-gray-400'
                 >

@@ -30,6 +30,12 @@ def predict_image():
     return jsonify(response)
 
 
+@app.route('/predict/statistics', methods=['GET'])
+def request_statistics():
+    
+    return jsonify(None)
+
+
 @app.route('/cron/retrain', methods=['POST'])
 def retrain_function():
     IMAGE_SIZE = (224,224)
@@ -71,6 +77,7 @@ def retrain_function():
         Dictionary of number of images per class name: {train_class_names_count}\n
         Shift the retrain date by 7 days.
         ''')
+        return "Not enough data to retrain the model", 400
         # TASK
         # retrain date += 7 days
     else:
@@ -85,9 +92,9 @@ def retrain_function():
             if len([el[1] for el in new_train_array if el[1] == img[1]]) < minimum_class_names_count:
                 new_train_array.append(img)
 
-        retrain_model(np.array(new_train_array), np.array(dct['test']))
+        model_accuracy = retrain_model(np.array(new_train_array), np.array(dct['test']))
 
-    return jsonify(None)
+    return jsonify({'model_accuracy': model_accuracy})
 
 asgi_app = WsgiToAsgi(app)
 
