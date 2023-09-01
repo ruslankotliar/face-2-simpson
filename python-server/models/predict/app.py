@@ -66,6 +66,7 @@ def retrain_model(images, old_test):
   if new_model_results['test_acc'][-1] > model_results:
     print('Replacing with new model')
     print(f'The previous model test accuracy equal {model_results}\nNew model test accuracy equal {new_model_results["test_acc"][-1]}')
+    return new_model_results["test_acc"][-1]
     # DO NOT UNCOMMENT THIS UNTIL THE WHOLE PROJECT IS DONE
     # ----------------------------------------------------------
     # os.remove(MODEL_PATH)

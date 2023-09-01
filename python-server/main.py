@@ -31,6 +31,12 @@ def predict_image():
     return jsonify(response)
 
 
+@app.route('/predict/statistics', methods=['GET'])
+def request_statistics():
+    
+    return jsonify(None)
+
+
 @app.route('/cron/retrain', methods=['POST'])
 def retrain_function():
     start_time = timer()
@@ -74,6 +80,7 @@ def retrain_function():
         Dictionary of number of images per class name: {train_class_names_count}\n
         Shift the retrain date by 7 days.
         ''')
+        return "Not enough data to retrain the model", 400
         # TASK
         # retrain date += 7 days
         with open(os.path.join(cwd,'python-server/models/predict/model_acc.txt'), 'r') as f:

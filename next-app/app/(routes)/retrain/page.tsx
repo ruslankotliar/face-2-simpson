@@ -10,7 +10,7 @@ const retrainModel = async function (): Promise<void> {
 
     return data;
   } catch (e) {
-    console.error(e);
+    if (e instanceof Error) console.error(e);
   }
 };
 
