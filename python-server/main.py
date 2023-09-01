@@ -1,8 +1,10 @@
 from asgiref.wsgi import WsgiToAsgi
 from flask import Flask, jsonify, request
-from PIL import Image
+from timeit import default_timer as timer
 from collections import Counter
+from PIL import Image
 import numpy as np
+import os
 
 from models import predict
 from models import retrain_model
@@ -10,6 +12,7 @@ from models import retrain_model
 from utils import S3Client
 
 app = Flask(__name__)
+cwd = os.getcwd()
 
 @app.route('/predict/simpson', methods=['POST'])
 def predict_image():
@@ -22,8 +25,6 @@ def predict_image():
     img = Image.open(file_stream)
     
     predict_data, predict_time = predict(img)
-
-    predict_data = dict(sorted(predict_data.items(), key=lambda x: x[1], reverse=True))
 
     response = { 'predict_data': predict_data, 'predict_time': predict_time}
 
@@ -38,6 +39,7 @@ def request_statistics():
 
 @app.route('/cron/retrain', methods=['POST'])
 def retrain_function():
+    start_time = timer()
     IMAGE_SIZE = (224,224)
     MIN_NUM_OF_IMAGES = 6
 
@@ -71,6 +73,7 @@ def retrain_function():
     numpy_train_images = np.array(dct['train'])
     train_class_names_count = dict(Counter(numpy_train_images[:,1]))
     minimum_class_names_count = min(train_class_names_count.values())
+    responce = {'model_accuracy':0}
     if minimum_class_names_count < MIN_NUM_OF_IMAGES:
         print(f'''
         There are not enough images to retrain model.\n
@@ -80,6 +83,8 @@ def retrain_function():
         return "Not enough data to retrain the model", 400
         # TASK
         # retrain date += 7 days
+        with open(os.path.join(cwd,'python-server/models/predict/model_acc.txt'), 'r') as f:
+            responce['model_accuracy'] = float(f.read())
     else:
         # TASK (ongoing) ↓
         # Reduce number of images for each character to minimum_class_names_count.
@@ -92,9 +97,11 @@ def retrain_function():
             if len([el[1] for el in new_train_array if el[1] == img[1]]) < minimum_class_names_count:
                 new_train_array.append(img)
 
-        model_accuracy = retrain_model(np.array(new_train_array), np.array(dct['test']))
+        responce['model_accuracy'] = retrain_model(np.array(new_train_array), np.array(dct['test']))
 
-    return jsonify({'model_accuracy': model_accuracy})
+    end_time = timer()
+    print(f'The whole model retraining took {end_time-start_time} seconds.')
+    return jsonify(responce)
 
 asgi_app = WsgiToAsgi(app)
 

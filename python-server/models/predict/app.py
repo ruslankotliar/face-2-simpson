@@ -37,7 +37,7 @@ def predict(img) -> Tuple[Dict, float]:
   end_time = timer()
   pred_time = round(end_time - start_time, 4)
 
-  return pred_labels_and_probs, pred_time
+  return dict(sorted(pred_labels_and_probs.items(), key=lambda x: x[1], reverse=True)), pred_time
 
 
 def retrain_model(images, old_test):
@@ -72,16 +72,17 @@ def retrain_model(images, old_test):
     # os.remove(MODEL_PATH)
     # torch.save(new_state_dict, MODEL_PATH)
     # with open(MODEL_ACC_PATH, 'w') as f:
-    #   f.write(new_model_results['test_acc'])
+    #   f.write(str(new_model_results['test_acc'][-1]))
     # ----------------------------------------------------------
 
     # TASK
     # Remove images from aws.
+    return new_model_results['test_acc'][-1]
   else:
     print('-'*30)
     print('The previous model is better.\nKeep it.')
     print(f'The previous model test accuracy equal {model_results}\nNew model test accuracy equal {new_model_results["test_acc"][-1]}')
-    return model_results
 
     # TASK
     # Shift retrain date
+    return model_results
