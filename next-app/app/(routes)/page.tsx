@@ -26,7 +26,7 @@ const sendFeedback = async function (
 
     return data;
   } catch (e) {
-    console.error(e);
+    if (e instanceof Error) console.error(e);
   }
 };
 
@@ -43,7 +43,7 @@ const predictSimpson = async function (
 
     return { predictData, key };
   } catch (e) {
-    console.error(e);
+    if (e instanceof Error) console.error(e);
   }
 };
 

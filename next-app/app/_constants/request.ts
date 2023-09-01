@@ -5,6 +5,7 @@ const HOST_URL = process.env.NEXT_PUBLIC_HOST_URL;
 const REQUEST_URL_PATHS: StringMap = {
   PREDICT_PERSON_IMG: '/predict/img',
   DELETE_PERSON_IMG: '/predict/feedback',
+  STATISTICS: '/predict/statistics',
   RETRAIN_MODEL: '/cron/retrain',
 };
 
