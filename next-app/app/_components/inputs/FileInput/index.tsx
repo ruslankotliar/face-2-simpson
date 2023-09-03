@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PredictInitialValues } from '../../_types';
+import { PredictInitialValues } from '../../../_types';
 import { ErrorMessage, FormikErrors } from 'formik';
 import Image from 'next/image';
 
@@ -70,4 +70,4 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
   );
 };
 
-export { FileInput };
+export default FileInput;

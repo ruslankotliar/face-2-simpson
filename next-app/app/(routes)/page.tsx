@@ -7,10 +7,11 @@ import { useEffect, useState } from 'react';
 import { Form, Formik, FormikHelpers } from 'formik';
 
 import { FORM_CONSTANTS, BUCKET_KEYS, REQUEST_URL_KEYS } from '../_constants';
-import { FileInput, SubmitButton } from '../_components';
 import { isValidFileType } from '../_helpers';
 import { PredictInitialValues, PredictSimpsonData } from '../_types';
 import Loader from './loading';
+import FileInput from '@app/_components/inputs/FileInput';
+import SubmitButton from '@app/_components/buttons/SubmitButton';
 
 const sendFeedback = async function (
   feedback: boolean | null,
@@ -18,15 +19,13 @@ const sendFeedback = async function (
   { key, predictData, predictTime }: PredictSimpsonData
 ): Promise<void> {
   try {
-    const { data } = await axios.post(REQUEST_URL_KEYS.DELETE_PERSON_IMG, {
+    await axios.post(REQUEST_URL_KEYS.DELETE_PERSON_IMG, {
       permission,
       feedback,
       key,
       predictData,
       predictTime,
     });
-
-    return data;
   } catch (e) {
     if (e instanceof Error) console.error(e);
   }
@@ -75,9 +74,7 @@ export default function Home() {
   const [feedback, setFeedback] = useState<boolean | null | undefined>(
     undefined
   );
-  const [permission, setPermission] = useState<boolean | undefined>(
-    undefined
-  );
+  const [permission, setPermission] = useState<boolean | undefined>(undefined);
   const [predictSimpsonData, setPredictSimpsonData] = useState<
     PredictSimpsonData | undefined
   >(undefined);

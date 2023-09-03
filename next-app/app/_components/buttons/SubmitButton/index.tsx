@@ -1,4 +1,4 @@
-export const SubmitButton = function () {
+const SubmitButton = function () {
   return (
     <div className='flex items-center justify-end'>
       <button
@@ -10,3 +10,5 @@ export const SubmitButton = function () {
     </div>
   );
 };
+
+export default SubmitButton;
