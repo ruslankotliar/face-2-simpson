@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import path from 'path';
 
 import {
   BUCKET_KEYS,
@@ -20,30 +22,77 @@ export async function POST(req: NextRequest) {
     const key = `${BUCKET_KEYS.TRAIN}/${uuidv4()}`;
     await s3Bucket.putObject(file, key);
 
-    
+    (async () => {
+      // Our starting point
+      try {
+        // Get the files as an array
+        const files = await fs.promises.readdir(
+          '/Users/ruslan_kotliar/Downloads/test_dataset/Lisa Simpson'
+        );
 
-    const { predict_data: predictData, predict_time: predictTime } =
-      await predictSimpson(key);
+        // Loop them all with the new for...of
+        let count = 0;
+        for (const file of files) {
+          if (count > 8) return;
+          count++;
+          // Get the full paths
+          const fromPath = path.join(
+            '/Users/ruslan_kotliar/Downloads/test_dataset/Lisa Simpson',
+            file
+          );
 
-    console.log(predictData, predictTime);
+          // Stat the file to see if we have a file or dir
+          const stat = await fs.promises.stat(fromPath);
 
-    await s3Bucket.putTagging(key, [
-      {
-        Key: BUCKET_OBJ_TAG_KEYS.CLASS_NAME,
-        Value: getMaxSimilarChar(predictData),
-      },
-      {
-        Key: BUCKET_OBJ_TAG_KEYS.PURPOSE,
-        Value: BUCKET_OBJ_TAG_VALUES.TRAIN,
-      },
-    ]);
+          if (stat.isFile()) {
+            fs.readFile(fromPath, async (err, file) => {
+              if (err) {
+                console.error(err);
+              } else {
+                const key = `${BUCKET_KEYS.TRAIN}/${uuidv4()}`;
+                await s3Bucket.putObject(file, key, [
+                  {
+                    Key: BUCKET_OBJ_TAG_KEYS.CLASS_NAME,
+                    Value: BUCKET_OBJ_TAG_VALUES.LISA,
+                  },
+                  {
+                    Key: BUCKET_OBJ_TAG_KEYS.PURPOSE,
+                    Value: BUCKET_OBJ_TAG_VALUES.TRAIN,
+                  },
+                ]);
+              }
+            });
+          } else if (stat.isDirectory())
+            console.log("'%s' is a directory.", fromPath);
+        } // End for...of
+      } catch (e) {
+        // Catch anything bad that happens
+        console.error("We've thrown! Whoops!", e);
+      }
+    })(); // Wrap in parenthesis and call now
 
-    console.log('Waiting for user feedback...');
-    return NextResponse.json({
-      predictData,
-      predictTime,
-      key,
-    });
+    // const { predict_data: predictData, predict_time: predictTime } =
+    //   await predictSimpson(key);
+
+    // console.log(predictData, predictTime);
+
+    // await s3Bucket.putTagging(key, [
+    //   {
+    //     Key: BUCKET_OBJ_TAG_KEYS.CLASS_NAME,
+    //     Value: getMaxSimilarChar(predictData),
+    //   },
+    //   {
+    //     Key: BUCKET_OBJ_TAG_KEYS.PURPOSE,
+    //     Value: BUCKET_OBJ_TAG_VALUES.TRAIN,
+    //   },
+    // ]);
+
+    // console.log('Waiting for user feedback...');
+    // return NextResponse.json({
+    //   predictData,
+    //   predictTime,
+    //   key,
+    // });
   } catch (e) {
     console.error(e);
     if (e instanceof Error)
