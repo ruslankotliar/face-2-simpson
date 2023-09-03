@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-// import fs from 'fs';
-// import path from 'path';
 
 import {
   BUCKET_KEYS,
@@ -21,6 +19,8 @@ export async function POST(req: NextRequest) {
 
     const key = `${BUCKET_KEYS.TRAIN}/${uuidv4()}`;
     await s3Bucket.putObject(file, key);
+
+    
 
     const { predict_data: predictData, predict_time: predictTime } =
       await predictSimpson(key);
