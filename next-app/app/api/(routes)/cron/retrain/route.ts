@@ -12,13 +12,22 @@ export async function POST(req: NextRequest) {
     const isEnoughData =
       data.length === DB_COUNTER_CHARS.length &&
       data.every((char) => char.seq >= ENOUGH_TRAIN_DATA);
+    const minQuantity = Math.min(...data.map((char) => char.seq));
+
+    const { accuracy: oldAccuracy } = await Accuracy.findOne(
+      {},
+      {},
+      {
+        sort: { createdAt: -1 },
+      }
+    );
 
     if (isEnoughData) {
-      const { model_accuracy: modelAccuracy } = await retrainModel(
-        Math.min(...data.map((char) => char.seq))
+      const { model_accuracy: accuracy } = await retrainModel(
+        minQuantity,
+        oldAccuracy
       );
-      await Accuracy.create({ modelAccuracy });
-      console.log('Model accuracy: ', modelAccuracy);
+      accuracy > oldAccuracy && (await Accuracy.create({ accuracy }));
     } else {
       console.group('Not enough data to retrain the model');
       DB_COUNTER_CHARS.forEach((char) =>

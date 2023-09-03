@@ -44,15 +44,17 @@ def retrain_function():
     Endpoint to retrain the model using images from S3.
     """
     minimum_class_names_count = request.json.get("min", 0)
+    old_accuracy = request.json.get("accuracy", 0)
+
     s3_client = S3Client()
     files = s3_client.get_s3_objects_list()
 
     data = {"train": [], "test": []}
     current_keys = CHARACTER_KEYS.copy()
 
-    for i, file in enumerate(files):
+    i = 0
+    for file in files:
         key = file["Key"]
-        print(i, "-", key)
         purpose, class_name = s3_client.get_s3_object_tagging(key)
 
         if (
@@ -60,6 +62,9 @@ def retrain_function():
             and len(current_keys[class_name["Value"]]) >= minimum_class_names_count
         ):
             continue
+
+        print(f"{i}. {key}")
+        i += 1
 
         image = fetch_and_transform_image(s3_client, key)
         data[purpose["Value"]].append((image, class_name["Value"]))
@@ -72,7 +77,10 @@ def retrain_function():
 
     delete_images_from_s3(current_keys)
 
-    model_accuracy = retrain_model(np.array(data["train"]), np.array(data["test"]))
+    model_accuracy = retrain_model(
+        np.array(data["train"]), np.array(data["test"]), old_accuracy
+    )
+
     return jsonify({"model_accuracy": model_accuracy})
 
 
@@ -90,7 +98,9 @@ def delete_images_from_s3(keys_dict):
     for character, keys in keys_dict.items():
         for key in keys:
             response_status = s3_client.delete_s3_object(key)
-            print(f"Deleted {key} for character {character}. Response: {response_status}")
+            print(
+                f"Deleted {key} for character {character}. Response: {response_status}"
+            )
 
 
 asgi_app = WsgiToAsgi(app)
