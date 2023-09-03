@@ -1,6 +1,5 @@
 import os
 import torch
-import sys
 
 from PIL import Image
 from timeit import default_timer as timer
@@ -13,26 +12,31 @@ cwd = os.getcwd()
 CLASS_NAMES_PATH = os.path.join(cwd, "models/predict/class_names.txt")
 MODEL_PATH = os.path.join(cwd, "models/predict/simpsons_model.pth")
 
+# Load class names once
+with open(CLASS_NAMES_PATH, "r") as f:
+    CLASS_NAMES = [name.strip() for name in f.readlines()]
+
+
+def load_mobilenet(num_classes: int):
+    """Load MobileNet model with given number of classes."""
+    model, transformer = create_mobilenet(num_classes=num_classes)
+    model.load_state_dict(torch.load(f=MODEL_PATH, map_location=torch.device("cpu")))
+    return model, transformer
+
 
 def predict(img) -> Tuple[Dict, float]:
-    with open(CLASS_NAMES_PATH, "r") as f:
-        class_names = [food_name.strip() for food_name in f.readlines()]
+    model, transformer = load_mobilenet(len(CLASS_NAMES))
 
-        model, transformer = create_mobilenet(num_classes=len(class_names))
-
-        model.load_state_dict(
-            torch.load(f=MODEL_PATH, map_location=torch.device("cpu"))
-        )
     start_time = timer()
 
     img = transformer(img).unsqueeze(0)
-
     model.eval()
+
     with torch.inference_mode():
         pred_probs = torch.softmax(model(img), dim=1)
 
     pred_labels_and_probs = {
-        class_names[i]: float(pred_probs[0][i]) for i in range(len(class_names))
+        CLASS_NAMES[i]: float(pred_probs[0][i]) for i in range(len(CLASS_NAMES))
     }
 
     end_time = timer()
@@ -43,15 +47,11 @@ def predict(img) -> Tuple[Dict, float]:
 
 def retrain_model(images, old_test, old_accuracy):
     print("Retraining model...")
-    with open(CLASS_NAMES_PATH, "r") as f:
-        class_names = [food_name.strip() for food_name in f.readlines()]
 
-    model, transformer = create_mobilenet(num_classes=len(class_names), seed=42)
-
-    model.load_state_dict(torch.load(f=MODEL_PATH, map_location=torch.device("cpu")))
+    model, _ = load_mobilenet(len(CLASS_NAMES))
 
     idx_class, class_idx = {}, {}
-    for idx, name in enumerate(class_names):
+    for idx, name in enumerate(CLASS_NAMES):
         idx_class[idx] = name
         class_idx[name] = idx
 
@@ -64,19 +64,16 @@ def retrain_model(images, old_test, old_accuracy):
     if new_accuracy > old_accuracy:
         print("Replacing with new model")
         print(
-            f"The previous model test accuracy equal {old_accuracy}\nNew model test accuracy equal {new_accuracy}"
+            f"The previous model test accuracy was {old_accuracy}\nNew model test accuracy is {new_accuracy}"
         )
-        return new_accuracy
         # DO NOT UNCOMMENT THIS UNTIL THE WHOLE PROJECT IS DONE
-        # ----------------------------------------------------------
         # os.remove(MODEL_PATH)
         # torch.save(new_state_dict, MODEL_PATH)
-        # ----------------------------------------------------------
-
     else:
         print("-" * 30)
-        print("The previous model is better.\nKeep it.")
+        print("The previous model is better.\nKeeping the old model.")
         print(
-            f"The previous model test accuracy equal {old_accuracy}\nNew model test accuracy equal {new_accuracy}"
+            f"The previous model test accuracy was {old_accuracy}\nNew model test accuracy is {new_accuracy}"
         )
-        return old_accuracy
+
+    return new_accuracy

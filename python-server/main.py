@@ -75,13 +75,14 @@ def retrain_function():
     if minimum_class_names_count < MIN_NUM_OF_IMAGES:
         return "Not enough data to retrain the model", 400
 
-    delete_images_from_s3(current_keys)
-
-    model_accuracy = retrain_model(
+    new_accuracy = retrain_model(
         np.array(data["train"]), np.array(data["test"]), old_accuracy
     )
 
-    return jsonify({"model_accuracy": model_accuracy})
+    if new_accuracy > old_accuracy:
+        delete_images_from_s3(current_keys)
+
+    return jsonify({"model_accuracy": max(new_accuracy, old_accuracy)})
 
 
 def fetch_and_transform_image(s3_client, key):
