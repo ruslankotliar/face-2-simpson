@@ -35,7 +35,7 @@ def predict(img) -> Tuple[Dict, float]:
   pred_labels_and_probs = {class_names[i]: float(pred_probs[0][i]) for i in range(len(class_names))}
 
   end_time = timer()
-  pred_time = round(end_time - start_time, 4)
+  pred_time = round((end_time - start_time) * 1000)
 
   return pred_labels_and_probs, pred_time
 

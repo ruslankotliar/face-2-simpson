@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
     console.log('Waiting for user feedback...');
     return NextResponse.json({
       predictData,
+      predictTime,
       key,
     });
   } catch (e) {

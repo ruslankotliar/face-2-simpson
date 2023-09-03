@@ -30,12 +30,6 @@ def predict_image():
     return jsonify(response)
 
 
-@app.route('/predict/statistics', methods=['GET'])
-def request_statistics():
-    
-    return jsonify(None)
-
-
 @app.route('/cron/retrain', methods=['POST'])
 def retrain_function():
     IMAGE_SIZE = (224,224)
