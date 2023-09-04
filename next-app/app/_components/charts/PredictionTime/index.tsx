@@ -35,17 +35,15 @@ interface PredictionTimeChartProps {
   data: PredictionTimeChartData[];
 }
 
-const PredictionTimeChart: FC<PredictionTimeChartProps> = async function ({
-  data,
-}) {
+const PredictionTimeChart: FC<PredictionTimeChartProps> = function ({ data }) {
   const chartData = {
-    labels: data.map((item) => moment(item.createdAt).format('YYYY-MM-DD')),
+    labels: data.map(({ date }) => moment(date).format('YYYY-MM-DD')),
     datasets: [
       {
         label: 'Prediction Time',
         data: data.map((item) => item.predictionTime),
         fill: false,
-        borderColor: 'rgba(75, 192, 192, 1)',
+        borderColor: 'rgba(93, 156, 236, 1)', // Updated color for a modern look
         borderWidth: 2,
         pointRadius: 3,
         pointHoverRadius: 5,
@@ -58,10 +56,14 @@ const PredictionTimeChart: FC<PredictionTimeChartProps> = async function ({
     plugins: {
       legend: {
         position: 'top',
+        labels: {
+          color: 'rgba(55, 65, 81, 1)', // Softened color
+        },
       },
       title: {
         display: true,
         text: 'Average Prediction Time',
+        color: 'rgba(55, 65, 81, 1)', // Softened color
       },
       tooltip: {
         mode: 'index',
@@ -72,7 +74,7 @@ const PredictionTimeChart: FC<PredictionTimeChartProps> = async function ({
               label += ': ';
             }
             if (context.parsed.y !== null) {
-              label += context.parsed.y.toFixed(2) + 'ms'; // Assuming prediction time is in milliseconds
+              label += context.parsed.y.toFixed(2) + 'ms';
             }
             return label;
           },
@@ -89,36 +91,45 @@ const PredictionTimeChart: FC<PredictionTimeChartProps> = async function ({
             day: 'MMM DD',
           },
         },
+        grid: {
+          color: 'rgba(229, 231, 235, 1)', // Softened color
+        },
       },
       y: {
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Time (ms)', // Assuming prediction time is in milliseconds
+          text: 'Time (ms)',
+          color: 'rgba(55, 65, 81, 1)', // Softened color
         },
         ticks: {
-          // Include a dollar sign in the ticks
-          callback: function (value, index, values) {
-            return value + 'ms'; // Assuming prediction time is in milliseconds
+          callback: function (value) {
+            return value + 'ms';
           },
+          color: 'rgba(55, 65, 81, 1)', // Softened color
+        },
+        grid: {
+          color: 'rgba(229, 231, 235, 1)', // Softened color
         },
       },
     },
     elements: {
       line: {
-        tension: 0.25, // This makes the line smoother. Set to 0 if you want to keep it straight
+        tension: 0.25,
+      },
+      point: {
+        backgroundColor: 'rgba(93, 156, 236, 1)', // Updated color for a modern look
       },
     },
     animation: {
       duration: 500,
       easing: 'easeInOutQuad',
-      onComplete: function (animation) {
-        // Callbacks after animations can be useful, for example, to show data annotations
-      },
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  return (
+    <Line data={chartData} options={options} className='rounded-md shadow-lg' />
+  );
 };
 
 export default PredictionTimeChart;

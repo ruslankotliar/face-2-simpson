@@ -1,5 +1,5 @@
 interface PredictionTimeChartData {
-  createdAt: string;
+  date: string;
   predictionTime: number;
 }
 

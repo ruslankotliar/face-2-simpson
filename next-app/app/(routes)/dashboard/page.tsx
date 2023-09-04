@@ -22,7 +22,7 @@ export default async function Dashboard() {
 
   return (
     <div className='min-h-[calc(100vh-3rem)] bg-white p-4'>
-      <div className='w-[calc(50%)] border border-1 p-4'>
+      <div className='w-[calc(50%)] p-4'>
         <Suspense>
           <PredictionTimeChart data={predictionTime} />
         </Suspense>
