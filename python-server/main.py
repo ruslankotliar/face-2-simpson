@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from PIL import Image
 import numpy as np
-from collections import Counter
 from asgiref.wsgi import WsgiToAsgi
 
 from models import predict, retrain_model
@@ -40,11 +39,9 @@ def predict_image():
 
 @app.route("/cron/retrain", methods=["POST"])
 def retrain_function():
-    """
-    Endpoint to retrain the model using images from S3.
-    """
     minimum_class_names_count = request.json.get("min", 0)
     old_accuracy = request.json.get("accuracy", 0)
+
 
     s3_client = S3Client()
     files = s3_client.get_s3_objects_list()
