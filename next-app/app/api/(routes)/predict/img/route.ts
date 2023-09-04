@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-// import fs from 'fs';
-// import path from 'path';
 
 import {
   BUCKET_KEYS,
@@ -41,6 +39,7 @@ export async function POST(req: NextRequest) {
     console.log('Waiting for user feedback...');
     return NextResponse.json({
       predictData,
+      predictTime,
       key,
     });
   } catch (e) {

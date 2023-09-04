@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import * as Yup from 'yup';
@@ -6,25 +7,25 @@ import { useEffect, useState } from 'react';
 import { Form, Formik, FormikHelpers } from 'formik';
 
 import { FORM_CONSTANTS, BUCKET_KEYS, REQUEST_URL_KEYS } from '../_constants';
-import { FileInput, SubmitButton } from '../_components';
 import { isValidFileType } from '../_helpers';
 import { PredictInitialValues, PredictSimpsonData } from '../_types';
 import Loader from './loading';
+import FileInput from '@app/_components/inputs/FileInput';
+import SubmitButton from '@app/_components/buttons/SubmitButton';
 
 const sendFeedback = async function (
-  feedback: boolean,
+  feedback: boolean | null,
   permission: boolean,
-  { key, predictData }: PredictSimpsonData
+  { key, predictData, predictTime }: PredictSimpsonData
 ): Promise<void> {
   try {
-    const { data } = await axios.post(REQUEST_URL_KEYS.DELETE_PERSON_IMG, {
+    await axios.post(REQUEST_URL_KEYS.DELETE_PERSON_IMG, {
       permission,
       feedback,
       key,
       predictData,
+      predictTime,
     });
-
-    return data;
   } catch (e) {
     if (e instanceof Error) console.error(e);
   }
@@ -37,11 +38,12 @@ const predictSimpson = async function (
     const formData = new FormData();
     formData.append(BUCKET_KEYS.TRAIN, img);
 
-    const {
-      data: { predictData, key },
-    } = await axios.post(REQUEST_URL_KEYS.PREDICT_PERSON_IMG, formData);
+    const { data } = await axios.post(
+      REQUEST_URL_KEYS.PREDICT_PERSON_IMG,
+      formData
+    );
 
-    return { predictData, key };
+    return data;
   } catch (e) {
     if (e instanceof Error) console.error(e);
   }
@@ -69,15 +71,33 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 });
 
 export default function Home() {
-  const [feedback, setFeedback] = useState<boolean | undefined>(undefined);
+  const [feedback, setFeedback] = useState<boolean | null | undefined>(
+    undefined
+  );
   const [permission, setPermission] = useState<boolean | undefined>(undefined);
   const [predictSimpsonData, setPredictSimpsonData] = useState<
     PredictSimpsonData | undefined
   >(undefined);
 
-  const receiveFeedback = function ({ predictData }: PredictSimpsonData) {
-    setFeedback(confirm(JSON.stringify(predictData)));
-    setPermission(confirm('Can we use your data?'));
+  const receiveFeedback = function (): void {
+    if (predictSimpsonData === undefined) return;
+    setFeedback(
+      confirm('Do u agree?' + JSON.stringify(predictSimpsonData.predictData))
+    );
+    setPermission(confirm('Can we store your data?'));
+  };
+
+  const resetData = async function (): Promise<void> {
+    if (
+      feedback === undefined ||
+      permission === undefined ||
+      predictSimpsonData === undefined
+    )
+      return;
+    await sendFeedback(feedback, permission, predictSimpsonData);
+    setFeedback(undefined);
+    setPermission(undefined);
+    setPredictSimpsonData(undefined);
   };
 
   const handleSubmit = async function (
@@ -91,15 +111,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    predictSimpsonData !== undefined && receiveFeedback(predictSimpsonData);
+    receiveFeedback();
   }, [predictSimpsonData]);
 
   useEffect(() => {
-    feedback !== undefined &&
-      permission !== undefined &&
-      predictSimpsonData &&
-      sendFeedback(feedback, permission, predictSimpsonData);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    resetData();
   }, [permission]);
 
   return (

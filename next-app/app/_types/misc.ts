@@ -12,6 +12,7 @@ interface NumberMap {
 
 interface PredictSimpsonData {
   predictData: NumberMap;
+  predictTime: number;
   key: string;
 }
 
