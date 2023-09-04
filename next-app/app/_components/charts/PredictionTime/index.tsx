@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { FC } from 'react';
+import { useEffect, useState } from 'react';
 import moment from 'moment';
+
+import { PredictionTimeChartData } from '@app/_types';
 
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-moment';
@@ -18,7 +21,9 @@ import {
   ChartOptions,
 } from 'chart.js';
 
-import { PredictionTimeChartData } from '@app/_types';
+import SelectInput from '@app/_components/inputs/SelectInput';
+import { CHART_STYLES, PREDICTION_TIME_CHART_UNITS } from '@app/_constants';
+import useQueryString from '@app/_hooks/useQueryString';
 
 ChartJS.register(
   CategoryScale,
@@ -31,19 +36,90 @@ ChartJS.register(
   Legend
 );
 
-interface PredictionTimeChartProps {
-  data: PredictionTimeChartData[];
+type TimeUnit = keyof typeof PREDICTION_TIME_CHART_UNITS | undefined;
+interface ScaleOptions {
+  unit: 'day' | 'month' | 'year';
+  displayFormats: {
+    day?: string;
+    month?: string;
+    year?: string;
+  };
 }
 
-const PredictionTimeChart: FC<PredictionTimeChartProps> = function ({ data }) {
+const PredictionTimeChart = async function ({
+  data,
+}: {
+  data: PredictionTimeChartData[];
+}) {
+  const { createQueryString, updateQueryString } = useQueryString();
+  const [unit, setUnit] = useState<TimeUnit | undefined>(undefined);
+  const dateFormat = getDateFormatByUnit(unit);
+
+  useEffect(() => {
+    if (unit) {
+      const path = createQueryString('timePredictionUnit', unit.toString());
+      updateQueryString(path);
+    }
+  }, [unit]);
+
+  function getDateFormatByUnit(unit: TimeUnit): string {
+    switch (unit) {
+      case PREDICTION_TIME_CHART_UNITS.DAY:
+        return 'MMM DD, YYYY';
+      case PREDICTION_TIME_CHART_UNITS.MONTH:
+        return 'MMM YYYY';
+      case PREDICTION_TIME_CHART_UNITS.YEAR:
+        return 'YYYY';
+      case PREDICTION_TIME_CHART_UNITS.ALL:
+      default:
+        return 'lll';
+    }
+  }
+
+  function getScaleOptionsByUnit(unit: TimeUnit): ScaleOptions {
+    switch (unit) {
+      case PREDICTION_TIME_CHART_UNITS.DAY:
+        return {
+          unit: 'day',
+          displayFormats: {
+            day: 'MMM DD',
+          },
+        };
+      case PREDICTION_TIME_CHART_UNITS.MONTH:
+        return {
+          unit: 'month',
+          displayFormats: {
+            month: 'MMM YYYY',
+          },
+        };
+      case PREDICTION_TIME_CHART_UNITS.YEAR:
+        return {
+          unit: 'year',
+          displayFormats: {
+            year: 'YYYY',
+          },
+        };
+      case PREDICTION_TIME_CHART_UNITS.ALL:
+      default:
+        return {
+          unit: 'day',
+          displayFormats: {
+            day: 'MMM DD',
+          },
+        };
+    }
+  }
+
   const chartData = {
-    labels: data.map(({ date }) => moment(date).format('YYYY-MM-DD')),
+    labels: data?.map(({ createdAt }) =>
+      moment.utc(createdAt).format(dateFormat)
+    ),
     datasets: [
       {
         label: 'Prediction Time',
-        data: data.map((item) => item.predictionTime),
+        data: data?.map(({ predictionTime }) => predictionTime),
         fill: false,
-        borderColor: 'rgba(93, 156, 236, 1)', // Updated color for a modern look
+        borderColor: CHART_STYLES.CHART_COLOR,
         borderWidth: 2,
         pointRadius: 3,
         pointHoverRadius: 5,
@@ -57,17 +133,21 @@ const PredictionTimeChart: FC<PredictionTimeChartProps> = function ({ data }) {
       legend: {
         position: 'top',
         labels: {
-          color: 'rgba(55, 65, 81, 1)', // Softened color
+          color: CHART_STYLES.SOFTENED_COLOR, // Softened color
         },
       },
       title: {
         display: true,
         text: 'Average Prediction Time',
-        color: 'rgba(55, 65, 81, 1)', // Softened color
+        color: CHART_STYLES.SOFTENED_COLOR, // Softened color
       },
       tooltip: {
         mode: 'index',
         callbacks: {
+          title: function (tooltipItems) {
+            const timestamp = tooltipItems[0].label;
+            return moment.utc(timestamp).format(dateFormat);
+          },
           label: function (context) {
             var label = context.dataset.label || '';
             if (label) {
@@ -85,14 +165,11 @@ const PredictionTimeChart: FC<PredictionTimeChartProps> = function ({ data }) {
       x: {
         type: 'time',
         time: {
-          parser: 'YYYY-MM-DD',
-          unit: 'day',
-          displayFormats: {
-            day: 'MMM DD',
-          },
+          parser: dateFormat,
+          ...getScaleOptionsByUnit(unit),
         },
         grid: {
-          color: 'rgba(229, 231, 235, 1)', // Softened color
+          color: CHART_STYLES.GRID_COLOR,
         },
       },
       y: {
@@ -100,16 +177,16 @@ const PredictionTimeChart: FC<PredictionTimeChartProps> = function ({ data }) {
         title: {
           display: true,
           text: 'Time (ms)',
-          color: 'rgba(55, 65, 81, 1)', // Softened color
+          color: CHART_STYLES.SOFTENED_COLOR, // Softened color
         },
         ticks: {
           callback: function (value) {
             return value + 'ms';
           },
-          color: 'rgba(55, 65, 81, 1)', // Softened color
+          color: CHART_STYLES.SOFTENED_COLOR, // Softened color
         },
         grid: {
-          color: 'rgba(229, 231, 235, 1)', // Softened color
+          color: CHART_STYLES.GRID_COLOR,
         },
       },
     },
@@ -118,7 +195,7 @@ const PredictionTimeChart: FC<PredictionTimeChartProps> = function ({ data }) {
         tension: 0.25,
       },
       point: {
-        backgroundColor: 'rgba(93, 156, 236, 1)', // Updated color for a modern look
+        backgroundColor: CHART_STYLES.CHART_COLOR, // Updated color for a modern look
       },
     },
     animation: {
@@ -128,7 +205,22 @@ const PredictionTimeChart: FC<PredictionTimeChartProps> = function ({ data }) {
   };
 
   return (
-    <Line data={chartData} options={options} className='rounded-md shadow-lg' />
+    <>
+      <SelectInput
+        placeholder={'Pick unit of time'}
+        value={unit}
+        onChange={setUnit}
+        options={Object.values(PREDICTION_TIME_CHART_UNITS).map((unit) => ({
+          value: unit,
+          label: `${unit[0].toUpperCase()}${unit.slice(1)}`,
+        }))}
+      />
+      <Line
+        data={chartData}
+        options={options}
+        className='rounded-md shadow-lg'
+      />
+    </>
   );
 };
 

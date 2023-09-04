@@ -1,10 +1,6 @@
 interface PredictionTimeChartData {
-  date: string;
+  createdAt: string;
   predictionTime: number;
 }
 
-interface ChartsData {
-  predictionTime: PredictionTimeChartData[];
-}
-
-export type { PredictionTimeChartData, ChartsData };
+export type { PredictionTimeChartData };

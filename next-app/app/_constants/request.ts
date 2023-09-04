@@ -6,7 +6,7 @@ const REQUEST_URL_PATHS: StringMap = {
   PREDICT_PERSON_IMG: '/predict/img',
   DELETE_PERSON_IMG: '/predict/feedback',
   RETRAIN_MODEL: '/cron/retrain',
-  CHARTS: '/charts',
+  PREDICTION_TIME_CHART: '/charts/predictionTime/',
 };
 
 const REQUEST_URL_KEYS = Object.keys(REQUEST_URL_PATHS).reduce(

@@ -5,15 +5,17 @@ import { StringMap } from '@app/_types';
 import { Prediction } from '@app/api/_models';
 import { connectToDB, getStatusText } from '@app/api/_utils';
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params: { unit } }: { params: { unit: string } }
+) {
   try {
     await connectToDB();
-    const granularity: any = 'day'; // let user decide
 
     let groupId: any = {};
     let dateFromParts: any = {};
 
-    switch (granularity) {
+    switch (unit) {
       case 'day':
         groupId = {
           year: { $year: '$createdAt' },
@@ -54,10 +56,10 @@ export async function GET(req: NextRequest) {
         break;
     }
 
-    const aggregation = [];
+    let chartData = [];
 
     if (groupId) {
-      aggregation.push(
+      chartData = await Prediction.aggregate([
         {
           $group: {
             _id: groupId,
@@ -67,32 +69,20 @@ export async function GET(req: NextRequest) {
         {
           $project: {
             _id: 0,
-            date: { $dateFromParts: dateFromParts },
+            createdAt: { $dateFromParts: dateFromParts },
             predictionTime: { $round: ['$predictionTime'] },
-          },
-        }
-      );
-    } else {
-      // For 'all' granularity or default
-      aggregation.push(
-        {
-          $group: {
-            _id: null,
-            predictionTime: { $avg: '$predictionTime' },
           },
         },
-        {
-          $project: {
-            _id: 0,
-            predictionTime: { $round: ['$predictionTime'] },
-          },
-        }
+      ]);
+    } else {
+      // For 'all' unit or default
+      chartData = await Prediction.find(
+        {},
+        '-_id predictionTime createdAt'
       );
     }
 
-    const predictionTime = await Prediction.aggregate(aggregation);
-
-    return NextResponse.json({ predictionTime });
+    return NextResponse.json({ chartData });
   } catch (e) {
     console.error(e);
     if (e instanceof Error)
