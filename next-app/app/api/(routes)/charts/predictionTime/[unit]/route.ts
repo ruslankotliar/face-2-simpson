@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { StatusCodes } from '@app/_constants';
-import { StringMap } from '@app/_types';
 import { Prediction } from '@app/api/_models';
 import { connectToDB, getStatusText } from '@app/api/_utils';
 
@@ -76,10 +75,7 @@ export async function GET(
       ]);
     } else {
       // For 'all' unit or default
-      chartData = await Prediction.find(
-        {},
-        '-_id predictionTime createdAt'
-      );
+      chartData = await Prediction.find({}, '-_id predictionTime createdAt');
     }
 
     return NextResponse.json({ chartData });

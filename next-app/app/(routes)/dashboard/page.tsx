@@ -7,6 +7,7 @@ import CharacterPredictionChart from '@app/_components/charts/CharacterPredicted
 import PredictionTimeChart from '@app/_components/charts/PredictionTime';
 
 import { generateFetchURL } from '@app/_helpers';
+import ModelAccuracyChart from '@app/_components/charts/ModelAccuracy';
 
 const getChartData = async function (url: string) {
   try {
@@ -57,14 +58,31 @@ export default async function Dashboard({
     };
   })();
 
-  const charts = [predictionTime, characterPredicted];
+  const modelAccuracy = await (async () => {
+    const key = 'MODEL_ACCURACY_CHART';
+    const url = generateFetchURL(key, {}, {});
+    const data = await getChartData(url);
+    const chart = <ModelAccuracyChart data={data} />;
+    const occupy = 2;
+
+    return {
+      key,
+      chart,
+      occupy,
+    };
+  })();
+
+  const charts = [modelAccuracy, characterPredicted, predictionTime];
 
   return (
     <div className='min-h-[calc(100vh-3rem)] bg-white p-4 grid grid-cols-3 grid-rows-2 gap-4'>
       {charts.map(({ key, chart, occupy }) => (
         <div
           key={key}
-          className={`relative flex-col items-center justify-center rounded-md shadow-lg col-span-${occupy}`}
+          className={`relative flex-col items-center justify-center rounded-md shadow-lg`}
+          style={{
+            gridColumn: `span ${occupy}`,
+          }}
         >
           <Suspense
             fallback={

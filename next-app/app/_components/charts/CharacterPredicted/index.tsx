@@ -36,15 +36,7 @@ const CharacterPredictionChart = function ({
       {
         label: 'Times Predicted',
         data: data?.map(({ count }) => count),
-        backgroundColor: [
-          // Add as many colors as you think you might need, or create a dynamic color generator.
-          'rgba(255, 99, 132, 0.5)',
-          'rgba(54, 162, 235, 0.5)',
-          'rgba(255, 206, 86, 0.5)',
-          'rgba(75, 192, 192, 0.5)',
-          'rgba(153, 102, 255, 0.5)',
-          'rgba(255, 159, 64, 0.5)',
-        ],
+        backgroundColor: CHART_STYLES.CHARACTER_PREDICTED.BACKGROUND,
       },
     ],
   };
@@ -55,13 +47,13 @@ const CharacterPredictionChart = function ({
       legend: {
         position: 'top',
         labels: {
-          color: CHART_STYLES.SOFTENED_COLOR,
+          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR,
         },
       },
       title: {
         display: true,
         text: 'Predicted Simpsons Characters Distribution',
-        color: CHART_STYLES.SOFTENED_COLOR,
+        color: CHART_STYLES.DEFAULT.SOFTENED_COLOR,
       },
     },
   };

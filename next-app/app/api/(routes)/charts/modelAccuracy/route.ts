@@ -1,21 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { StatusCodes } from '@app/_constants';
-import { Prediction } from '@app/api/_models';
+import { Accuracy } from '@app/api/_models';
 import { connectToDB, getStatusText } from '@app/api/_utils';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectToDB();
 
-    const chartData = await Prediction.aggregate([
-      {
-        $group: {
-          _id: '$characterPredicted',
-          count: { $sum: 1 },
-        },
-      },
-    ]);
+    const chartData = await Accuracy.find({}, 'accuracy createdAt -_id');
+
+    console.log(chartData);
 
     return NextResponse.json({ chartData });
   } catch (e) {

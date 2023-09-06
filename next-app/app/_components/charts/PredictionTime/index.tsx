@@ -4,8 +4,6 @@
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 
-import { PredictionTimeChartData } from '@app/_types';
-
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-moment';
 import {
@@ -36,6 +34,11 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+interface PredictionTimeChartData {
+  createdAt: string;
+  predictionTime: number;
+}
 
 type TimeUnit = keyof typeof PREDICTION_TIME_CHART_UNITS | undefined;
 interface ScaleOptions {
@@ -120,7 +123,7 @@ const PredictionTimeChart = async function ({
         label: 'Prediction Time',
         data: data?.map(({ predictionTime }) => predictionTime),
         fill: false,
-        borderColor: CHART_STYLES.CHART_COLOR,
+        borderColor: CHART_STYLES.PREDICTION_TIME.CHART_COLOR,
         borderWidth: 2,
         pointRadius: 3,
         pointHoverRadius: 5,
@@ -134,13 +137,13 @@ const PredictionTimeChart = async function ({
       legend: {
         position: 'top',
         labels: {
-          color: CHART_STYLES.SOFTENED_COLOR, // Softened color
+          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
         },
       },
       title: {
         display: true,
         text: 'Average Prediction Time',
-        color: CHART_STYLES.SOFTENED_COLOR, // Softened color
+        color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
       },
       tooltip: {
         mode: 'index',
@@ -170,7 +173,7 @@ const PredictionTimeChart = async function ({
           ...getScaleOptionsByUnit(unit),
         },
         grid: {
-          color: CHART_STYLES.GRID_COLOR,
+          color: CHART_STYLES.DEFAULT.GRID_COLOR,
         },
       },
       y: {
@@ -178,16 +181,16 @@ const PredictionTimeChart = async function ({
         title: {
           display: true,
           text: 'Time (ms)',
-          color: CHART_STYLES.SOFTENED_COLOR, // Softened color
+          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
         },
         ticks: {
           callback: function (value) {
             return value + 'ms';
           },
-          color: CHART_STYLES.SOFTENED_COLOR, // Softened color
+          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
         },
         grid: {
-          color: CHART_STYLES.GRID_COLOR,
+          color: CHART_STYLES.DEFAULT.GRID_COLOR,
         },
       },
     },
@@ -196,7 +199,7 @@ const PredictionTimeChart = async function ({
         tension: 0.25,
       },
       point: {
-        backgroundColor: CHART_STYLES.CHART_COLOR, // Updated color for a modern look
+        backgroundColor: CHART_STYLES.PREDICTION_TIME.CHART_COLOR, // Updated color for a modern look
       },
     },
     animation: {
