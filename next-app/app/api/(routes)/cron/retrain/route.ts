@@ -27,7 +27,10 @@ export async function POST(req: NextRequest) {
         minQuantity,
         oldAccuracy
       );
-      accuracy > oldAccuracy && (await Accuracy.create({ accuracy }));
+      if (accuracy > oldAccuracy) {
+        await Accuracy.create({ accuracy });
+        await ImageCounter.updateMany({}, { $inc: { seq: minQuantity * -1 } });
+      }
     } else {
       console.group('Not enough data to retrain the model');
       DB_COUNTER_CHARS.forEach((char) =>

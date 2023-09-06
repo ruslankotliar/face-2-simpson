@@ -16,4 +16,17 @@ interface PredictSimpsonData {
   key: string;
 }
 
-export type { StringMap, StringArrayMap, PredictSimpsonData, NumberMap };
+type RequestParams = {
+  unit?: string;
+};
+
+type RequestSearchParams = {};
+
+export type {
+  StringMap,
+  StringArrayMap,
+  PredictSimpsonData,
+  NumberMap,
+  RequestParams,
+  RequestSearchParams,
+};

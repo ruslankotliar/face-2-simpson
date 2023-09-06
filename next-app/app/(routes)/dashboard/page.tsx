@@ -1,19 +1,20 @@
 import axios from 'axios';
 import { Suspense } from 'react';
 
-import PredictionTimeChart from '@app/_components/charts/PredictionTime';
-import { REQUEST_URL_KEYS } from '@app/_constants';
 import Loader from '@app/_components/misc/Loader';
 
-const getPredictionTimeChartData = async function (unit: string | undefined) {
+import CharacterPredictionChart from '@app/_components/charts/CharacterPredicted';
+import PredictionTimeChart from '@app/_components/charts/PredictionTime';
+
+import { generateFetchURL } from '@app/_helpers';
+
+const getChartData = async function (url: string) {
   try {
-    const { data } = await axios.get(
-      `${REQUEST_URL_KEYS.PREDICTION_TIME_CHART}${unit}`
-    );
+    const {
+      data: { chartData },
+    } = await axios.get(url);
 
-    console.log(data);
-
-    return data;
+    return chartData;
   } catch (e) {
     if (e instanceof Error) console.error(e.message);
   }
@@ -24,19 +25,46 @@ export default async function Dashboard({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const charts = [
-    {
-      key: 'predictionTime',
-      data: await getPredictionTimeChartData(timePredictionUnit?.toString()),
-    },
-  ];
+  const predictionTime = await (async () => {
+    const key = 'PREDICTION_TIME_CHART';
+    const url = generateFetchURL(
+      key,
+      { unit: timePredictionUnit?.toString() },
+      {}
+    );
+    const data = await getChartData(url);
+    const chart = <PredictionTimeChart data={data} />;
+    const occupy = 2;
+
+    return {
+      key,
+      chart,
+      occupy,
+    };
+  })();
+
+  const characterPredicted = await (async () => {
+    const key = 'CHARACTER_PREDICTED_CHART';
+    const url = generateFetchURL(key, {}, {});
+    const data = await getChartData(url);
+    const chart = <CharacterPredictionChart data={data} />;
+    const occupy = 1;
+
+    return {
+      key,
+      chart,
+      occupy,
+    };
+  })();
+
+  const charts = [predictionTime, characterPredicted];
 
   return (
-    <div className='min-h-[calc(100vh-3rem)] bg-white p-4 grid grid-cols-2 grid-rows-2 gap-4'>
-      {charts.map(({ key, data: { chartData } }) => (
+    <div className='min-h-[calc(100vh-3rem)] bg-white p-4 grid grid-cols-3 grid-rows-2 gap-4'>
+      {charts.map(({ key, chart, occupy }) => (
         <div
           key={key}
-          className='relative flex-col items-center justify-center'
+          className={`relative flex-col items-center justify-center rounded-md shadow-lg col-span-${occupy}`}
         >
           <Suspense
             fallback={
@@ -47,7 +75,7 @@ export default async function Dashboard({
               />
             }
           >
-            <PredictionTimeChart data={chartData} />
+            {chart}
           </Suspense>
         </div>
       ))}

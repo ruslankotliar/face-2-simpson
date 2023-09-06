@@ -24,6 +24,7 @@ import {
 import SelectInput from '@app/_components/inputs/SelectInput';
 import { CHART_STYLES, PREDICTION_TIME_CHART_UNITS } from '@app/_constants';
 import useQueryString from '@app/_hooks/useQueryString';
+import { capitalizeWord } from '@app/_helpers';
 
 ChartJS.register(
   CategoryScale,
@@ -173,7 +174,7 @@ const PredictionTimeChart = async function ({
         },
       },
       y: {
-        beginAtZero: true,
+        grace: '5%',
         title: {
           display: true,
           text: 'Time (ms)',
@@ -212,14 +213,10 @@ const PredictionTimeChart = async function ({
         onChange={setUnit}
         options={Object.values(PREDICTION_TIME_CHART_UNITS).map((unit) => ({
           value: unit,
-          label: `${unit[0].toUpperCase()}${unit.slice(1)}`,
+          label: capitalizeWord(unit),
         }))}
       />
-      <Line
-        data={chartData}
-        options={options}
-        className='rounded-md shadow-lg'
-      />
+      <Line data={chartData} options={options} />
     </>
   );
 };
