@@ -57,8 +57,6 @@ const getChartData = async function (url: string) {
     const res = await fetch(url);
     const { chartData } = await res.json();
 
-    console.log(chartData);
-
     return chartData;
   } catch (e) {
     if (e instanceof Error) console.error(e.message);
@@ -69,7 +67,7 @@ const PredictionTimeChart = function () {
   const [data, setData] = useState<
     [string, PredictionTimePoint[]][] | undefined
   >(undefined);
-  const [unit, setUnit] = useState<TimeUnit>(undefined);
+  const [unit, setUnit] = useState<TimeUnit>(PREDICTION_TIME_CHART_UNITS.ALL);
   const dateFormat = getDateFormatByUnit(unit);
 
   const updateData = async function () {
@@ -249,11 +247,13 @@ const PredictionTimeChart = function () {
       <SelectInput
         placeholder={'Pick unit of time'}
         value={unit}
-        onChange={setUnit}
-        options={Object.values(PREDICTION_TIME_CHART_UNITS).map((unit) => ({
-          value: unit,
-          label: capitalizeWord(unit),
-        }))}
+        onChange={(value) => setUnit(value as TimeUnit)}
+        options={Object.values(PREDICTION_TIME_CHART_UNITS).map(
+          (unit: TimeUnit) => ({
+            value: unit,
+            label: capitalizeWord(unit),
+          })
+        )}
         style={{
           position: 'absolute',
           top: 0,
