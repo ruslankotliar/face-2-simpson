@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useEffect, useState } from 'react';
 import moment from 'moment';
+import { useEffect, useState } from 'react';
 
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-moment';
@@ -17,12 +16,8 @@ import {
   Tooltip,
   Legend,
   ChartOptions,
+  ChartData,
 } from 'chart.js';
-
-import SelectInput from '@app/_components/inputs/SelectInput';
-import { CHART_STYLES, PREDICTION_TIME_CHART_UNITS } from '@app/_constants';
-import useQueryString from '@app/_hooks/useQueryString';
-import { capitalizeWord } from '@app/_helpers';
 
 ChartJS.register(
   CategoryScale,
@@ -35,12 +30,17 @@ ChartJS.register(
   Legend
 );
 
+import { CHART_STYLES, PREDICTION_TIME_CHART_UNITS } from '@app/_constants';
+import { TimeUnit } from '@app/_types';
+
+import { capitalizeWord, generateFetchURL } from '@app/_helpers';
+import SelectInput from '@app/_components/inputs/SelectInput';
+
 interface PredictionTimeChartData {
   createdAt: string;
   predictionTime: number;
 }
 
-type TimeUnit = keyof typeof PREDICTION_TIME_CHART_UNITS | undefined;
 interface ScaleOptions {
   unit: 'day' | 'month' | 'year';
   displayFormats: {
@@ -50,21 +50,35 @@ interface ScaleOptions {
   };
 }
 
-const PredictionTimeChart = async function ({
-  data,
-}: {
-  data: PredictionTimeChartData[];
-}) {
-  const { createQueryString, updateQueryString } = useQueryString();
-  const [unit, setUnit] = useState<TimeUnit | undefined>(undefined);
-  const dateFormat = getDateFormatByUnit(unit);
+const getChartData = async function (url: string) {
+  try {
+    const res = await fetch(url, { next: { revalidate: 15 } });
+    const { chartData } = await res.json();
+
+    return chartData;
+  } catch (e) {
+    if (e instanceof Error) console.error(e.message);
+  }
+};
+
+const PredictionTimeChart = function () {
+  const [data, setData] = useState<PredictionTimeChartData[]>([]);
+  const [unit, setUnit] = useState<TimeUnit>(undefined);
+
+  const updateData = async function () {
+    setData(
+      await getChartData(
+        generateFetchURL('PREDICTION_TIME_CHART', {}, { unit })
+      )
+    );
+  };
 
   useEffect(() => {
-    if (unit) {
-      const path = createQueryString('timePredictionUnit', unit.toString());
-      updateQueryString(path);
-    }
+    updateData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unit]);
+
+  const dateFormat = getDateFormatByUnit(unit);
 
   function getDateFormatByUnit(unit: TimeUnit): string {
     switch (unit) {
@@ -114,14 +128,14 @@ const PredictionTimeChart = async function ({
     }
   }
 
-  const chartData = {
-    labels: data?.map(({ createdAt }) =>
+  const chartData: ChartData<'line'> = {
+    labels: data.map(({ createdAt }) =>
       moment.utc(createdAt).format(dateFormat)
     ),
     datasets: [
       {
-        label: 'Prediction Time',
-        data: data?.map(({ predictionTime }) => predictionTime),
+        label: 'Prediction Time (All Characters)',
+        data: data.map(({ predictionTime }) => predictionTime),
         fill: false,
         borderColor: CHART_STYLES.PREDICTION_TIME.CHART_COLOR,
         borderWidth: 2,
@@ -184,10 +198,10 @@ const PredictionTimeChart = async function ({
           color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
         },
         ticks: {
-          callback: function (value) {
+          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
+          callback: function (value: number | string) {
             return value + 'ms';
           },
-          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
         },
         grid: {
           color: CHART_STYLES.DEFAULT.GRID_COLOR,
@@ -199,7 +213,7 @@ const PredictionTimeChart = async function ({
         tension: 0.25,
       },
       point: {
-        backgroundColor: CHART_STYLES.PREDICTION_TIME.CHART_COLOR, // Updated color for a modern look
+        backgroundColor: CHART_STYLES.PREDICTION_TIME.CHART_COLOR,
       },
     },
     animation: {

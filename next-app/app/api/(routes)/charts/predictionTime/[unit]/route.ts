@@ -5,7 +5,7 @@ import { Prediction } from '@app/api/_models';
 import { connectToDB, getStatusText } from '@app/api/_utils';
 
 export async function GET(
-  req: NextRequest,
+  _: NextRequest,
   { params: { unit } }: { params: { unit: string } }
 ) {
   try {
@@ -72,10 +72,14 @@ export async function GET(
             predictionTime: { $round: ['$predictionTime'] },
           },
         },
+        { $sort: { createdAt: 1 } },
       ]);
     } else {
       // For 'all' unit or default
-      chartData = await Prediction.find({}, '-_id predictionTime createdAt');
+      chartData = await Prediction.find(
+        {},
+        '-_id predictionTime createdAt'
+      ).sort({ createdAt: 1 });
     }
 
     return NextResponse.json({ chartData });

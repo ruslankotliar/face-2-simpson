@@ -1,64 +1,23 @@
-'use client';
+import { generateFetchURL } from '@app/_helpers';
+import PieChart from './PieChart';
 
-import { Pie } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  Tooltip,
-  Legend,
-  Title,
-  ArcElement,
-  ChartOptions,
-} from 'chart.js';
-import { CHART_STYLES } from '@app/_constants';
-import { capitalizeWord } from '@app/_helpers';
+const getChartData = async function (url: string) {
+  try {
+    const res = await fetch(url, { next: { revalidate: 15 } });
+    const { chartData } = await res.json();
 
-interface CharacterPredictionChartData {
-  _id: string; // This is the characterPredicted
-  count: number;
-}
+    return chartData;
+  } catch (e) {
+    if (e instanceof Error) console.error(e.message);
+  }
+};
 
-ChartJS.register(CategoryScale, Tooltip, Legend, Title, ArcElement);
+const CharacterPredictionChart = async function () {
+  const data = await getChartData(
+    generateFetchURL('CHARACTER_PREDICTED_CHART', {}, {})
+  );
 
-const CharacterPredictionChart = function ({
-  data,
-}: {
-  data: CharacterPredictionChartData[];
-}) {
-  const chartData = {
-    labels: data?.map(({ _id }) =>
-      _id
-        .split('_')
-        .map((w) => capitalizeWord(w))
-        .join('')
-    ),
-    datasets: [
-      {
-        label: 'Times Predicted',
-        data: data?.map(({ count }) => count),
-        backgroundColor: CHART_STYLES.CHARACTER_PREDICTED.BACKGROUND,
-      },
-    ],
-  };
-
-  const options: ChartOptions<'pie'> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR,
-        },
-      },
-      title: {
-        display: true,
-        text: 'Predicted Simpsons Characters Distribution',
-        color: CHART_STYLES.DEFAULT.SOFTENED_COLOR,
-      },
-    },
-  };
-
-  return <Pie data={chartData} options={options} />;
+  return <PieChart data={data} />;
 };
 
 export default CharacterPredictionChart;

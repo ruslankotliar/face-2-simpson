@@ -8,9 +8,9 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDB();
 
-    const chartData = await Accuracy.find({}, 'accuracy createdAt -_id');
-
-    console.log(chartData);
+    const chartData = await Accuracy.find({}, 'accuracy createdAt -_id').sort({
+      createdAt: 1,
+    });
 
     return NextResponse.json({ chartData });
   } catch (e) {
