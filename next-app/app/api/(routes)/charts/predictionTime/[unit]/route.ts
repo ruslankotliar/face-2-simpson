@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { StatusCodes } from '@app/_constants';
 import { Prediction } from '@app/api/_models';
 import { connectToDB, getStatusText } from '@app/api/_utils';
+import { PipelineStage } from 'mongoose';
+
+interface PredictionTimeChartData {
+  createdAt: string;
+  predictionTime: number;
+}
 
 export async function GET(
   _: NextRequest,
@@ -50,38 +56,80 @@ export async function GET(
 
       case 'all':
       default:
-        groupId = null;
-        dateFromParts = null;
+        groupId = {
+          year: { $year: '$createdAt' },
+          month: { $month: '$createdAt' },
+          day: { $dayOfMonth: '$createdAt' },
+          hour: { $hour: '$createdAt' },
+          minute: { $minute: '$createdAt' },
+        };
+        dateFromParts = {
+          year: '$_id.year',
+          month: '$_id.month',
+          day: '$_id.day',
+          hour: '$_id.hour',
+          minute: '$_id.minute',
+        };
         break;
     }
 
-    let chartData = [];
+    const chartData: Record<string, PredictionTimeChartData[]> = {};
 
-    if (groupId) {
-      chartData = await Prediction.aggregate([
-        {
-          $group: {
-            _id: groupId,
-            predictionTime: { $avg: '$predictionTime' },
+    // Aggregate data for all characters together
+    chartData['all_characters'] = await Prediction.aggregate([
+      {
+        $group: {
+          _id: groupId,
+          predictionTime: { $avg: '$predictionTime' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          createdAt: { $dateFromParts: dateFromParts },
+          predictionTime: { $round: ['$predictionTime'] },
+        },
+      },
+      { $sort: { createdAt: 1 } },
+    ]);
+
+    const characterAggregatedData = await Prediction.aggregate([
+      {
+        $group: {
+          _id: {
+            ...groupId,
+            character: '$characterPredicted',
+          },
+          predictionTime: { $avg: '$predictionTime' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          character: '$_id.character',
+          createdAt: { $dateFromParts: dateFromParts },
+          predictionTime: { $round: ['$predictionTime'] },
+        },
+      },
+      { $sort: { createdAt: 1 } },
+      {
+        $group: {
+          _id: '$character',
+          data: {
+            $push: {
+              createdAt: '$createdAt',
+              predictionTime: '$predictionTime',
+            },
           },
         },
-        {
-          $project: {
-            _id: 0,
-            createdAt: { $dateFromParts: dateFromParts },
-            predictionTime: { $round: ['$predictionTime'] },
-          },
-        },
-        { $sort: { createdAt: 1 } },
-      ]);
-    } else {
-      // For 'all' unit or default
-      chartData = await Prediction.find(
-        {},
-        '-_id predictionTime createdAt'
-      ).sort({ createdAt: 1 });
+      },
+    ]);
+
+    for (const data of characterAggregatedData) {
+      chartData[data._id] = data.data;
     }
 
+    // Return the aggregated data for all characters together and for each character individually
     return NextResponse.json({ chartData });
   } catch (e) {
     console.error(e);

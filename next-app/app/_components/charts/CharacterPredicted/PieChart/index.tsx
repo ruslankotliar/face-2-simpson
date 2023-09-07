@@ -41,6 +41,7 @@ const PieChart = function ({ data }: { data: CharacterPredictionChartData[] }) {
 
   const options: ChartOptions<'pie'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as 'top',

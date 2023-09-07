@@ -1,11 +1,12 @@
 'use client';
 
-import moment from 'moment';
+import dayjs from 'dayjs';
+import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 
 import { CHART_STYLES } from '@app/_constants';
 
 import { Line } from 'react-chartjs-2';
-import 'chartjs-adapter-moment';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,18 +32,16 @@ ChartJS.register(
   Legend
 );
 
-interface ModelAccuracyChartData {
+interface ModelAccuracyPoint {
   createdAt: string;
   accuracy: number;
 }
 
-const LineChart = function ({ data }: { data: ModelAccuracyChartData[] }) {
+const LineChart = function ({ data }: { data: ModelAccuracyPoint[] }) {
   const dateFormat = 'lll';
 
   const chartData: ChartData<'line'> = {
-    labels: data?.map(({ createdAt }) =>
-      moment.utc(createdAt).format(dateFormat)
-    ),
+    labels: data?.map(({ createdAt }) => dayjs(createdAt).format(dateFormat)),
     datasets: [
       {
         label: 'Model Accuracy',
@@ -58,6 +57,7 @@ const LineChart = function ({ data }: { data: ModelAccuracyChartData[] }) {
 
   const options: ChartOptions<'line'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
@@ -120,7 +120,7 @@ const LineChart = function ({ data }: { data: ModelAccuracyChartData[] }) {
       easing: 'easeInOutQuad',
     },
   };
-  
+
   return <Line data={chartData} options={options} />;
 };
 

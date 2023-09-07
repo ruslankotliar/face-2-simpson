@@ -1,15 +1,16 @@
 'use client';
 
-import moment from 'moment';
 import { useEffect, useState } from 'react';
 
+import dayjs from 'dayjs';
+import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
+
 import { Line } from 'react-chartjs-2';
-import 'chartjs-adapter-moment';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  TimeScale,
+  TimeSeriesScale,
   PointElement,
   LineElement,
   Title,
@@ -24,7 +25,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
-  TimeScale,
+  TimeSeriesScale,
   Title,
   Tooltip,
   Legend
@@ -36,24 +37,27 @@ import { TimeUnit } from '@app/_types';
 import { capitalizeWord, generateFetchURL } from '@app/_helpers';
 import SelectInput from '@app/_components/inputs/SelectInput';
 
-interface PredictionTimeChartData {
-  createdAt: string;
-  predictionTime: number;
-}
-
 interface ScaleOptions {
-  unit: 'day' | 'month' | 'year';
+  unit: 'day' | 'month' | 'year' | 'minute';
   displayFormats: {
     day?: string;
     month?: string;
     year?: string;
+    minute?: string;
   };
+}
+
+interface PredictionTimePoint {
+  createdAt: string;
+  predictionTime: number;
 }
 
 const getChartData = async function (url: string) {
   try {
-    const res = await fetch(url, { next: { revalidate: 15 } });
+    const res = await fetch(url);
     const { chartData } = await res.json();
+
+    console.log(chartData);
 
     return chartData;
   } catch (e) {
@@ -62,23 +66,37 @@ const getChartData = async function (url: string) {
 };
 
 const PredictionTimeChart = function () {
-  const [data, setData] = useState<PredictionTimeChartData[]>([]);
+  const [data, setData] = useState<
+    [string, PredictionTimePoint[]][] | undefined
+  >(undefined);
   const [unit, setUnit] = useState<TimeUnit>(undefined);
+  const dateFormat = getDateFormatByUnit(unit);
 
   const updateData = async function () {
-    setData(
-      await getChartData(
-        generateFetchURL('PREDICTION_TIME_CHART', {}, { unit })
-      )
+    const res: Record<string, PredictionTimePoint[]> = await getChartData(
+      generateFetchURL('PREDICTION_TIME_CHART', {}, { unit })
     );
+
+    const modifiedResponse: [string, PredictionTimePoint[]][] = Object.entries(
+      res
+    ).map(([char, charData]) => [
+      char
+        .split('_')
+        .map((w) => capitalizeWord(w))
+        .join(' '),
+      charData.map(({ createdAt, predictionTime }) => ({
+        createdAt: dayjs(createdAt).format(dateFormat),
+        predictionTime,
+      })),
+    ]);
+
+    setData(modifiedResponse);
   };
 
   useEffect(() => {
     updateData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unit]);
-
-  const dateFormat = getDateFormatByUnit(unit);
 
   function getDateFormatByUnit(unit: TimeUnit): string {
     switch (unit) {
@@ -120,33 +138,36 @@ const PredictionTimeChart = function () {
       case PREDICTION_TIME_CHART_UNITS.ALL:
       default:
         return {
-          unit: 'day',
+          unit: 'minute',
           displayFormats: {
-            day: 'MMM DD',
+            minute: 'lll',
           },
         };
     }
   }
 
-  const chartData: ChartData<'line'> = {
-    labels: data.map(({ createdAt }) =>
-      moment.utc(createdAt).format(dateFormat)
-    ),
-    datasets: [
-      {
-        label: 'Prediction Time (All Characters)',
-        data: data.map(({ predictionTime }) => predictionTime),
-        fill: false,
-        borderColor: CHART_STYLES.PREDICTION_TIME.CHART_COLOR,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointHoverRadius: 5,
-      },
-    ],
+  const chartData: ChartData<'line', PredictionTimePoint[]> = {
+    labels: !data?.length ? [] : data[0][1].map(({ createdAt }) => createdAt),
+    datasets: !data
+      ? []
+      : data.map(([label, data], index) => ({
+          label,
+          data,
+          parsing: {
+            xAxisKey: 'createdAt',
+            yAxisKey: 'predictionTime',
+          },
+          fill: false,
+          borderColor: CHART_STYLES.PREDICTION_TIME.CHART_COLORS[index],
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+        })),
   };
 
   const options: ChartOptions<'line'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top',
@@ -160,11 +181,11 @@ const PredictionTimeChart = function () {
         color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
       },
       tooltip: {
-        mode: 'index',
+        mode: 'point',
         callbacks: {
           title: function (tooltipItems) {
             const timestamp = tooltipItems[0].label;
-            return moment.utc(timestamp).format(dateFormat);
+            return dayjs(timestamp).format(dateFormat);
           },
           label: function (context) {
             var label = context.dataset.label || '';
@@ -181,7 +202,7 @@ const PredictionTimeChart = function () {
     },
     scales: {
       x: {
-        type: 'time',
+        type: 'timeseries',
         time: {
           parser: dateFormat,
           ...getScaleOptionsByUnit(unit),
@@ -211,6 +232,7 @@ const PredictionTimeChart = function () {
     elements: {
       line: {
         tension: 0.25,
+        spanGaps: false,
       },
       point: {
         backgroundColor: CHART_STYLES.PREDICTION_TIME.CHART_COLOR,
@@ -232,8 +254,15 @@ const PredictionTimeChart = function () {
           value: unit,
           label: capitalizeWord(unit),
         }))}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '25%',
+          zIndex: '2',
+        }}
       />
-      <Line data={chartData} options={options} />
+      <Line data={chartData} options={options} style={{ zIndex: '1' }} />
     </>
   );
 };

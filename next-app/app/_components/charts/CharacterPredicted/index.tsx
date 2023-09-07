@@ -3,7 +3,7 @@ import PieChart from './PieChart';
 
 const getChartData = async function (url: string) {
   try {
-    const res = await fetch(url, { next: { revalidate: 15 } });
+    const res = await fetch(url, { next: { revalidate: 60 } });
     const { chartData } = await res.json();
 
     return chartData;

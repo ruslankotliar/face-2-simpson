@@ -29,7 +29,7 @@ def predict_image():
 
     s3_client = S3Client()
     file_stream = s3_client.get_s3_object(key)
-    Image.open(file_stream).convert("RGB")
+    img = Image.open(file_stream).convert("RGB")
 
     predict_data, predict_time = predict(img)
     predict_data = dict(sorted(predict_data.items(), key=lambda x: x[1], reverse=True))
