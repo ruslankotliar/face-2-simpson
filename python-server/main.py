@@ -29,7 +29,7 @@ def predict_image():
 
     s3_client = S3Client()
     file_stream = s3_client.get_s3_object(key)
-    img = Image.open(file_stream)
+    img = Image.open(file_stream).convert("RGB")
 
     predict_data, predict_time = predict(img)
     predict_data = dict(sorted(predict_data.items(), key=lambda x: x[1], reverse=True))
@@ -41,7 +41,6 @@ def predict_image():
 def retrain_function():
     minimum_class_names_count = request.json.get("min", 0)
     old_accuracy = request.json.get("accuracy", 0)
-
 
     s3_client = S3Client()
     files = s3_client.get_s3_objects_list()

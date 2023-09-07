@@ -1,31 +1,20 @@
-import axios from 'axios';
-
+import CharacterPredictionChart from '@app/_components/charts/CharacterPredicted';
 import PredictionTimeChart from '@app/_components/charts/PredictionTime';
-import { REQUEST_URL_KEYS } from '@app/_constants';
-import { ChartsData } from '@app/_types';
-import { Suspense } from 'react';
-
-const getChartsData = async function () {
-  try {
-    const { data } = await axios.get(REQUEST_URL_KEYS.CHARTS);
-
-    console.log(data);
-
-    return data;
-  } catch (e) {
-    if (e instanceof Error) console.error(e.message);
-  }
-};
+import ModelAccuracyChart from '@app/_components/charts/ModelAccuracy';
 
 export default async function Dashboard() {
-  const { predictionTime }: ChartsData = await getChartsData();
+  console.log('reloading...');
 
   return (
-    <div className='min-h-[calc(100vh-3rem)] bg-white p-4'>
-      <div className='w-[calc(50%)] border border-1 p-4'>
-        <Suspense>
-          <PredictionTimeChart data={predictionTime} />
-        </Suspense>
+    <div className='h-[calc(100vh-4rem)] w-screen bg-white p-6 grid grid-cols-3 grid-rows-2 gap-4'>
+      <div className={'rounded-md shadow-lg col-span-1'}>
+        <CharacterPredictionChart />
+      </div>
+      <div className={'rounded-md shadow-lg col-span-2'}>
+        <ModelAccuracyChart />
+      </div>
+      <div className={'rounded-md shadow-lg col-span-3 relative max-h-full'}>
+        <PredictionTimeChart />
       </div>
     </div>
   );

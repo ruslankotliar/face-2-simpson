@@ -24,9 +24,17 @@ const BUCKET_OBJ_TAG_VALUES: StringMap = {
   ...BUCKET_KEYS,
 };
 
+const PREDICTION_TIME_CHART_UNITS: StringMap = {
+  ALL: 'all',
+  DAY: 'day',
+  MONTH: 'month',
+  YEAR: 'year',
+};
+
 export {
   FORM_CONSTANTS,
   VALID_FILE_EXTENSIONS,
   BUCKET_KEYS,
   BUCKET_OBJ_TAG_VALUES,
+  PREDICTION_TIME_CHART_UNITS,
 };

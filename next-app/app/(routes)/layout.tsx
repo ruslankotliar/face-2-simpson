@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <header className='bg-black p-4'>
+        <header className='bg-black h-16 flex items-center px-10'>
           <nav>
             <ul className='flex space-x-4'>
               <li>
@@ -45,7 +45,7 @@ export default function RootLayout({
             </ul>
           </nav>
         </header>
-        <main>{children}</main>
+        <main className='min-h-[calc(100vh-4rem)]'>{children}</main>
       </body>
     </html>
   );

@@ -6,7 +6,6 @@ import { REQUEST_URL_KEYS } from '@app/_constants';
 const retrainModel = async function (): Promise<void> {
   try {
     const { data } = await axios.post(REQUEST_URL_KEYS.RETRAIN_MODEL);
-    console.log(data);
 
     return data;
   } catch (e) {

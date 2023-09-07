@@ -1,3 +1,5 @@
+import { PREDICTION_TIME_CHART_UNITS } from '@app/_constants';
+
 interface StringMap {
   [key: string]: string;
 }
@@ -16,4 +18,20 @@ interface PredictSimpsonData {
   key: string;
 }
 
-export type { StringMap, StringArrayMap, PredictSimpsonData, NumberMap };
+type RequestParams = {
+  unit?: TimeUnit;
+};
+
+type RequestSearchParams = {};
+
+type TimeUnit = keyof typeof PREDICTION_TIME_CHART_UNITS | undefined;
+
+export type {
+  StringMap,
+  StringArrayMap,
+  PredictSimpsonData,
+  NumberMap,
+  RequestParams,
+  RequestSearchParams,
+  TimeUnit,
+};

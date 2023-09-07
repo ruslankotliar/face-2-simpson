@@ -27,7 +27,7 @@ const predictionSchema = new mongoose.Schema(
   },
   {
     // add createdAt and updatedAt timestamps
-    timestamps: true,
+    timestamps: { createdAt: true, updatedAt: false },
   }
 );
 

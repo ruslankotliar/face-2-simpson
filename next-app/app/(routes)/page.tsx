@@ -7,19 +7,20 @@ import { useEffect, useState } from 'react';
 import { Form, Formik, FormikHelpers } from 'formik';
 
 import { FORM_CONSTANTS, BUCKET_KEYS, REQUEST_URL_KEYS } from '../_constants';
-import { isValidFileType } from '../_helpers';
+import { generateFetchURL, isValidFileType } from '../_helpers';
 import { PredictInitialValues, PredictSimpsonData } from '../_types';
 import Loader from './loading';
 import FileInput from '@app/_components/inputs/FileInput';
 import SubmitButton from '@app/_components/buttons/SubmitButton';
 
 const sendFeedback = async function (
+  url: string,
   feedback: boolean | null,
   permission: boolean,
   { key, predictData, predictTime }: PredictSimpsonData
 ): Promise<void> {
   try {
-    await axios.post(REQUEST_URL_KEYS.DELETE_PERSON_IMG, {
+    await axios.post(url, {
       permission,
       feedback,
       key,
@@ -32,16 +33,14 @@ const sendFeedback = async function (
 };
 
 const predictSimpson = async function (
+  url: string,
   img: File
 ): Promise<PredictSimpsonData | undefined> {
   try {
     const formData = new FormData();
     formData.append(BUCKET_KEYS.TRAIN, img);
 
-    const { data } = await axios.post(
-      REQUEST_URL_KEYS.PREDICT_PERSON_IMG,
-      formData
-    );
+    const { data } = await axios.post(url, formData);
 
     return data;
   } catch (e) {
@@ -94,7 +93,12 @@ export default function Home() {
       predictSimpsonData === undefined
     )
       return;
-    await sendFeedback(feedback, permission, predictSimpsonData);
+    await sendFeedback(
+      generateFetchURL('DELETE_PERSON_IMG', {}, {}),
+      feedback,
+      permission,
+      predictSimpsonData
+    );
     setFeedback(undefined);
     setPermission(undefined);
     setPredictSimpsonData(undefined);
@@ -105,7 +109,10 @@ export default function Home() {
     { resetForm }: FormikHelpers<any>
   ) {
     console.log('Submitting...');
-    const data = await predictSimpson(personImg);
+    const data = await predictSimpson(
+      generateFetchURL('PREDICT_PERSON_IMG', {}, {}),
+      personImg
+    );
     setPredictSimpsonData(data);
     // resetForm();
   };
