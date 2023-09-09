@@ -54,6 +54,31 @@ const PieChart = function ({ data }: { data: CharacterPredictionChartData[] }) {
         text: 'Predicted Simpsons Characters Distribution',
         color: CHART_STYLES.DEFAULT.SOFTENED_COLOR,
       },
+      tooltip: {
+        mode: 'point',
+        callbacks: {
+          label: function ({ parsed, dataset: { data, label } }) {
+            if (label) label += ': ';
+            const sum = data.reduce((a, b) => a + b, 0);
+            const percentage = Math.round((Number(parsed) / sum) * 100) + '%';
+            if (parsed !== null) label += percentage;
+            return label;
+          },
+        },
+      },
+      // datalabels: {
+      //   formatter: (value, ctx) => {
+      //     let datasets = ctx.chart.data.datasets;
+      //     if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+      //       let sum = datasets[0].data.reduce((a, b) => a + b, 0);
+      //       let percentage = Math.round((value / sum) * 100) + '%';
+      //       return percentage;
+      //     } else {
+      //       return percentage;
+      //     }
+      //   },
+      //   color: '#fff',
+      // },
     },
   };
   return <Pie data={chartData} options={options} />;

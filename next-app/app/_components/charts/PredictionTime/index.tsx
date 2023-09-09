@@ -179,7 +179,7 @@ const PredictionTimeChart = function () {
             return dayjs(timestamp).format(dateFormat);
           },
           label: function (context) {
-            var label = context.dataset.label || '';
+            let label = context.dataset.label || '';
             if (label) {
               label += ': ';
             }
