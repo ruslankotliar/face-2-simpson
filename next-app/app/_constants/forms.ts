@@ -1,9 +1,11 @@
+import { StringArrayMap } from '@app/_types';
+
 const FORM_CONSTANTS = {
   MAX_PERSON_IMG_SIZE: '50000000',
   ACCEPT_PERSON_IMG_EXTENSIONS: '.jpeg, .png',
 };
 
-const VALID_FILE_EXTENSIONS = {
+const VALID_FILE_EXTENSIONS: StringArrayMap = {
   personImg: ['png', 'jpeg'],
 };
 
