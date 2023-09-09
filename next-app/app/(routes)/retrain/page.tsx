@@ -5,6 +5,15 @@ import { REQUEST_URL_KEYS } from '@app/_constants';
 
 const retrainModel = async function (): Promise<void> {
   try {
+    const password = prompt('Enter a password to proceed');
+    if (
+      process.env.NEXT_PUBLIC_RETRAIN_PASSWORD &&
+      password !== process.env.NEXT_PUBLIC_RETRAIN_PASSWORD
+    ) {
+      alert('Access denied');
+      return;
+    }
+
     const { data } = await axios.post(REQUEST_URL_KEYS.RETRAIN_MODEL);
 
     return data;
