@@ -26,7 +26,7 @@ type RequestParams = {
 
 type RequestSearchParams = {};
 
-type TimeUnit = 'all' | 'day' | 'month' | 'year';
+type TimeUnit = 'day' | 'month' | 'year';
 
 type SimpsonCharacter =
   | 'bart_simpson'

@@ -67,7 +67,9 @@ const PredictionTimeChart = function () {
   const [data, setData] = useState<
     [string, PredictionTimePoint[]][] | undefined
   >(undefined);
-  const [unit, setUnit] = useState<TimeUnit>(PREDICTION_TIME_CHART_UNITS.ALL);
+  const [unit, setUnit] = useState<TimeUnit>(
+    PREDICTION_TIME_CHART_UNITS.DAY as TimeUnit
+  );
   const dateFormat = getDateFormatByUnit(unit);
 
   const updateData = async function () {
@@ -98,20 +100,19 @@ const PredictionTimeChart = function () {
 
   function getDateFormatByUnit(unit: TimeUnit): string {
     switch (unit) {
+      default:
       case PREDICTION_TIME_CHART_UNITS.DAY:
         return 'MMM DD, YYYY';
       case PREDICTION_TIME_CHART_UNITS.MONTH:
         return 'MMM YYYY';
       case PREDICTION_TIME_CHART_UNITS.YEAR:
         return 'YYYY';
-      case PREDICTION_TIME_CHART_UNITS.ALL:
-      default:
-        return 'lll';
     }
   }
 
   function getScaleOptionsByUnit(unit: TimeUnit): ScaleOptions {
     switch (unit) {
+      default:
       case PREDICTION_TIME_CHART_UNITS.DAY:
         return {
           unit: 'day',
@@ -131,14 +132,6 @@ const PredictionTimeChart = function () {
           unit: 'year',
           displayFormats: {
             year: 'YYYY',
-          },
-        };
-      case PREDICTION_TIME_CHART_UNITS.ALL:
-      default:
-        return {
-          unit: 'minute',
-          displayFormats: {
-            minute: 'lll',
           },
         };
     }
@@ -248,12 +241,10 @@ const PredictionTimeChart = function () {
         placeholder={'Pick unit of time'}
         value={unit}
         onChange={(value) => setUnit(value as TimeUnit)}
-        options={Object.values(PREDICTION_TIME_CHART_UNITS).map(
-          (unit: TimeUnit) => ({
-            value: unit,
-            label: capitalizeWord(unit),
-          })
-        )}
+        options={Object.values(PREDICTION_TIME_CHART_UNITS).map((unit) => ({
+          value: unit,
+          label: capitalizeWord(unit),
+        }))}
         style={{
           position: 'absolute',
           top: 0,
