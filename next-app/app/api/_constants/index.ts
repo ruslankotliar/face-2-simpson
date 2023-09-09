@@ -9,11 +9,6 @@ const AWS_S3_BUCKET: StringMap = {
   BUCKET: process.env.AWS_BUCKET as string,
 };
 
-const BUCKET_OBJ_TAG_KEYS: StringMap = {
-  CLASS_NAME: 'class_name',
-  PURPOSE: 'purpose',
-};
-
 let PYTHON_API_ROUTES: StringMap = {
   PREDICT_SIMPSON: '/predict/simpson',
   RETRAIN_MODEL: '/cron/retrain',
@@ -36,7 +31,6 @@ const ENOUGH_TRAIN_DATA: number = 8;
 export {
   AWS_S3_BUCKET,
   PYTHON_API_ROUTES,
-  BUCKET_OBJ_TAG_KEYS,
   DB_COUNTER_CHARS,
   ENOUGH_TRAIN_DATA,
 };

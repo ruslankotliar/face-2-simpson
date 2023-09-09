@@ -9,19 +9,16 @@ const VALID_FILE_EXTENSIONS: StringArrayMap = {
   personImg: ['png', 'jpeg'],
 };
 
-const BUCKET_KEYS: StringMap = {
-  TRAIN: 'train',
-  TEST: 'test',
+const FILENAME_KEYS: Record<string, StringMap> = {
+  PURPOSE: {
+    TRAIN: 'train',
+    TEST: 'test',
+  },
 };
 
-const BUCKET_OBJ_TAG_VALUES: StringMap = {
-  // simpsons
-  BART: 'bart_simpson',
-  HOMER: 'homer_simpson',
-  LISA: 'lisa_simpson',
-  MARGE: 'marge_simpson',
-  // purpose
-  ...BUCKET_KEYS,
+const FORM_DATA_KEYS: StringMap = {
+  PREDICTION_IMG: 'predictImg',
+  PREDICTION_RESULT: 'predictionResult',
 };
 
 const PREDICTION_TIME_CHART_UNITS: Record<string, TimeUnit> = {
@@ -34,7 +31,7 @@ const PREDICTION_TIME_CHART_UNITS: Record<string, TimeUnit> = {
 export {
   FORM_CONSTANTS,
   VALID_FILE_EXTENSIONS,
-  BUCKET_KEYS,
-  BUCKET_OBJ_TAG_VALUES,
+  FORM_DATA_KEYS,
   PREDICTION_TIME_CHART_UNITS,
+  FILENAME_KEYS,
 };
