@@ -7,9 +7,7 @@ import { predictSimpson } from '@app/api/_rest';
 export async function POST(req: NextRequest) {
   try {
     const data = await req.formData();
-    const img: File | null = data.get(
-      FORM_DATA_KEYS.PREDICTION_IMG
-    ) as unknown as File;
+    const img = data.get(FORM_DATA_KEYS.PREDICTION_IMG) as File;
     if (!img) throw Error('No image found. Please, try again.');
 
     const { predict_data: predictionData, predict_time: predictionTime } =
