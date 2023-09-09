@@ -16,7 +16,7 @@ interface PredictSimpsonData {
 }
 
 interface FeedbackData extends PredictSimpsonData {
-  userFeedback: boolean;
+  userFeedback: boolean | null;
   permissionToStore: boolean;
 }
 

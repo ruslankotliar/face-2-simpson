@@ -22,7 +22,7 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
   };
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 z-5'>
       <div className='relative border-2 border-dashed border-gray-300 rounded-md p-4 hover:border-gray-400 transition-all duration-200 cursor-pointer'>
         <input
           type='file'
