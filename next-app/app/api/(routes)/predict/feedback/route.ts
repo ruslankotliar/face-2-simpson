@@ -16,9 +16,7 @@ export async function POST(req: NextRequest) {
     const predictionResult: string | null = formData.get(
       FORM_DATA_KEYS.PREDICTION_RESULT
     ) as string;
-    const img: File | null = formData.get(
-      FORM_DATA_KEYS.PREDICTION_IMG
-    ) as unknown as File;
+    const img = formData.get(FORM_DATA_KEYS.PREDICTION_IMG) as File;
 
     if (!predictionResult || !img)
       throw Error('Prediction result or img is missing');

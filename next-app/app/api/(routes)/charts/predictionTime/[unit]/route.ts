@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { StatusCodes } from '@app/_constants';
 import { Prediction } from '@app/api/_models';
 import { connectToDB, getStatusText } from '@app/api/_utils';
-import { PipelineStage } from 'mongoose';
 
 interface PredictionTimeChartData {
   createdAt: string;
@@ -21,6 +20,7 @@ export async function GET(
     let dateFromParts: any = {};
 
     switch (unit) {
+      default:
       case 'day':
         groupId = {
           year: { $year: '$createdAt' },
@@ -51,24 +51,6 @@ export async function GET(
         };
         dateFromParts = {
           year: '$_id.year',
-        };
-        break;
-
-      case 'all':
-      default:
-        groupId = {
-          year: { $year: '$createdAt' },
-          month: { $month: '$createdAt' },
-          day: { $dayOfMonth: '$createdAt' },
-          hour: { $hour: '$createdAt' },
-          minute: { $minute: '$createdAt' },
-        };
-        dateFromParts = {
-          year: '$_id.year',
-          month: '$_id.month',
-          day: '$_id.day',
-          hour: '$_id.hour',
-          minute: '$_id.minute',
         };
         break;
     }

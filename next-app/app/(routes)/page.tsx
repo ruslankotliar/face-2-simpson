@@ -12,10 +12,13 @@ import {
   FeedbackData,
   PredictInitialValues,
   PredictSimpsonData,
+  SimpsonCharacter,
 } from '../_types';
 import Loader from './loading';
 import FileInput from '@app/_components/inputs/FileInput';
 import SubmitButton from '@app/_components/buttons/SubmitButton';
+import CheckboxInput from '@app/_components/inputs/Checkbox';
+import Modal from '@app/_components/misc/Modal';
 
 const sendFeedback = async function (
   url: string,
@@ -66,23 +69,21 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 });
 
 export default function Home() {
-  const [feedbackData, setFeedbackData] = useState<FeedbackData | undefined>();
-  const [imgFormData, setImgFormData] = useState<FormData | undefined>();
+  const [feedbackData, setFeedbackData] = useState<FeedbackData>();
+  const [imgFormData, setImgFormData] = useState<FormData>();
+  const [permissionToStore, setPermissionToStore] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
 
   const receiveFeedback = function (
     data: PredictSimpsonData | undefined
   ): void {
     if (!data) return;
-    setFeedbackData({
-      ...data,
-      userFeedback: confirm(
-        'Do u agree?' + JSON.stringify(data.predictionData)
-      ),
-      permissionToStore: confirm('Can we store your data?'),
-    });
+    setPredictionData(data);
+    setShowModal(true);
   };
 
-  const finishFeedback = async function (): Promise<void> {
+  const submitFeedbackToServer = async function (): Promise<void> {
     if (!feedbackData || !imgFormData) return;
     await sendFeedback(
       generateFetchURL('DELETE_PERSON_IMG', {}, {}),
@@ -91,10 +92,37 @@ export default function Home() {
     );
   };
 
-  const handleSubmit = async function (
-    { personImg }: any,
-    { resetForm }: FormikHelpers<any>
-  ) {
+  const handleApprove = () => {
+    if (!predictionData) return;
+    setFeedbackData({
+      ...predictionData,
+      userFeedback: true,
+      permissionToStore,
+    });
+    setShowModal(false);
+  };
+
+  const handleDisapprove = () => {
+    if (!predictionData) return;
+    setFeedbackData({
+      ...predictionData,
+      userFeedback: false,
+      permissionToStore,
+    });
+    setShowModal(false);
+  };
+
+  const handleCloseModal = () => {
+    if (!predictionData) return;
+    setFeedbackData({
+      ...predictionData,
+      userFeedback: null,
+      permissionToStore,
+    });
+    setShowModal(false);
+  };
+
+  const handleSubmit = async function ({ personImg }: any) {
     console.log('Submitting...');
     const formData = new FormData();
     formData.append(FORM_DATA_KEYS.PREDICTION_IMG, personImg);
@@ -105,34 +133,47 @@ export default function Home() {
     );
     setImgFormData(formData);
     receiveFeedback(data);
-    // resetForm();
   };
 
   useEffect(() => {
-    finishFeedback();
+    submitFeedbackToServer();
   }, [feedbackData]);
 
   return (
-    <div className='flex items-center justify-center min-h-screen bg-white'>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ setFieldValue, isSubmitting }) => (
-          <>
-            {isSubmitting && <Loader />}
-            <Form className='w-full max-w-sm space-y-6'>
-              <FileInput
-                name={'personImg'}
-                accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
-                setFieldValue={setFieldValue}
-              />
-              <SubmitButton />
-            </Form>
-          </>
-        )}
-      </Formik>
-    </div>
+    <>
+      <Modal
+        show={showModal}
+        data={predictionData?.predictionData}
+        onClose={handleCloseModal}
+        onApprove={handleApprove}
+        onDisapprove={handleDisapprove}
+      />
+      <div className='flex items-center justify-center min-h-screen bg-white'>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ setFieldValue, isSubmitting }) => (
+            <>
+              {isSubmitting && <Loader />}
+              <Form className='w-full max-w-sm space-y-6'>
+                <FileInput
+                  name={'personImg'}
+                  accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
+                  setFieldValue={setFieldValue}
+                />
+                <CheckboxInput
+                  label='Can we store your data?'
+                  checked={permissionToStore}
+                  onChange={setPermissionToStore}
+                />
+                <SubmitButton />
+              </Form>
+            </>
+          )}
+        </Formik>
+      </div>
+    </>
   );
 }
