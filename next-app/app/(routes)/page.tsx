@@ -6,27 +6,26 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Form, Formik, FormikHelpers } from 'formik';
 
-import { FORM_CONSTANTS, BUCKET_KEYS, REQUEST_URL_KEYS } from '../_constants';
+import { FORM_CONSTANTS, FORM_DATA_KEYS } from '../_constants';
 import { generateFetchURL, isValidFileType } from '../_helpers';
-import { PredictInitialValues, PredictSimpsonData } from '../_types';
+import {
+  FeedbackData,
+  PredictInitialValues,
+  PredictSimpsonData,
+} from '../_types';
 import Loader from './loading';
 import FileInput from '@app/_components/inputs/FileInput';
 import SubmitButton from '@app/_components/buttons/SubmitButton';
 
 const sendFeedback = async function (
   url: string,
-  feedback: boolean | null,
-  permission: boolean,
-  { key, predictData, predictTime }: PredictSimpsonData
+  data: FeedbackData,
+  formData: FormData
 ): Promise<void> {
   try {
-    await axios.post(url, {
-      permission,
-      feedback,
-      key,
-      predictData,
-      predictTime,
-    });
+    formData.append(FORM_DATA_KEYS.PREDICTION_RESULT, JSON.stringify(data));
+
+    await axios.post(url, formData);
   } catch (e) {
     if (e instanceof Error) console.error(e);
   }
@@ -34,12 +33,9 @@ const sendFeedback = async function (
 
 const predictSimpson = async function (
   url: string,
-  img: File
+  formData: FormData
 ): Promise<PredictSimpsonData | undefined> {
   try {
-    const formData = new FormData();
-    formData.append(BUCKET_KEYS.TRAIN, img);
-
     const { data } = await axios.post(url, formData);
 
     return data;
@@ -70,38 +66,29 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 });
 
 export default function Home() {
-  const [feedback, setFeedback] = useState<boolean | null | undefined>(
-    undefined
-  );
-  const [permission, setPermission] = useState<boolean | undefined>(undefined);
-  const [predictSimpsonData, setPredictSimpsonData] = useState<
-    PredictSimpsonData | undefined
-  >(undefined);
+  const [feedbackData, setFeedbackData] = useState<FeedbackData | undefined>();
+  const [imgFormData, setImgFormData] = useState<FormData | undefined>();
 
-  const receiveFeedback = function (): void {
-    if (predictSimpsonData === undefined) return;
-    setFeedback(
-      confirm('Do u agree?' + JSON.stringify(predictSimpsonData.predictData))
-    );
-    setPermission(confirm('Can we store your data?'));
+  const receiveFeedback = function (
+    data: PredictSimpsonData | undefined
+  ): void {
+    if (!data) return;
+    setFeedbackData({
+      ...data,
+      userFeedback: confirm(
+        'Do u agree?' + JSON.stringify(data.predictionData)
+      ),
+      permissionToStore: confirm('Can we store your data?'),
+    });
   };
 
-  const resetData = async function (): Promise<void> {
-    if (
-      feedback === undefined ||
-      permission === undefined ||
-      predictSimpsonData === undefined
-    )
-      return;
+  const finishFeedback = async function (): Promise<void> {
+    if (!feedbackData || !imgFormData) return;
     await sendFeedback(
       generateFetchURL('DELETE_PERSON_IMG', {}, {}),
-      feedback,
-      permission,
-      predictSimpsonData
+      feedbackData,
+      imgFormData
     );
-    setFeedback(undefined);
-    setPermission(undefined);
-    setPredictSimpsonData(undefined);
   };
 
   const handleSubmit = async function (
@@ -109,21 +96,21 @@ export default function Home() {
     { resetForm }: FormikHelpers<any>
   ) {
     console.log('Submitting...');
+    const formData = new FormData();
+    formData.append(FORM_DATA_KEYS.PREDICTION_IMG, personImg);
+
     const data = await predictSimpson(
       generateFetchURL('PREDICT_PERSON_IMG', {}, {}),
-      personImg
+      formData
     );
-    setPredictSimpsonData(data);
+    setImgFormData(formData);
+    receiveFeedback(data);
     // resetForm();
   };
 
   useEffect(() => {
-    receiveFeedback();
-  }, [predictSimpsonData]);
-
-  useEffect(() => {
-    resetData();
-  }, [permission]);
+    finishFeedback();
+  }, [feedbackData]);
 
   return (
     <div className='flex items-center justify-center min-h-screen bg-white'>

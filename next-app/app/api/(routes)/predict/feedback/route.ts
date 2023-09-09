@@ -1,37 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
 
-import { StatusCodes } from '../../../../_constants';
+import {
+  FILENAME_KEYS,
+  FORM_DATA_KEYS,
+  StatusCodes,
+} from '../../../../_constants';
 import { s3Bucket, getStatusText, connectToDB } from '../../../_utils';
 import { ImageCounter, Prediction } from '@app/api/_models';
 import { getMaxSimilarChar } from '@app/api/_helpers';
 
 export async function POST(req: NextRequest) {
   try {
-    const {
-      feedback: userFeedback,
-      permission,
-      key: imageBucketKey,
-      predictData,
-      predictTime: predictionTime,
-    } = await req.json();
-    const characterPredicted = getMaxSimilarChar(predictData);
-    console.group('Feedback & Permission');
-    console.log(
-      'Feedback: ',
-      userFeedback
-        ? 'positive'
-        : userFeedback === null
-        ? "don't know"
-        : 'negative'
-    );
-    console.log(
-      'Permission to store data: ',
-      permission ? 'positive' : 'negative'
-    );
+    const formData = await req.formData();
+    const predictionResult: string | null = formData.get(
+      FORM_DATA_KEYS.PREDICTION_RESULT
+    ) as string;
+    const img: File | null = formData.get(
+      FORM_DATA_KEYS.PREDICTION_IMG
+    ) as unknown as File;
 
-    if (permission === false) {
-      s3Bucket.deleteObject(imageBucketKey);
-    } else {
+    if (!predictionResult || !img)
+      throw Error('Prediction result or img is missing');
+
+    const { userFeedback, permissionToStore, predictionData, predictionTime } =
+      JSON.parse(predictionResult);
+
+    const characterPredicted = getMaxSimilarChar(predictionData);
+
+    if (permissionToStore === true) {
       await connectToDB();
       await ImageCounter.findByIdAndUpdate(
         {
@@ -40,10 +37,12 @@ export async function POST(req: NextRequest) {
         { $inc: { seq: 1 } },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
-      console.log(
-        'Successfully incremented images counter: ',
-        characterPredicted
-      );
+
+      const imageBucketKey = `${
+        FILENAME_KEYS.PURPOSE.TRAIN
+      }/${characterPredicted}/${uuidv4()}`;
+
+      await s3Bucket.putObject(img, imageBucketKey);
 
       await Prediction.create({
         predictionTime,

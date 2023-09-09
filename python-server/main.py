@@ -23,13 +23,17 @@ def predict_image():
     """
     Endpoint to predict the Simpson character from an image.
     """
-    key = request.json.get("key")
-    if not key:
-        return jsonify({"error": "No key found"}), 400
+    if "predictImg" not in request.files:
+        return jsonify({"error": "No predictImg key found"}), 400
 
-    s3_client = S3Client()
-    file_stream = s3_client.get_s3_object(key)
-    img = Image.open(file_stream).convert("RGB")
+    file = request.files["predictImg"]
+
+    # Check if the file is not empty
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+
+    if file:
+        img = Image.open(file).convert("RGB")
 
     predict_data, predict_time = predict(img)
     predict_data = dict(sorted(predict_data.items(), key=lambda x: x[1], reverse=True))

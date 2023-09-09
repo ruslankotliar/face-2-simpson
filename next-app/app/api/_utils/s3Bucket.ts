@@ -2,11 +2,7 @@ import { Upload } from '@aws-sdk/lib-storage';
 
 import { s3client } from '../_aws';
 import { AWS_S3_BUCKET } from '../_constants';
-import {
-  DeleteObjectCommand,
-  PutObjectTaggingCommand,
-  Tag,
-} from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, Tag } from '@aws-sdk/client-s3';
 
 const s3Bucket = {
   putObject: async function (
@@ -31,28 +27,28 @@ const s3Bucket = {
     });
 
     parallelUploads3.on('httpUploadProgress', ({ Key }) => {
-      console.log(`Upload: ${Key}`);
+      console.log(`Upload success: ${Key}`);
     });
 
     await parallelUploads3.done();
   },
 
-  putTagging: async function (objectKey: string, tags: Tag[]) {
-    const input = {
-      // PutObjectTaggingRequest
-      Bucket: AWS_S3_BUCKET.BUCKET, // required
-      Key: objectKey, // required
-      Tagging: {
-        // Tagging
-        TagSet: tags,
-      },
-    };
+  // putTagging: async function (objectKey: string, tags: Tag[]) {
+  //   const input = {
+  //     // PutObjectTaggingRequest
+  //     Bucket: AWS_S3_BUCKET.BUCKET, // required
+  //     Key: objectKey, // required
+  //     Tagging: {
+  //       // Tagging
+  //       TagSet: tags,
+  //     },
+  //   };
 
-    const command = new PutObjectTaggingCommand(input);
-    await s3client.send(command);
+  //   const command = new PutObjectTaggingCommand(input);
+  //   await s3client.send(command);
 
-    console.log('Object:', objectKey, '| Set Tags:', tags);
-  },
+  //   console.log('Object:', objectKey, '| Set Tags:', tags);
+  // },
 
   deleteObject: async function (objectKey: string) {
     console.log('Delete: ', objectKey);
