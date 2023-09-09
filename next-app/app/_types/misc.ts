@@ -24,7 +24,7 @@ type RequestParams = {
 
 type RequestSearchParams = {};
 
-type TimeUnit = keyof typeof PREDICTION_TIME_CHART_UNITS | undefined;
+type TimeUnit = 'all' | 'day' | 'month' | 'year';
 
 export type {
   StringMap,

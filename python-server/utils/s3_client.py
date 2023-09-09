@@ -8,8 +8,8 @@ load_dotenv()
 
 class S3Client:
     def __init__(self):
-        self.AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
-        self.AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
+        self.AWS_ACCESS_KEY = os.getenv("AMAZON_ACCESS_KEY")
+        self.AWS_SECRET_KEY = os.getenv("AMAZON_SECRET_KEY")
         self.AWS_REGION = os.getenv("AWS_REGION")
         self.AWS_BUCKET = os.getenv("AWS_BUCKET")
 

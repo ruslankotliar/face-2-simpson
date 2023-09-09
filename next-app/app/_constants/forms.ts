@@ -1,4 +1,4 @@
-import { StringArrayMap, StringMap } from '../_types';
+import { StringArrayMap, StringMap, TimeUnit } from '../_types';
 
 const FORM_CONSTANTS: StringMap = {
   MAX_PERSON_IMG_SIZE: '50000000',
@@ -24,7 +24,7 @@ const BUCKET_OBJ_TAG_VALUES: StringMap = {
   ...BUCKET_KEYS,
 };
 
-const PREDICTION_TIME_CHART_UNITS: StringMap = {
+const PREDICTION_TIME_CHART_UNITS: Record<string, TimeUnit> = {
   ALL: 'all',
   DAY: 'day',
   MONTH: 'month',
