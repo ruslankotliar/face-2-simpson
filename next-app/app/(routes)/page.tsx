@@ -4,7 +4,7 @@
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Form, Formik, FormikHelpers } from 'formik';
+import { Form, Formik } from 'formik';
 
 import { FORM_CONSTANTS, FORM_DATA_KEYS } from '../_constants';
 import { generateFetchURL, isValidFileType } from '../_helpers';
@@ -12,7 +12,6 @@ import {
   FeedbackData,
   PredictInitialValues,
   PredictSimpsonData,
-  SimpsonCharacter,
 } from '../_types';
 import Loader from './loading';
 import FileInput from '@app/_components/inputs/FileInput';
@@ -22,13 +21,10 @@ import Modal from '@app/_components/misc/Modal';
 
 const sendFeedback = async function (
   url: string,
-  data: FeedbackData,
-  formData: FormData
+  data: FeedbackData
 ): Promise<void> {
   try {
-    formData.append(FORM_DATA_KEYS.PREDICTION_RESULT, JSON.stringify(data));
-
-    await axios.post(url, formData);
+    await axios.post(url, data);
   } catch (e) {
     if (e instanceof Error) console.error(e);
   }
@@ -36,9 +32,12 @@ const sendFeedback = async function (
 
 const predictSimpson = async function (
   url: string,
-  formData: FormData
+  personImg: File
 ): Promise<PredictSimpsonData | undefined> {
   try {
+    const formData = new FormData();
+    formData.append(FORM_DATA_KEYS.PREDICTION_IMG, personImg);
+
     const { data } = await axios.post(url, formData);
 
     return data;
@@ -70,7 +69,6 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 
 export default function Home() {
   const [feedbackData, setFeedbackData] = useState<FeedbackData>();
-  const [imgFormData, setImgFormData] = useState<FormData>();
   const [permissionToStore, setPermissionToStore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
@@ -84,11 +82,10 @@ export default function Home() {
   };
 
   const submitFeedbackToServer = async function (): Promise<void> {
-    if (!feedbackData || !imgFormData) return;
+    if (!feedbackData) return;
     await sendFeedback(
       generateFetchURL('DELETE_PERSON_IMG', {}, {}),
-      feedbackData,
-      imgFormData
+      feedbackData
     );
   };
 
@@ -124,14 +121,11 @@ export default function Home() {
 
   const handleSubmit = async function ({ personImg }: any) {
     console.log('Submitting...');
-    const formData = new FormData();
-    formData.append(FORM_DATA_KEYS.PREDICTION_IMG, personImg);
 
     const data = await predictSimpson(
       generateFetchURL('PREDICT_PERSON_IMG', {}, {}),
-      formData
+      personImg
     );
-    setImgFormData(formData);
     receiveFeedback(data);
   };
 
