@@ -20,7 +20,7 @@ Resources:
     Metadata:
       Dockerfile: ./Dockerfile
       DockerContext: ./
-      DockerTag: python3.8-v1-1
+      DockerTag: python3.10-v1-1
 
   RetrainModelFunction:
     Type: AWS::Serverless::Function
@@ -39,7 +39,7 @@ Resources:
     Metadata:
       Dockerfile: ./Dockerfile
       DockerContext: ./
-      DockerTag: python3.8-v1-2
+      DockerTag: python3.10-v1-2
 
 Outputs:
   PredictApi:
