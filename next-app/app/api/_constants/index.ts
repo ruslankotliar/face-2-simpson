@@ -10,8 +10,8 @@ const AWS_S3_BUCKET: StringMap = {
 };
 
 let PYTHON_API_ROUTES: StringMap = {
-  PREDICT_SIMPSON: '/predict/simpson',
-  RETRAIN_MODEL: '/cron/retrain',
+  PREDICT_SIMPSON: '/predict',
+  RETRAIN_MODEL: '/retrain',
 };
 
 PYTHON_API_ROUTES = Object.keys(PYTHON_API_ROUTES).reduce(
