@@ -9,7 +9,6 @@ Resources:
       MemorySize: 512
       Timeout: 30
       PackageType: Image
-      Architectures: ['arm64']
       ImageConfig:
         Command: ['app.lambda_predict_image']
       Events:
@@ -27,7 +26,6 @@ Resources:
   #   Type: AWS::Serverless::Function
   #   Properties:
   #     PackageType: Image
-  #     Architectures: ['arm64']
   #     ImageConfig:
   #       Command: ['app.lambda_retrain_function']
   #     Events:
