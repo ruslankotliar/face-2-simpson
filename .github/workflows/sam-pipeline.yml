@@ -31,6 +31,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
+      - name: Change directory to python-server
+        run: cd python-server
+
       - name: Build SAM Application
         run: sam build
 
