@@ -9,8 +9,6 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_predict_image']
-      Architectures:
-        - arm64
       Events:
         ApiEndpoint:
           Type: HttpApi
@@ -28,8 +26,6 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_retrain_function']
-      Architectures:
-        - arm64
       Events:
         ApiEndpoint:
           Type: HttpApi
