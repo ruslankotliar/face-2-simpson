@@ -15,6 +15,7 @@ export const predictSimpson = async function (img: File) {
 
     return data;
   } catch (e) {
+    console.error(e);
     if (e instanceof Error) throw Error(e.message);
   }
 };
