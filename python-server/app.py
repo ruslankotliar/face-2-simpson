@@ -1,4 +1,5 @@
 import json
+import base64
 import numpy as np
 from PIL import Image
 from io import BytesIO
@@ -20,13 +21,11 @@ def lambda_predict_image(event, context):
     """
     Lambda function to predict the Simpson character from an image.
     """
-    # Validate incoming event for image data
-    if "body" not in event:
-        return {"statusCode": 400, "body": json.dumps({"error": "No body in request"})}
-
-    # Convert base64 to Image object
-    decoded_image = base64.b64decode(event["body"])
-    img = Image.open(BytesIO(decoded_image)).convert("RGB")
+    image_bytes = event["body"]
+    encoded_data = image_bytes.split(",")[1] if "," in image_bytes else image_bytes
+    img_b64dec = base64.b64decode(encoded_data)
+    img_byteIO = BytesIO(img_b64dec)
+    img = Image.open(img_byteIO).convert("RGB")
 
     # Make prediction and sort results
     predict_data, predict_time = predict(img)

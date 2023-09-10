@@ -14,10 +14,11 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.formData();
     const img = data.get(FORM_DATA_KEYS.PREDICTION_IMG) as File;
+    const imgBase64 = data.get(FORM_DATA_KEYS.PREDICTION_IMG_BASE64) as string;
     if (!img) throw Error('No image found. Please, try again.');
 
     const { predict_data: predictionData, predict_time: predictionTime } =
-      await predictSimpson(img);
+      await predictSimpson(imgBase64);
 
     const characterPredicted = getMaxSimilarChar(predictionData);
 

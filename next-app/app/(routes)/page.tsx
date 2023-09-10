@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 
 import { FORM_CONSTANTS, FORM_DATA_KEYS } from '../_constants';
-import { generateFetchURL, isValidFileType } from '../_helpers';
+import { fileToBase64, generateFetchURL, isValidFileType } from '../_helpers';
 import {
   FeedbackData,
   PredictInitialValues,
@@ -37,6 +37,8 @@ const predictSimpson = async function (
   try {
     const formData = new FormData();
     formData.append(FORM_DATA_KEYS.PREDICTION_IMG, personImg);
+    const base64 = await fileToBase64(personImg);
+    formData.append(FORM_DATA_KEYS.PREDICTION_IMG_BASE64, base64 as string);
 
     const { data } = await axios.post(url, formData);
 

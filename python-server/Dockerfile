@@ -8,7 +8,6 @@ RUN pip install numpy==1.23.5
 RUN pip install scikit-learn==1.2.2
 RUN pip install tqdm==4.66.1
 
-
 # COPY requirements.txt ./
 # RUN pip install -r requirements.txt
 

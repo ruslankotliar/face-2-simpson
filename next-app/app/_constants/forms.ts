@@ -18,6 +18,7 @@ const FILENAME_KEYS = {
 
 const FORM_DATA_KEYS = {
   PREDICTION_IMG: 'predictImg',
+  PREDICTION_IMG_BASE64: 'predictImgBase64',
   PREDICTION_RESULT: 'predictionResult',
 };
 
