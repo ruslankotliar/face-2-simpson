@@ -1,9 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  python3.8
-
-  SAM Template for Python Pytorch ML Prediction Model Server
+Description: Python 3.10 based SAM Template for PyTorch ML Prediction Model Server
 
 Resources:
   PredictImageFunction:
@@ -12,17 +9,16 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_predict_image']
-      MemorySize: 5000
-      Timeout: 300
+      Architectures:
+        - arm64
       Events:
         ApiEndpoint:
           Type: HttpApi
           Properties:
             Path: /predict
             Method: post
-            TimeoutInMillis: 29000
     Metadata:
-      Dockerfile: Dockerfile
+      Dockerfile: ./Dockerfile
       DockerContext: ./
       DockerTag: python3.8-v1-1
 
@@ -32,17 +28,16 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_retrain_function']
-      MemorySize: 5000
-      Timeout: 300
+      Architectures:
+        - arm64
       Events:
         ApiEndpoint:
           Type: HttpApi
           Properties:
             Path: /retrain
             Method: get
-            TimeoutInMillis: 29000
     Metadata:
-      Dockerfile: Dockerfile
+      Dockerfile: ./Dockerfile
       DockerContext: ./
       DockerTag: python3.8-v1-2
 

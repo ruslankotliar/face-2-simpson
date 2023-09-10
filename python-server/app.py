@@ -2,7 +2,6 @@ import json
 import numpy as np
 from PIL import Image
 from io import BytesIO
-from asgiref.wsgi import WsgiToAsgi
 from models import predict, retrain_model
 from utils import S3Client
 
