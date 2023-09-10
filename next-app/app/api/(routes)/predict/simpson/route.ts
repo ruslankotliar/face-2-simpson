@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
 
-import { FORM_DATA_KEYS, StatusCodes } from '../../../../_constants';
-import { getStatusText } from '../../../_utils';
+import {
+  FILENAME_KEYS,
+  FORM_DATA_KEYS,
+  StatusCodes,
+} from '../../../../_constants';
+import { getStatusText, s3Bucket } from '../../../_utils';
 import { predictSimpson } from '@app/api/_rest';
+import { getMaxSimilarChar } from '@app/api/_helpers';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,12 +19,21 @@ export async function POST(req: NextRequest) {
     const { predict_data: predictionData, predict_time: predictionTime } =
       await predictSimpson(img);
 
+    const characterPredicted = getMaxSimilarChar(predictionData);
+
+    const imageBucketKey = `${
+      FILENAME_KEYS.PURPOSE.TRAIN
+    }/${characterPredicted}/${uuidv4()}`;
+
+    await s3Bucket.putObject(img, imageBucketKey);
+
     console.log(predictionData, predictionTime);
 
     console.log('Waiting for user feedback...');
     return NextResponse.json({
       predictionData,
       predictionTime,
+      imageBucketKey,
     });
   } catch (e) {
     console.error(e);

@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Python 3.10 based SAM Template for PyTorch ML Prediction Model Server
+
+Resources:
+  PredictImageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageConfig:
+        Command: ['app.lambda_predict_image']
+      Architectures:
+        - arm64
+      Events:
+        ApiEndpoint:
+          Type: HttpApi
+          Properties:
+            Path: /predict
+            Method: post
+    Metadata:
+      Dockerfile: ./Dockerfile
+      DockerContext: ./
+      DockerTag: python3.8-v1-1
+
+  RetrainModelFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageConfig:
+        Command: ['app.lambda_retrain_function']
+      Architectures:
+        - arm64
+      Events:
+        ApiEndpoint:
+          Type: HttpApi
+          Properties:
+            Path: /retrain
+            Method: get
+    Metadata:
+      Dockerfile: ./Dockerfile
+      DockerContext: ./
+      DockerTag: python3.8-v1-2
+
+Outputs:
+  PredictApi:
+    Description: 'API Gateway endpoint URL for Prod stage for predict function'
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/predict'
+  RetrainApi:
+    Description: 'API Gateway endpoint URL for Prod stage for retrain function'
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/retrain'

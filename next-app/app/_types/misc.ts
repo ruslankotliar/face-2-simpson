@@ -13,6 +13,7 @@ interface NumberMap {
 interface PredictSimpsonData {
   predictionData: Record<SimpsonCharacter, number>;
   predictionTime: number;
+  imageBucketKey: string;
 }
 
 interface FeedbackData extends PredictSimpsonData {
