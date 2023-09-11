@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { StatusCodes } from '../../../_constants';
-import { getStatusText, connectToDB } from '../../_utils';
+import { StatusCodes } from '../../../../_constants';
+import { getStatusText, connectToDB } from '../../../_utils';
 import { ImageCounter, Prediction } from '@app/api/_models';
 import { getMaxSimilarChar } from '@app/api/_helpers';
 

@@ -1,6 +1,6 @@
 import { StringMap } from '../../_types';
 
-const PYTHON_API = process.env.NEXT_PUBLIC_PYTHON_API;
+const PYTHON_API = process.env.PYTHON_API;
 
 const AWS_S3_BUCKET: StringMap = {
   ACCESS_KEY: process.env.AMAZON_ACCESS_KEY as string,

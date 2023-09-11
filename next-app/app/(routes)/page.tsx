@@ -18,7 +18,6 @@ import FileInput from '@app/_components/inputs/FileInput';
 import SubmitButton from '@app/_components/buttons/SubmitButton';
 import CheckboxInput from '@app/_components/inputs/Checkbox';
 import Modal from '@app/_components/misc/Modal';
-import { PYTHON_API_ROUTES } from '@app/api/_constants';
 
 const sendFeedback = async function (
   url: string,
@@ -32,21 +31,14 @@ const sendFeedback = async function (
 };
 
 const predictSimpson = async function (
+  url: string,
   personImg: File
 ): Promise<PredictSimpsonData | undefined> {
   try {
     const imgBase64 = await fileToBase64(personImg);
-    const {
-      data: {
-        predict_data: predictionData,
-        predict_time: predictionTime,
-        image_bucket_key: imageBucketKey,
-      },
-    } = await axios.post(PYTHON_API_ROUTES.PREDICT_SIMPSON, {
-      body: imgBase64,
-    });
+    const { data } = await axios.post(url, { imgBase64 });
 
-    return { predictionData, predictionTime, imageBucketKey };
+    return data;
   } catch (e) {
     if (e instanceof Error) console.error(e.message);
   }
@@ -90,7 +82,7 @@ export default function Home() {
   const submitFeedbackToServer = async function (): Promise<void> {
     if (!feedbackData) return;
     await sendFeedback(
-      generateFetchURL('DELETE_PERSON_IMG', {}, {}),
+      generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}),
       feedbackData
     );
   };
@@ -128,7 +120,10 @@ export default function Home() {
   const handleSubmit = async function ({ personImg }: any) {
     console.log('Submitting...');
 
-    const data = await predictSimpson(personImg);
+    const data = await predictSimpson(
+      generateFetchURL('REQUEST_PREDICTION', {}, {}),
+      personImg
+    );
     receiveFeedback(data);
   };
 
