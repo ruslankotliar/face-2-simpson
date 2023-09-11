@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'python-server/**'
+      - '.github/workflows/sam-pipeline.yml'
 
 jobs:
   deploy:
