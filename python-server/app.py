@@ -2,9 +2,9 @@ import json
 import base64
 import uuid
 
+from io import BytesIO
 import numpy as np
 from PIL import Image
-from io import BytesIO
 from typing import Dict, Union
 
 from models import predict, retrain_model
@@ -35,10 +35,11 @@ def lambda_predict_image(event, context):
     Lambda function to predict the Simpson character from an image.
     """
     image_bytes = event["body"]
+
     encoded_data = image_bytes.split(",")[1] if "," in image_bytes else image_bytes
     img_b64dec = base64.b64decode(encoded_data)
-    img_byteIO = BytesIO(img_b64dec)
-    img = Image.open(img_byteIO).convert("RGB")
+
+    img = Image.open(BytesIO(img_b64dec)).convert("RGB")
 
     # Make prediction and sort results
     predict_data, predict_time = predict(img)
@@ -47,9 +48,10 @@ def lambda_predict_image(event, context):
     )
 
     s3_client = S3Client()
+
     character_predicted = get_max_similar_char(sorted_predictions)
     image_bucket_key = f"train/{character_predicted}/{uuid.uuid4()}"
-    s3_client.put_s3_object(img_byteIO, image_bucket_key)
+    s3_client.put_s3_object(BytesIO(img_b64dec), image_bucket_key)
 
     return {
         "statusCode": 200,
