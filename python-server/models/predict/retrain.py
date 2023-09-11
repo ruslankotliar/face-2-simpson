@@ -92,7 +92,7 @@ def build_and_retrain_model(images, class_idx, old_test, num_epochs=10):
                                                                                             batch_size=BATCH_SIZE)
 
   # Build a model
-  model= create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
+  model, transformer = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
 
   # Load a state dict of the previous model
   model.load_state_dict(
@@ -142,7 +142,7 @@ def build_and_retrain_model(images, class_idx, old_test, num_epochs=10):
       best_epoch = np.argmax(model_results['test_acc']) + 1
       print("The best epoch is ", best_epoch)
 
-      model = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
+      model, transformer = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
 
       model.load_state_dict(
           torch.load(f=MODEL_PATH,
