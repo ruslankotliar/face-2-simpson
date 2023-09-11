@@ -48,7 +48,8 @@ jobs:
           cd python-server
           sam deploy \
             --parameter-overrides \
-            AMAZON_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            AMAZON_SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            AMAZON_REGION=${{ secrets.AMAZON_REGION }} \
-            AMAZON_BUCKET=${{ secrets.AMAZON_BUCKET }}
+              ParameterKey=AMAZON_ACCESS_KEY,ParameterValue=${{ secrets.AWS_ACCESS_KEY_ID }} \
+              ParameterKey=AMAZON_SECRET_KEY,ParameterValue=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+              ParameterKey=AMAZON_REGION,ParameterValue=${{ secrets.AMAZON_REGION }} \
+              ParameterKey=AMAZON_BUCKET,ParameterValue=${{ secrets.AMAZON_BUCKET }}
+
