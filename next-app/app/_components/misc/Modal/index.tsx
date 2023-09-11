@@ -30,7 +30,9 @@ const Modal: FC<ModalProps> = ({
     >
       <div className='bg-white rounded-lg p-8 w-1/2' onClick={handleInnerClick}>
         <div className='mb-6'>
-          <h2 className='text-xl font-bold mb-4'>Prediction Result:</h2>
+          <h2 className='text-xl text-black font-bold mb-4'>
+            Prediction Result:
+          </h2>
           {Object.entries(data).map(([character, confidence]) => (
             <p key={character}>
               <strong>{character.replace('_', ' ').toUpperCase()}:</strong>{' '}
