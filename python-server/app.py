@@ -1,6 +1,7 @@
 import json
 import base64
 import uuid
+import boto3
 
 from io import BytesIO
 import numpy as np
@@ -9,6 +10,8 @@ from typing import Dict, Union
 
 from models import predict, retrain_model
 from utils import S3Client
+
+s3 = boto3.client("s3")
 
 # Constants
 IMAGE_SIZE = (224, 224)
@@ -47,7 +50,7 @@ def lambda_predict_image(event, context):
         sorted(predict_data.items(), key=lambda x: x[1], reverse=True)
     )
 
-    s3_client = S3Client()
+    s3_client = S3Client(s3)
 
     character_predicted = get_max_similar_char(sorted_predictions)
     image_bucket_key = f"train/{character_predicted}/{uuid.uuid4()}"
@@ -74,7 +77,7 @@ def fetch_and_transform_image(s3_client, key):
 
 
 def lambda_retrain_function(event, context):
-    s3_client = S3Client()
+    s3_client = S3Client(s3)
     training_data, current_keys = gather_training_data(s3_client, event["body"])
 
     if len(training_data["train"]) < MIN_NUM_OF_IMAGES:
