@@ -20,6 +20,11 @@ with open(CLASS_NAMES_PATH, "r") as f:
 def predict(img) -> Tuple[Dict, float]:
     model, transformer = create_mobilenet(len(CLASS_NAMES))
 
+    model.load_state_dict(
+        torch.load(f=MODEL_PATH,
+                   map_location=torch.device("cpu"))
+    )
+
     start_time = timer()
 
     img = transformer(img).unsqueeze(0)
