@@ -7,6 +7,7 @@ from typing import Tuple, Dict
 
 from .model import create_mobilenet
 from .retrain import build_and_retrain_model
+from .retrain_functions import train_test_transforms
 
 cwd = os.getcwd()
 CLASS_NAMES_PATH = os.path.join(cwd, "models/predict/class_names.txt")
@@ -16,16 +17,10 @@ MODEL_PATH = os.path.join(cwd, "models/predict/simpsons_model.pth")
 with open(CLASS_NAMES_PATH, "r") as f:
     CLASS_NAMES = [name.strip() for name in f.readlines()]
 
-
-def load_mobilenet(num_classes: int):
-    """Load MobileNet model with given number of classes."""
-    model, transformer = create_mobilenet(num_classes=num_classes)
-    model.load_state_dict(torch.load(f=MODEL_PATH, map_location=torch.device("cpu")))
-    return model, transformer
-
-
 def predict(img) -> Tuple[Dict, float]:
-    model, transformer = load_mobilenet(len(CLASS_NAMES))
+    model = create_mobilenet(len(CLASS_NAMES))
+
+    _, transformer = train_test_transforms()
 
     start_time = timer()
 
@@ -48,7 +43,7 @@ def predict(img) -> Tuple[Dict, float]:
 def retrain_model(images, old_test, old_accuracy):
     print("Retraining model...")
 
-    model, _ = load_mobilenet(len(CLASS_NAMES))
+    model = create_mobilenet(len(CLASS_NAMES))
 
     idx_class, class_idx = {}, {}
     for idx, name in enumerate(CLASS_NAMES):

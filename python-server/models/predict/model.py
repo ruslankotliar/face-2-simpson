@@ -4,12 +4,8 @@ from torch import nn
 
 def create_mobilenet(num_classes,
                      seed=42):
-
-  weights = torchvision.models.MobileNet_V2_Weights.DEFAULT
-
-  model = torchvision.models.mobilenet_v2(weights=weights)
-
-  transformer = weights.transforms()
+  torch.manual_seed(seed)
+  model = torchvision.models.mobilenet_v2()
 
   for param in model.parameters():
     param.requires_grad = False
@@ -19,4 +15,4 @@ def create_mobilenet(num_classes,
       nn.Linear(1280, num_classes, bias=True)
       )
 
-  return model , transformer
+  return model
