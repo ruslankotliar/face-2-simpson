@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { StatusCodes } from '../../../../_constants';
-import { getStatusText, connectToDB } from '../../../_utils';
+import { StatusCodes } from '../../../_constants';
+import { getStatusText, connectToDB } from '../../_utils';
 import { ImageCounter, Prediction } from '@app/api/_models';
 import { getMaxSimilarChar } from '@app/api/_helpers';
 
@@ -37,8 +37,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(null);
   } catch (e) {
-    console.error(e);
-    if (e instanceof Error)
+    if (e instanceof Error) {
+      console.error(e.message);
       return NextResponse.json(
         { message: e.message },
         {
@@ -46,5 +46,6 @@ export async function POST(req: NextRequest) {
           statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
         }
       );
+    }
   }
 }

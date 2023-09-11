@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 
-import { FORM_CONSTANTS, FORM_DATA_KEYS } from '../_constants';
+import { FORM_CONSTANTS } from '../_constants';
 import { fileToBase64, generateFetchURL, isValidFileType } from '../_helpers';
 import {
   FeedbackData,
@@ -18,6 +18,7 @@ import FileInput from '@app/_components/inputs/FileInput';
 import SubmitButton from '@app/_components/buttons/SubmitButton';
 import CheckboxInput from '@app/_components/inputs/Checkbox';
 import Modal from '@app/_components/misc/Modal';
+import { PYTHON_API_ROUTES } from '@app/api/_constants';
 
 const sendFeedback = async function (
   url: string,
@@ -26,25 +27,28 @@ const sendFeedback = async function (
   try {
     await axios.post(url, data);
   } catch (e) {
-    if (e instanceof Error) console.error(e);
+    if (e instanceof Error) console.error(e.message);
   }
 };
 
 const predictSimpson = async function (
-  url: string,
   personImg: File
 ): Promise<PredictSimpsonData | undefined> {
   try {
-    const formData = new FormData();
-    formData.append(FORM_DATA_KEYS.PREDICTION_IMG, personImg);
-    const base64 = await fileToBase64(personImg);
-    formData.append(FORM_DATA_KEYS.PREDICTION_IMG_BASE64, base64 as string);
+    const imgBase64 = await fileToBase64(personImg);
+    const {
+      data: {
+        predict_data: predictionData,
+        predict_time: predictionTime,
+        image_bucket_key: imageBucketKey,
+      },
+    } = await axios.post(PYTHON_API_ROUTES.PREDICT_SIMPSON, {
+      body: imgBase64,
+    });
 
-    const { data } = await axios.post(url, formData);
-
-    return data;
+    return { predictionData, predictionTime, imageBucketKey };
   } catch (e) {
-    if (e instanceof Error) console.error(e);
+    if (e instanceof Error) console.error(e.message);
   }
 };
 
@@ -124,10 +128,7 @@ export default function Home() {
   const handleSubmit = async function ({ personImg }: any) {
     console.log('Submitting...');
 
-    const data = await predictSimpson(
-      generateFetchURL('PREDICT_PERSON_IMG', {}, {}),
-      personImg
-    );
+    const data = await predictSimpson(personImg);
     receiveFeedback(data);
   };
 

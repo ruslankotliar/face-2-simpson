@@ -9,17 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.391.0",
-    "@aws-sdk/lib-storage": "^3.391.0",
     "@types/node": "20.5.0",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
-    "@types/uuid": "^9.0.2",
     "autoprefixer": "10.4.15",
     "axios": "^1.4.0",
     "chart.js": "^4.4.0",
     "chartjs-adapter-dayjs-4": "^1.0.4",
-    "cron": "^2.4.3",
     "dayjs": "^1.11.9",
     "eslint": "8.47.0",
     "eslint-config-next": "^13.4.19",
@@ -32,7 +28,6 @@
     "react-dom": "18.2.0",
     "tailwindcss": "3.3.3",
     "typescript": "5.1.6",
-    "uuid": "^9.0.0",
     "yup": "^1.2.0"
   }
 }

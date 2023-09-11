@@ -14,28 +14,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Clean unnecessary files to save disk space
-      - name: Clean unnecessary files to save disk space
-        run: |
-          docker rmi `docker images -q`
-          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/sudo apt/sources.list.d
-          sudo apt -y autoremove --purge
-          sudo apt -y autoclean
-          sudo apt clean
-          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
-          df -h
+      # Check initial disk space
+      - name: Check Disk Space
+        run: df -h
 
-      # Free up disk space on Ubuntu
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
-          tool-cache: false
-          large-packages: true
-          swap-storage: true
+      # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Cache Python dependencies
       - name: Cache Python dependencies
         uses: actions/cache@v2
         with:
@@ -44,11 +31,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
+      # Install AWS sam
       - name: Install AWS sam
         uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
 
+      # Configure AWS credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -56,11 +45,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
+      # Build SAM application
       - name: Build SAM Application
         run: |
           cd python-server
-          sam build --use-container --parallel --beta-features
+          sam build --use-container --cached
 
+      # Deploy SAM application
       - name: Deploy SAM Application
         run: |
           cd python-server

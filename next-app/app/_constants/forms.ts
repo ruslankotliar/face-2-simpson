@@ -6,7 +6,7 @@ const FORM_CONSTANTS = {
 };
 
 const VALID_FILE_EXTENSIONS: StringArrayMap = {
-  personImg: ['png', 'jpeg'],
+  personImg: ['png', 'jpeg', 'jpg'],
 };
 
 const FILENAME_KEYS = {
@@ -14,12 +14,6 @@ const FILENAME_KEYS = {
     TRAIN: 'train',
     TEST: 'test',
   },
-};
-
-const FORM_DATA_KEYS = {
-  PREDICTION_IMG: 'predictImg',
-  PREDICTION_IMG_BASE64: 'predictImgBase64',
-  PREDICTION_RESULT: 'predictionResult',
 };
 
 const PREDICTION_TIME_CHART_UNITS = {
@@ -31,7 +25,6 @@ const PREDICTION_TIME_CHART_UNITS = {
 export {
   FORM_CONSTANTS,
   VALID_FILE_EXTENSIONS,
-  FORM_DATA_KEYS,
   PREDICTION_TIME_CHART_UNITS,
   FILENAME_KEYS,
 };

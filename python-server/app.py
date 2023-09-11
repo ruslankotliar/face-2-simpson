@@ -1,8 +1,12 @@
 import json
 import base64
+import uuid
+
 import numpy as np
 from PIL import Image
 from io import BytesIO
+from typing import Dict, Union
+
 from models import predict, retrain_model
 from utils import S3Client
 
@@ -15,6 +19,15 @@ CHARACTER_KEYS = {
     "homer_simpson": [],
     "marge_simpson": [],
 }
+
+SimpsonCharacter = Union[
+    "bart_simpson", "homer_simpson", "lisa_simpson", "marge_simpson"
+]
+
+
+def get_max_similar_char(data: Dict[SimpsonCharacter, int]) -> SimpsonCharacter:
+    # Here, we get the key associated with the max value in the dictionary
+    return max(data, key=data.get)
 
 
 def lambda_predict_image(event, context):
@@ -33,10 +46,19 @@ def lambda_predict_image(event, context):
         sorted(predict_data.items(), key=lambda x: x[1], reverse=True)
     )
 
+    s3_client = S3Client()
+    character_predicted = get_max_similar_char(sorted_predictions)
+    image_bucket_key = f"train/{character_predicted}/{uuid.uuid4()}"
+    s3_client.put_s3_object(img_byteIO, image_bucket_key)
+
     return {
         "statusCode": 200,
         "body": json.dumps(
-            {"predict_data": sorted_predictions, "predict_time": predict_time}
+            {
+                "predict_data": sorted_predictions,
+                "predict_time": predict_time,
+                "image_bucket_key": image_bucket_key,
+            }
         ),
     }
 

@@ -24,9 +24,11 @@ class S3Client:
         obj = self.s3.get_object(Bucket=self.AWS_BUCKET, Key=key)
         return obj["Body"]
 
-    def get_s3_object_tagging(self, key):
-        obj = self.s3.get_object_tagging(Bucket=self.AWS_BUCKET, Key=key)
-        return obj["TagSet"]
+    def put_s3_object(self, body, key, bucket=None):
+        if bucket is None:
+            bucket = self.AWS_BUCKET
+        obj = self.s3.put_object(Body=body, Bucket=bucket, Key=key)
+        return None
 
     def get_s3_objects_list(self, bucket=None):
         if bucket is None:
