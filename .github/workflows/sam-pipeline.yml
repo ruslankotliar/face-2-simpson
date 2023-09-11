@@ -39,7 +39,7 @@ jobs:
       - name: Build SAM Application
         run: |
           cd python-server
-          sam build --use-container --parallel --cached --beta-features
+          sam build --use-container --parallel --beta-features
 
       - name: Deploy SAM Application
         run: |
