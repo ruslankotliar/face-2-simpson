@@ -44,16 +44,6 @@ jobs:
 
       # Deploy SAM application
       - name: Deploy SAM Application
-        env:
-          AMAZON_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AMAZON_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AMAZON_REGION: ${{ secrets.AMAZON_REGION }}
-          AMAZON_BUCKET: ${{ secrets.AMAZON_BUCKET }}
         run: |
           cd python-server
-          sam deploy \
-            --parameter-overrides \
-              AMAZON_ACCESS_KEY=$AMAZON_ACCESS_KEY \
-              AMAZON_SECRET_KEY=$AMAZON_SECRET_KEY \
-              AMAZON_REGION=$AMAZON_REGION \
-              AMAZON_BUCKET=$AMAZON_BUCKET
+          sam deploy

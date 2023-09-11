@@ -4,16 +4,16 @@ import boto3
 
 class S3Client:
     def __init__(self):
-        self.AWS_ACCESS_KEY = os.environ["AMAZON_ACCESS_KEY"]
-        self.AWS_SECRET_KEY = os.environ["AMAZON_SECRET_KEY"]
-        self.AMAZON_REGION = os.environ["AMAZON_REGION"]
+        self.AWS_ACCESS_KEY = os.environ["AWS_ACCESS_KEY"]
+        self.AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
+        self.AWS_REGION = os.environ["AWS_REGION"]
         self.AMAZON_BUCKET = os.environ["AMAZON_BUCKET"]
 
         self.s3 = boto3.client(
             "s3",
             aws_access_key_id=self.AWS_ACCESS_KEY,
-            aws_secret_access_key=self.AWS_SECRET_KEY,
-            region_name=self.AMAZON_REGION,
+            aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
+            region_name=self.AWS_REGION,
         )
 
     def get_s3_object(self, key):
