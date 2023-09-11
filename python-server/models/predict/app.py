@@ -18,9 +18,7 @@ with open(CLASS_NAMES_PATH, "r") as f:
     CLASS_NAMES = [name.strip() for name in f.readlines()]
 
 def predict(img) -> Tuple[Dict, float]:
-    model = create_mobilenet(len(CLASS_NAMES))
-
-    _, transformer = train_test_transforms()
+    model, transformer = create_mobilenet(len(CLASS_NAMES))
 
     start_time = timer()
 
@@ -42,8 +40,6 @@ def predict(img) -> Tuple[Dict, float]:
 
 def retrain_model(images, old_test, old_accuracy):
     print("Retraining model...")
-
-    model = create_mobilenet(len(CLASS_NAMES))
 
     idx_class, class_idx = {}, {}
     for idx, name in enumerate(CLASS_NAMES):

@@ -1,11 +1,15 @@
-import torch
-import torchvision
+from torchvision import models, transforms
 from torch import nn
 
 def create_mobilenet(num_classes,
                      seed=42):
-  torch.manual_seed(seed)
-  model = torchvision.models.mobilenet_v2()
+  model = models.mobilenet_v2()
+  transformer = transforms.Compose([
+      transforms.Resize(256),
+      transforms.CenterCrop(224),
+      transforms.ToTensor(),
+      transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+  ])
 
   for param in model.parameters():
     param.requires_grad = False
@@ -15,4 +19,4 @@ def create_mobilenet(num_classes,
       nn.Linear(1280, num_classes, bias=True)
       )
 
-  return model
+  return model, transformer
