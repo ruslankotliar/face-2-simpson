@@ -3,7 +3,9 @@ name: Deploy PyTorch Model to AWS Lambda
 on:
   push:
     branches:
-      - main # assuming you're deploying when code is pushed to main
+      - main
+    paths:
+      - 'python-server/**'
 
 jobs:
   deploy:
@@ -14,13 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
       - name: Install AWS sam
         uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -32,7 +31,7 @@ jobs:
       - name: Build SAM Application
         run: |
           cd python-server
-          sam build
+          sam build --use-container --parallel --cached --beta-features
 
       - name: Deploy SAM Application
         run: |

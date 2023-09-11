@@ -11,6 +11,8 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_predict_image']
+      # need this to run docker on mac
+      Architectures: ['arm64'] 
       Events:
         ApiEndpoint:
           Type: HttpApi
@@ -28,6 +30,8 @@ Resources:
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_retrain_function']
+      # need this to run docker on mac
+      Architectures: ['arm64']
       Events:
         ApiEndpoint:
           Type: HttpApi
