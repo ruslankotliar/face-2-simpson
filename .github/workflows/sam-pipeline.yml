@@ -14,6 +14,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Clean unnecessary files to save disk space
+      - name: Clean unnecessary files to save disk space
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/sudo apt/sources.list.d
+          sudo apt -y autoremove --purge
+          sudo apt -y autoclean
+          sudo apt clean
+          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+          df -h
+
+      # Free up disk space on Ubuntu
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
+          tool-cache: false
+          large-packages: true
+          swap-storage: true
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -40,7 +59,7 @@ jobs:
       - name: Build SAM Application
         run: |
           cd python-server
-          sam build --parallel --beta-features
+          sam build --use-container --parallel --beta-features
 
       - name: Deploy SAM Application
         run: |
