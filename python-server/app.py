@@ -70,6 +70,8 @@ def lambda_predict_image(event, context):
     image_bucket_key = f"train/{character_predicted}/{uuid.uuid4()}"
     s3_client.put_s3_object(BytesIO(img_b64dec), image_bucket_key)
 
+    s3_client.delete_s3_object(img_key)  # remove obj created with presigned url
+
     return {
         "statusCode": 200,
         "body": json.dumps(

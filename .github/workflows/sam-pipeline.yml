@@ -46,4 +46,4 @@ jobs:
       - name: Deploy SAM Application
         run: |
           cd python-server
-          sam deploy --resolve-image-repos
+          sam deploy
