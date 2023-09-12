@@ -7,6 +7,18 @@ class S3Client:
 
         self.s3 = s3
 
+    def get_presigned_url(self, key, expiration=30, bucket=None):
+        if bucket is None:
+            bucket = self.AMAZON_BUCKET
+
+        url = self.s3.generate_presigned_post(
+            bucket_name=bucket,
+            object_name=key,
+            ExpiresIn=expiration,
+        )
+
+        return url
+
     def get_s3_object(self, key):
         obj = self.s3.get_object(Bucket=self.AMAZON_BUCKET, Key=key)
         return obj["Body"]

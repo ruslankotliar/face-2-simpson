@@ -1,6 +1,7 @@
 import { StringMap } from '../_types';
 
 const REQUEST_URL_KEYS: StringMap = {
+  UPLOAD_IMAGE: '/upload/image',
   REQUEST_PREDICTION: '/prediction/request',
   SEND_PREDICTION_FEEDBACK: '/prediction/feedback',
   RETRAIN_MODEL: '/cron/retrain',

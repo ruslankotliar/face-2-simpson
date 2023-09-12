@@ -12,6 +12,7 @@ const AWS_S3_BUCKET: StringMap = {
 let PYTHON_API_ROUTES: StringMap = {
   PREDICT_SIMPSON: '/predict',
   RETRAIN_MODEL: '/retrain',
+  GENERATE_PRESIGNED_URL: '/generate-presigned-url',
 };
 
 PYTHON_API_ROUTES = Object.keys(PYTHON_API_ROUTES).reduce(
@@ -26,6 +27,8 @@ const DB_COUNTER_CHARS: string[] = [
   'marge_simpson',
 ];
 
+const S3_OBJ_EXPIRES_IN: number = 60 * 2;
+
 const ENOUGH_TRAIN_DATA: number = 8;
 
 export {
@@ -33,4 +36,5 @@ export {
   PYTHON_API_ROUTES,
   DB_COUNTER_CHARS,
   ENOUGH_TRAIN_DATA,
+  S3_OBJ_EXPIRES_IN,
 };

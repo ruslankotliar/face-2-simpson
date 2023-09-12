@@ -2,11 +2,9 @@ import axios from 'axios';
 
 import { PYTHON_API_ROUTES } from '../_constants';
 
-export const predictSimpson = async function (signedKey: string) {
+export const signUrl = async function () {
   try {
-    const { data } = await axios.post(PYTHON_API_ROUTES.PREDICT_SIMPSON, {
-      signedKey,
-    });
+    const { data } = await axios.get(PYTHON_API_ROUTES.GENERATE_PRESIGNED_URL);
 
     return data;
   } catch (e) {

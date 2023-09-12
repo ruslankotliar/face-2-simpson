@@ -1,5 +1,4 @@
 import json
-import base64
 import uuid
 import boto3
 
@@ -28,6 +27,21 @@ SimpsonCharacter = Union[
 ]
 
 
+def lambda_generate_presigned_url(event, context):
+    key = f"temp/{uuid.uuid4()}"
+    url = s3.get_presigned_url(key)
+
+    return {
+        "statusCode": 200,
+        "body": json.dumps(
+            {
+                "url": url,
+                "key": key,
+            }
+        ),
+    }
+
+
 def get_max_similar_char(data: Dict[SimpsonCharacter, int]) -> SimpsonCharacter:
     # Here, we get the key associated with the max value in the dictionary
     return max(data, key=data.get)
@@ -37,12 +51,12 @@ def lambda_predict_image(event, context):
     """
     Lambda function to predict the Simpson character from an image.
     """
-    image_bytes = event["body"]
+    s3_client = S3Client(s3)
 
-    encoded_data = image_bytes.split(",")[1] if "," in image_bytes else image_bytes
-    img_b64dec = base64.b64decode(encoded_data)
+    img_key = event["signedKey"]
+    s3_object = s3_client.get_s3_object(img_key)
 
-    img = Image.open(BytesIO(img_b64dec)).convert("RGB")
+    img = Image.open(s3_object).convert("RGB")
 
     # Make prediction and sort results
     predict_data, predict_time = predict(img)

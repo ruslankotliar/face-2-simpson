@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 
 import { FORM_CONSTANTS } from '../_constants';
-import { fileToBase64, generateFetchURL, isValidFileType } from '../_helpers';
+import { generateFetchURL, isValidFileType } from '../_helpers';
 import {
   FeedbackData,
   PredictInitialValues,
@@ -31,12 +31,19 @@ const sendFeedback = async function (
 };
 
 const predictSimpson = async function (
-  url: string,
   personImg: File
 ): Promise<PredictSimpsonData | undefined> {
   try {
-    const imgBase64 = await fileToBase64(personImg);
-    const { data } = await axios.post(url, { imgBase64 });
+    const {
+      data: { url, key },
+    } = await axios.get(generateFetchURL('UPLOAD_IMAGE', {}, {}));
+
+    await axios.put(url, personImg);
+
+    const { data } = await axios.post(
+      generateFetchURL('REQUEST_PREDICTION', {}, {}),
+      { key }
+    );
 
     return data;
   } catch (e) {
@@ -120,10 +127,7 @@ export default function Home() {
   const handleSubmit = async function ({ personImg }: any) {
     console.log('Submitting...');
 
-    const data = await predictSimpson(
-      generateFetchURL('REQUEST_PREDICTION', {}, {}),
-      personImg
-    );
+    const data = await predictSimpson(personImg);
     receiveFeedback(data);
   };
 
