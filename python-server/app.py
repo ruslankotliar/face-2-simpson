@@ -28,7 +28,8 @@ SimpsonCharacter = Union[
 
 def lambda_generate_presigned_url(event, context):
     key = f"temp/{uuid.uuid4()}"
-    url = s3.get_presigned_url(key)
+    s3_client = S3Client(s3)
+    url = s3_client.get_presigned_url(key)
 
     return {
         "statusCode": 200,
@@ -54,7 +55,8 @@ def lambda_predict_image(event, context):
     """
     s3_client = S3Client(s3)
 
-    img_key = event["signedKey"]
+    img_key = event["body"]
+
     s3_object = s3_client.get_s3_object(img_key)
 
     img = Image.open(s3_object).convert("RGB")
@@ -69,7 +71,7 @@ def lambda_predict_image(event, context):
 
     character_predicted = get_max_similar_char(sorted_predictions)
     image_bucket_key = f"train/{character_predicted}/{uuid.uuid4()}"
-    s3_client.put_s3_object(BytesIO(img_b64dec), image_bucket_key)
+    s3_client.put_s3_object(s3_object.read(), image_bucket_key)
 
     s3_client.delete_s3_object(img_key)  # remove obj created with presigned url
 
