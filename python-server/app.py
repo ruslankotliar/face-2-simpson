@@ -7,7 +7,6 @@ import numpy as np
 from PIL import Image
 from typing import Dict, Union
 
-from models import predict, retrain_model
 from utils import S3Client
 
 s3 = boto3.client("s3")
@@ -48,6 +47,8 @@ def get_max_similar_char(data: Dict[SimpsonCharacter, int]) -> SimpsonCharacter:
 
 
 def lambda_predict_image(event, context):
+    from models import predict
+
     """
     Lambda function to predict the Simpson character from an image.
     """
@@ -93,6 +94,8 @@ def fetch_and_transform_image(s3_client, key):
 
 
 def lambda_retrain_function(event, context):
+    from models import retrain_model
+
     s3_client = S3Client(s3)
     training_data, current_keys = gather_training_data(s3_client, event["body"])
 
