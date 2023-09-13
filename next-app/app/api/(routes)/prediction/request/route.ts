@@ -24,8 +24,7 @@ export async function POST(req: NextRequest) {
       console.error(e.message);
       return NextResponse.json(
         {
-          message: e.message,
-          error: JSON.stringify(e),
+          ...e,
         },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,

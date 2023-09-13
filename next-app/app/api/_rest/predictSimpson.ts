@@ -11,6 +11,6 @@ export const predictSimpson = async function (signedKey: string) {
 
     return data;
   } catch (e) {
-    if (e instanceof Error) throw Error(e.message);
+    if (e instanceof Error) throw Error('Error on python server: ' + e.message);
   }
 };
