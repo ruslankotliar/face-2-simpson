@@ -1,6 +1,5 @@
 'use client';
 /* eslint-disable react-hooks/exhaustive-deps */
-export const revalidate = 0;
 
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -31,15 +30,47 @@ const sendFeedback = async function (
   }
 };
 
+const generatePresignedUrl = async function (): Promise<
+  { url: string; key: string } | undefined
+> {
+  try {
+    const res = await fetch(generateFetchURL('UPLOAD_IMAGE', {}, {}), {
+      cache: 'no-cache',
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch data');
+    }
+
+    const data = await res.json();
+
+    return data;
+  } catch (e) {
+    if (e instanceof Error) console.error(e.message);
+  }
+};
+
+const uploadImg = async function (
+  url: string,
+  personImg: File
+): Promise<undefined> {
+  try {
+    await axios.put(url, personImg);
+  } catch (e) {
+    if (e instanceof Error) console.error(e.message);
+  }
+};
+
 const predictSimpson = async function (
   personImg: File
 ): Promise<PredictSimpsonData | undefined> {
   try {
-    const {
-      data: { url, key },
-    } = await axios.get(generateFetchURL('UPLOAD_IMAGE', {}, {}));
+    const presignedUrlData = await generatePresignedUrl();
+    console.log(presignedUrlData);
+    if (!presignedUrlData) return;
+    const { url, key } = presignedUrlData;
 
-    await axios.put(url, personImg);
+    await uploadImg(url, personImg);
 
     const { data } = await axios.post(
       generateFetchURL('REQUEST_PREDICTION', {}, {}),
