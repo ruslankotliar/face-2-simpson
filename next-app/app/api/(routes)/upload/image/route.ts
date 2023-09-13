@@ -4,7 +4,7 @@ import { StatusCodes } from '@app/_constants';
 import { getStatusText } from '@app/api/_utils';
 import { signUrl } from '@app/api/_rest';
 
-export async function GET() {
+export async function POST() {
   try {
     const { url, key } = await signUrl();
 
