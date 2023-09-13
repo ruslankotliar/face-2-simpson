@@ -1,6 +1,7 @@
 import json
 import uuid
 import boto3
+import base64
 
 from io import BytesIO
 import numpy as np
@@ -40,7 +41,8 @@ def lambda_predict_image(event, context):
     """
     s3_client = S3Client(s3)
 
-    img_key = event["body"]
+    img_key_encoded = event["body"]
+    img_key = base64.b64decode(img_key_encoded).decode("utf-8")
 
     s3_object = s3_client.get_s3_object(img_key)
 

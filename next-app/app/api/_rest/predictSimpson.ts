@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 import { PYTHON_API_ROUTES } from '../_constants';
-import { NextResponse } from 'next/server';
 
 export const predictSimpson = async function (signedKey: string) {
   try {
@@ -12,10 +11,7 @@ export const predictSimpson = async function (signedKey: string) {
 
     return data;
   } catch (e) {
-    if (e instanceof Error) {
-      throw new Error(
-        `Error on python server: ${e.name} - ${e.message}\n${e.stack}`
-      );
-    }
+    if (e instanceof Error)
+      throw new Error(`Error on python server: ${e.name} - ${e.message}`);
   }
 };
