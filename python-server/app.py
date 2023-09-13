@@ -4,6 +4,7 @@ import uuid
 
 from io import BytesIO
 import numpy as np
+import os
 from PIL import Image
 from typing import Dict, Union
 
@@ -12,7 +13,10 @@ from utils import S3Client
 
 # Constants
 IMAGE_SIZE = (224, 224)
-MIN_NUM_OF_IMAGES = 6
+MIN_NUM_OF_IMAGES = 8
+CLASS_NAMES_PATH = 'python-server/models/predict/class_names.txt'
+MODEL_PATH = 'python-server/models/predict/simpsons_model.pth'
+
 CHARACTER_KEYS = {
     "lisa_simpson": [],
     "bart_simpson": [],
@@ -74,28 +78,46 @@ def fetch_and_transform_image(s3_client, key):
 
 
 def lambda_retrain_function(event, context):
-    s3_client = S3Client()
-    training_data, current_keys = gather_training_data(s3_client, event["body"])
+    old_accuracy = event.get("accuracy", 0)
+    minimum_class_names_count = event.get("min", 0)
 
-    if len(training_data["train"]) < MIN_NUM_OF_IMAGES:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "Not enough data to retrain the model"}),
-        }
+    if minimum_class_names_count < MIN_NUM_OF_IMAGES:
+        return "Not enough data to retrain the model", 400
+
+    s3_client = S3Client()
+    files = s3_client.get_s3_objects_list()
+
+    data = {"train": [], "test": []}
+    current_keys = CHARACTER_KEYS.copy()
+
+    for i, file in enumerate(files):
+        file_name, purpose, class_name = preprocess_file(file)
+
+        if (
+                purpose == "train"
+                and len(current_keys[class_name]) >= minimum_class_names_count
+        ):
+            continue
+
+        print(f"{i}. {file_name}")
+
+        image = fetch_and_transform_image(s3_client, file_name)
+        data[purpose].append((image, class_name))
+
+        if purpose == "train":
+            current_keys[class_name].append(file_name)
 
     new_accuracy = retrain_model(
-        np.array(training_data["train"]),
-        np.array(training_data["test"]),
-        event["body"].get("accuracy", 0),
+        np.array(data["train"]), np.array(data["test"]), old_accuracy
     )
 
-    if new_accuracy > event["body"].get("accuracy", 0):
+    if new_accuracy > old_accuracy:
         delete_images_from_s3(current_keys)
 
     return {
         "statusCode": 200,
         "body": json.dumps(
-            {"model_accuracy": max(new_accuracy, event["body"].get("accuracy", 0))}
+            {"model_accuracy": max(new_accuracy, old_accuracy)}
         ),
     }
 
@@ -106,7 +128,7 @@ def gather_training_data(s3_client, body):
     current_keys = CHARACTER_KEYS.copy()
 
     for file in files:
-        key, purpose, class_name = preprocess_file(file, s3_client)
+        key, purpose, class_name = preprocess_file(file)
         if not purpose or len(current_keys[class_name]) >= body.get("min", 0):
             continue
 
@@ -118,12 +140,10 @@ def gather_training_data(s3_client, body):
     return data, current_keys
 
 
-def preprocess_file(file, s3_client):
-    key = file["Key"]
-    tags = s3_client.get_s3_object_tagging(key)
-    purpose = tags.get("Value")
-    class_name = tags.get("Value")
-    return key, purpose, class_name
+def preprocess_file(file):
+    file_name = file["Key"]
+    purpose, class_name, _ = file_name.split('/')
+    return file_name, purpose, class_name
 
 
 def delete_images_from_s3(keys_dict):

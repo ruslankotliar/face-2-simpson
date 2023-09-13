@@ -45,7 +45,7 @@ Resources:
           Type: HttpApi
           Properties:
             Path: /retrain
-            Method: get
+            Method: post
     Metadata:
       Dockerfile: ./Dockerfile
       DockerContext: ./
