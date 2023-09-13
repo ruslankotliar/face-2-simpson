@@ -1,5 +1,6 @@
+export const revalidate = 1;
 /* eslint-disable react-hooks/exhaustive-deps */
-'use client';
+('use client');
 
 import * as Yup from 'yup';
 import axios from 'axios';

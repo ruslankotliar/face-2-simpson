@@ -9,6 +9,8 @@ from typing import Dict, Union
 
 from utils import S3Client
 
+s3 = boto3.client("s3")
+
 
 # Constants
 IMAGE_SIZE = (224, 224)
@@ -28,13 +30,6 @@ SimpsonCharacter = Union[
 def lambda_generate_presigned_url(event, context):
     key = f"temp/{uuid.uuid4()}"
 
-    s3 = boto3.client(
-        "s3",
-        aws_access_key_id=os.environ.get("AMAZON_ACCESS_KEY"),
-        aws_secret_access_key=os.environ.get("AMAZON_SECRET_KEY"),
-        region_name=os.environ.get("AMAZON_REGION"),
-    )
-
     s3_client = S3Client(s3)
     url = s3_client.get_presigned_url(key)
 
@@ -49,7 +44,9 @@ def lambda_generate_presigned_url(event, context):
     }
 
 
-s3 = boto3.client("s3")
+def get_max_similar_char(data: Dict[SimpsonCharacter, int]) -> SimpsonCharacter:
+    # Here, we get the key associated with the max value in the dictionary
+    return max(data, key=data.get)
 
 
 def lambda_predict_image(event, context):
@@ -90,9 +87,12 @@ def lambda_predict_image(event, context):
     }
 
 
-def get_max_similar_char(data: Dict[SimpsonCharacter, int]) -> SimpsonCharacter:
-    # Here, we get the key associated with the max value in the dictionary
-    return max(data, key=data.get)
+def fetch_and_transform_image(s3_client, key):
+    """
+    Fetches an image from S3 and applies necessary transformations.
+    """
+    image_stream = Image.open(s3_client.get_s3_object(key)).convert("RGB")
+    return np.asarray(image_stream.resize(IMAGE_SIZE))
 
 
 def lambda_retrain_function(event, context):
@@ -122,14 +122,6 @@ def lambda_retrain_function(event, context):
             {"model_accuracy": max(new_accuracy, event["body"].get("accuracy", 0))}
         ),
     }
-
-
-def fetch_and_transform_image(s3_client, key):
-    """
-    Fetches an image from S3 and applies necessary transformations.
-    """
-    image_stream = Image.open(s3_client.get_s3_object(key)).convert("RGB")
-    return np.asarray(image_stream.resize(IMAGE_SIZE))
 
 
 def gather_training_data(s3_client, body):
