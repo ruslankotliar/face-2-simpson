@@ -24,7 +24,10 @@ export async function POST(req: NextRequest) {
       console.error(e.message);
       return NextResponse.json(
         {
-          ...e,
+          message: 'Error in next.js: ' + e.message,
+          cause: e.cause,
+          name: e.name,
+          stack: e.stack,
         },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
