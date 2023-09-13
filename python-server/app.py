@@ -9,7 +9,6 @@ from typing import Dict, Union
 
 from utils import S3Client
 
-s3 = boto3.client("s3")
 
 # Constants
 IMAGE_SIZE = (224, 224)
@@ -28,6 +27,14 @@ SimpsonCharacter = Union[
 
 def lambda_generate_presigned_url(event, context):
     key = f"temp/{uuid.uuid4()}"
+
+    s3 = boto3.client(
+        "s3",
+        aws_access_key_id=os.environ.get("AMAZON_ACCESS_KEY"),
+        aws_secret_access_key=os.environ.get("AMAZON_SECRET_KEY"),
+        region_name=os.environ.get("AMAZON_REGION"),
+    )
+
     s3_client = S3Client(s3)
     url = s3_client.get_presigned_url(key)
 
@@ -42,9 +49,7 @@ def lambda_generate_presigned_url(event, context):
     }
 
 
-def get_max_similar_char(data: Dict[SimpsonCharacter, int]) -> SimpsonCharacter:
-    # Here, we get the key associated with the max value in the dictionary
-    return max(data, key=data.get)
+s3 = boto3.client("s3")
 
 
 def lambda_predict_image(event, context):
@@ -67,8 +72,6 @@ def lambda_predict_image(event, context):
         sorted(predict_data.items(), key=lambda x: x[1], reverse=True)
     )
 
-    s3_client = S3Client(s3)
-
     character_predicted = get_max_similar_char(sorted_predictions)
     image_bucket_key = f"train/{character_predicted}/{uuid.uuid4()}"
     s3_client.put_s3_object(s3_object.read(), image_bucket_key)
@@ -87,12 +90,9 @@ def lambda_predict_image(event, context):
     }
 
 
-def fetch_and_transform_image(s3_client, key):
-    """
-    Fetches an image from S3 and applies necessary transformations.
-    """
-    image_stream = Image.open(s3_client.get_s3_object(key)).convert("RGB")
-    return np.asarray(image_stream.resize(IMAGE_SIZE))
+def get_max_similar_char(data: Dict[SimpsonCharacter, int]) -> SimpsonCharacter:
+    # Here, we get the key associated with the max value in the dictionary
+    return max(data, key=data.get)
 
 
 def lambda_retrain_function(event, context):
@@ -122,6 +122,14 @@ def lambda_retrain_function(event, context):
             {"model_accuracy": max(new_accuracy, event["body"].get("accuracy", 0))}
         ),
     }
+
+
+def fetch_and_transform_image(s3_client, key):
+    """
+    Fetches an image from S3 and applies necessary transformations.
+    """
+    image_stream = Image.open(s3_client.get_s3_object(key)).convert("RGB")
+    return np.asarray(image_stream.resize(IMAGE_SIZE))
 
 
 def gather_training_data(s3_client, body):
