@@ -12,13 +12,10 @@ export const predictSimpson = async function (signedKey: string) {
 
     return data;
   } catch (e) {
-    if (e instanceof Error)
-      return NextResponse.json({
-        message: e.message,
-        cause: e.cause,
-        stack: e.stack,
-        name: e.name,
-      });
-    // if (e instanceof Error) throw Error('Error on python server: ' + e.message);
+    if (e instanceof Error) {
+      throw new Error(
+        `Error on python server: ${e.name} - ${e.message}\n${e.stack}`
+      );
+    }
   }
 };
