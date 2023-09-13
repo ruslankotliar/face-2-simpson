@@ -27,23 +27,6 @@ SimpsonCharacter = Union[
 ]
 
 
-def lambda_generate_presigned_url(event, context):
-    key = f"temp/{uuid.uuid4()}"
-
-    s3_client = S3Client(s3)
-    url = s3_client.get_presigned_url(key)
-
-    return {
-        "statusCode": 200,
-        "body": json.dumps(
-            {
-                "url": url,
-                "key": key,
-            }
-        ),
-    }
-
-
 def get_max_similar_char(data: Dict[SimpsonCharacter, int]) -> SimpsonCharacter:
     # Here, we get the key associated with the max value in the dictionary
     return max(data, key=data.get)

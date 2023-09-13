@@ -12,7 +12,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_predict_image']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-imgs
@@ -23,7 +23,7 @@ Resources:
             Path: /predict
             Method: post
     Metadata:
-      Dockerfile: ./Dockerfile
+      Dockerfile: ./lambdas/prediction/Dockerfile
       DockerContext: ./
       DockerTag: python3.10-v1-1
 
@@ -36,7 +36,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_retrain_function']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-imgs
@@ -47,7 +47,7 @@ Resources:
             Path: /retrain
             Method: get
     Metadata:
-      Dockerfile: ./Dockerfile
+      Dockerfile: ./lambdas/prediction/Dockerfile
       DockerContext: ./
       DockerTag: python3.10-v1-2
 
@@ -60,7 +60,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_generate_presigned_url']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-imgs
@@ -71,7 +71,7 @@ Resources:
             Path: /generate-presigned-url
             Method: get
     Metadata:
-      Dockerfile: ./Dockerfile
+      Dockerfile: ./lambdas/presigned_url/Dockerfile
       DockerContext: ./
       DockerTag: python3.10-v1-1
 
