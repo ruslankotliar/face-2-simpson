@@ -19,6 +19,7 @@ import {
   PredictSimpsonData,
   PredictInitialValues,
 } from '@src/types';
+import SimpsonAnimation from '@src/components/animations/Simpson';
 
 const sendFeedback = async function (
   url: string,
@@ -141,6 +142,7 @@ export default function Home() {
 
   return (
     <>
+      <SimpsonAnimation />
       <Modal
         show={showModal}
         data={predictionData?.predictionData}
