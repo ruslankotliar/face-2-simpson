@@ -20,8 +20,7 @@
       }
     ],
     "paths": {
-      "@app/*": ["./app/*"],
-      "@api/*": ["./app/api/*"]
+      "@src/*": ["./src/*"]
     }
   },
   "include": [
@@ -29,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "middleware.ts"
+    "src/middleware.ts"
   ],
   "exclude": ["node_modules"]
 }
