@@ -45,7 +45,7 @@ Resources:
           Type: HttpApi
           Properties:
             Path: /retrain
-            Method: get
+            Method: post
     Metadata:
       Dockerfile: ./lambdas/prediction/Dockerfile
       DockerContext: ./
@@ -69,7 +69,7 @@ Resources:
           Type: HttpApi
           Properties:
             Path: /generate-presigned-url
-            Method: get
+            Method: post
     Metadata:
       Dockerfile: ./lambdas/presigned_url/Dockerfile
       DockerContext: ./
