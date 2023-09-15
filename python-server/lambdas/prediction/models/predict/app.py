@@ -1,13 +1,9 @@
 import os
 import torch
 
-from PIL import Image
 from timeit import default_timer as timer
 from typing import Tuple, Dict
 
-from .model import create_mobilenet
-from .retrain import build_and_retrain_model
-from .retrain_functions import train_test_transforms
 
 cwd = os.getcwd()
 CLASS_NAMES_PATH = os.path.join(cwd, "models/predict/class_names.txt")
@@ -17,13 +13,13 @@ MODEL_PATH = os.path.join(cwd, "models/predict/simpsons_model.pth")
 with open(CLASS_NAMES_PATH, "r") as f:
     CLASS_NAMES = [name.strip() for name in f.readlines()]
 
+
 def predict(img) -> Tuple[Dict, float]:
+    from .model import create_mobilenet
+
     model, transformer = create_mobilenet(len(CLASS_NAMES))
 
-    model.load_state_dict(
-        torch.load(f=MODEL_PATH,
-                   map_location=torch.device("cpu"))
-    )
+    model.load_state_dict(torch.load(f=MODEL_PATH, map_location=torch.device("cpu")))
 
     start_time = timer()
 
@@ -44,6 +40,10 @@ def predict(img) -> Tuple[Dict, float]:
 
 
 def retrain_model(images, old_test, old_accuracy):
+    from .retrain import build_and_retrain_model
+    from .retrain_functions import train_test_transforms
+    from PIL import Image
+
     print("Retraining model...")
 
     idx_class, class_idx = {}, {}

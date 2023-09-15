@@ -4,7 +4,9 @@ import { PYTHON_API_ROUTES } from '../constants/server';
 
 export const predictSimpson = async function (signedKey: string) {
   try {
-    const body = btoa(JSON.stringify({ signedKey }));
+    const payload = JSON.stringify({ signedKey });
+    const body =
+      process.env.NODE_ENV === 'development' ? btoa(payload) : payload;
 
     const { data } = await axios.post(PYTHON_API_ROUTES.PREDICT_SIMPSON, body);
 

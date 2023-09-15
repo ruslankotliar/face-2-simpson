@@ -1,20 +1,23 @@
 'use client';
 
 import { REQUEST_URL_KEYS } from '@src/constants';
+import { generateFetchURL } from '@src/helpers';
 import axios from 'axios';
 
 const retrainModel = async function (): Promise<void> {
   try {
-    // const password = prompt('Enter a password to proceed');
-    // if (
-    //   process.env.NEXT_PUBLIC_RETRAIN_PASSWORD &&
-    //   password !== process.env.NEXT_PUBLIC_RETRAIN_PASSWORD
-    // ) {
-    //   alert('Access denied');
-    //   return;
-    // }
+    const password = prompt('Enter a password to proceed');
+    if (
+      process.env.NEXT_PUBLIC_RETRAIN_PASSWORD &&
+      password !== process.env.NEXT_PUBLIC_RETRAIN_PASSWORD
+    ) {
+      alert('Access denied');
+      return;
+    }
 
-    const { data } = await axios.post(REQUEST_URL_KEYS.RETRAIN_MODEL);
+    const { data } = await axios.post(
+      generateFetchURL('RETRAIN_MODEL', {}, {})
+    );
 
     return data;
   } catch (e) {
