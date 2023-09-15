@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { predictSimpson } from '../../../../../_rest';
-import { StatusCodes } from '../../../../../constants';
-import { getStatusText } from '../../../../../_utils';
+import { StatusCodes } from '@src/constants';
+import { predictSimpson } from '@src/rest';
+import { getStatusText } from '@src/utils';
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,11 +1,11 @@
-import { StatusCodes } from '../../../../../constants';
 import {
   DB_COUNTER_CHARS,
   ENOUGH_TRAIN_DATA,
-} from '../../../../../constants/server';
-import { Accuracy, ImageCounter } from '../../../../../models';
-import { retrainModel } from '../../../../../_rest';
-import { connectToDB, getStatusText } from '../../../../../_utils';
+  StatusCodes,
+} from '@src/constants';
+import { ImageCounter, Accuracy } from '@src/models';
+import { retrainModel } from '@src/rest';
+import { connectToDB, getStatusText } from '@src/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {

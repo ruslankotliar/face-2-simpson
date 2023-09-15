@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { StatusCodes } from '../../../../constants';
-import { Prediction } from '../../../../models';
-import { connectToDB, getStatusText } from '../../../../utils';
+import { StatusCodes } from '@src/constants';
+import { Prediction } from '@src/models';
+import { connectToDB, getStatusText } from '@src/utils';
 
 export async function GET() {
   try {

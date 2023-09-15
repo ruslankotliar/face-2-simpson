@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { StatusCodes } from '../../../../constants';
-import { Accuracy } from '../../../../models';
-import { connectToDB, getStatusText } from '../../../../utils';
+import { StatusCodes } from '@src/constants';
+import { Accuracy } from '@src/models';
+import { connectToDB, getStatusText } from '@src/utils';
 
 export async function GET(req: NextRequest) {
   try {

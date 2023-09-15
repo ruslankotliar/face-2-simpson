@@ -1,4 +1,4 @@
-import { StringMap } from '../app/_types';
+import { StringMap } from '@src/types';
 
 const REQUEST_URL_KEYS: StringMap = {
   UPLOAD_IMAGE: '/upload/image',

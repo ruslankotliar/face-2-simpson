@@ -1,4 +1,4 @@
-import { NumberMap, SimpsonCharacter } from '../../_types';
+import { SimpsonCharacter } from '@src/types';
 
 export const getMaxSimilarChar = function (
   data: Record<SimpsonCharacter, number>

@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-import { StatusCodes } from '../../../../../constants';
-import { getStatusText } from '../../../../../_utils';
-import { signUrl } from '../../../../../_rest';
+import { StatusCodes } from '@src/constants';
+import { signUrl } from '@src/rest';
+import { getStatusText } from '@src/utils';
 
 export async function POST() {
   try {

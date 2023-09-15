@@ -1,5 +1,5 @@
-import { REQUEST_URL_KEYS } from '../constants';
-import { RequestParams, RequestSearchParams } from '../types';
+import { REQUEST_URL_KEYS } from '@src/constants';
+import { RequestParams, RequestSearchParams } from '@src/types';
 
 const generateFetchURL = (
   key: keyof typeof REQUEST_URL_KEYS,

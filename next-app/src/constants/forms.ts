@@ -1,4 +1,4 @@
-import { StringArrayMap } from '../app/_types';
+import { StringArrayMap } from '@src/types';
 
 const FORM_CONSTANTS = {
   MAX_PERSON_IMG_SIZE: 10 * 1024 * 1024, // 10MB in bytes

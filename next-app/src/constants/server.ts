@@ -1,4 +1,4 @@
-import { StringMap } from '../../_types';
+import { StringMap } from '@src/types';
 
 const PYTHON_API = process.env.PYTHON_API;
 

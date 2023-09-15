@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { StatusCodes } from '../../../../../constants';
-import { getStatusText, connectToDB } from '../../../../../_utils';
-import { ImageCounter, Prediction } from '../../../../../models';
-import { getMaxSimilarChar } from '../../../_helpers';
+import { StatusCodes } from '@src/constants';
+import { getMaxSimilarChar } from '@src/helpers';
+import { ImageCounter, Prediction } from '@src/models';
+import { connectToDB, getStatusText } from '@src/utils';
 
 export async function POST(req: NextRequest) {
   try {

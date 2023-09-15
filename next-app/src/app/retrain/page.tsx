@@ -3,17 +3,16 @@
 import { REQUEST_URL_KEYS } from '@src/constants';
 import axios from 'axios';
 
-
 const retrainModel = async function (): Promise<void> {
   try {
-    const password = prompt('Enter a password to proceed');
-    if (
-      process.env.NEXT_PUBLIC_RETRAIN_PASSWORD &&
-      password !== process.env.NEXT_PUBLIC_RETRAIN_PASSWORD
-    ) {
-      alert('Access denied');
-      return;
-    }
+    // const password = prompt('Enter a password to proceed');
+    // if (
+    //   process.env.NEXT_PUBLIC_RETRAIN_PASSWORD &&
+    //   password !== process.env.NEXT_PUBLIC_RETRAIN_PASSWORD
+    // ) {
+    //   alert('Access denied');
+    //   return;
+    // }
 
     const { data } = await axios.post(REQUEST_URL_KEYS.RETRAIN_MODEL);
 
@@ -27,7 +26,7 @@ export default function Retrain() {
   return (
     <div className='h-screen w-screen flex items-center justify-center bg-white'>
       <button
-        onClick={() => retrainModel()}
+        onClick={async () => await retrainModel()}
         className='bg-black text-white px-4 py-2 rounded transition duration-300 ease-in-out hover:bg-white hover:text-black hover:border-black border-2'
       >
         Retrain Model

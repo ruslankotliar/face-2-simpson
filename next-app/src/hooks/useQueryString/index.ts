@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback } from 'react';
-
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const useQueryString = function () {
