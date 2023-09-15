@@ -1,6 +1,0 @@
-torch==2.0.0
-torchvision==0.15.1
-boto3==1.28.30
-numpy==1.23.5
-scikit-learn==1.2.2
-tqdm==4.66.1

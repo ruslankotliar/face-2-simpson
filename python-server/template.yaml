@@ -23,7 +23,7 @@ Resources:
             Path: /predict
             Method: post
     Metadata:
-      Dockerfile: ./Dockerfile
+      Dockerfile: ./lambdas/prediction/Dockerfile
       DockerContext: ./
       DockerTag: python3.10-v1-1
 
@@ -47,9 +47,33 @@ Resources:
             Path: /retrain
             Method: post
     Metadata:
-      Dockerfile: ./Dockerfile
+      Dockerfile: ./lambdas/prediction/Dockerfile
       DockerContext: ./
       DockerTag: python3.10-v1-2
+
+  GeneratePresignedUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 128
+      Timeout: 5
+      PackageType: Image
+      ImageConfig:
+        Command: ['app.lambda_generate_presigned_url']
+      # need this to run docker on mac
+      # Architectures: ['arm64']
+      Environment:
+        Variables:
+          AMAZON_BUCKET: face-2-simpson-imgs
+      Events:
+        ApiEndpoint:
+          Type: HttpApi
+          Properties:
+            Path: /generate-presigned-url
+            Method: post
+    Metadata:
+      Dockerfile: ./lambdas/presigned_url/Dockerfile
+      DockerContext: ./
+      DockerTag: python3.10-v1-1
 
 Outputs:
   PredictApi:
@@ -58,3 +82,6 @@ Outputs:
   RetrainApi:
     Description: 'API Gateway endpoint URL for Prod stage for retrain function'
     Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/retrain'
+  GeneratePresignedUrlApi:
+    Description: 'API Gateway endpoint URL for Prod stage for generate presigned url function'
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/generate-presigned-url'
