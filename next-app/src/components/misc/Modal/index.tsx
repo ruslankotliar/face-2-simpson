@@ -1,5 +1,3 @@
-// Modal.tsx
-
 import { SimpsonCharacter } from '@src/types';
 import { FC } from 'react';
 
@@ -51,13 +49,13 @@ const Modal: FC<ModalProps> = ({
           </button>
           <button
             onClick={onDisapprove}
-            className='bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-medium'
+            className='bg-red-600 text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-medium'
           >
             Disapprove
           </button>
           <button
             onClick={onClose}
-            className='bg-primary text-white px-4 py-2 rounded-md hover:bg-secondary transition-medium'
+            className='bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-medium'
           >
             Close
           </button>

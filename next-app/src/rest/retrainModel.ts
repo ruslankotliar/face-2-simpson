@@ -1,6 +1,5 @@
+import { PYTHON_API_ROUTES } from '@src/constants';
 import axios from 'axios';
-
-import { PYTHON_API_ROUTES } from '../constants/server';
 
 export const retrainModel = async function (min: number, accuracy: number) {
   try {

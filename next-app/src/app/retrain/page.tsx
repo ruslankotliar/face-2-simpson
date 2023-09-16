@@ -1,6 +1,5 @@
 'use client';
 
-import { REQUEST_URL_KEYS } from '@src/constants';
 import { generateFetchURL } from '@src/helpers';
 import axios from 'axios';
 

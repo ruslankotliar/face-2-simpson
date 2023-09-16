@@ -19,6 +19,10 @@ import {
   ChartOptions,
   ChartData,
 } from 'chart.js';
+import SelectInput from '@src/components/inputs/SelectInput';
+import { PREDICTION_TIME_CHART_UNITS, CHART_STYLES } from '@src/constants';
+import { generateFetchURL, capitalizeWord } from '@src/helpers';
+import { TimeUnit } from '@src/types';
 
 ChartJS.register(
   CategoryScale,
@@ -30,12 +34,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
-import { CHART_STYLES, PREDICTION_TIME_CHART_UNITS } from '../../../constants';
-import { TimeUnit } from '../../../app/_types';
-
-import { capitalizeWord, generateFetchURL } from '../../../helpers';
-import SelectInput from '../../inputs/SelectInput';
 
 interface ScaleOptions {
   unit: 'day' | 'month' | 'year' | 'minute';
