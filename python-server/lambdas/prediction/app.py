@@ -52,7 +52,6 @@ def lambda_predict_image(event, context):
             raise Exception("No image key provided")
 
         s3_object = s3_client.get_s3_object(img_key)
-
         img = Image.open(s3_object).convert("RGB")
 
         # Make prediction and sort results
@@ -131,8 +130,9 @@ def lambda_retrain_function(event, context):
 
             print(f"{i}. {file_name}")
 
-            image = fetch_and_transform_image(s3_client, file_name)
-            data[purpose].append((image, class_name))
+            img = fetch_and_transform_image(s3_client, file_name)
+
+            data[purpose].append((img, class_name))
 
             if purpose == "train":
                 current_keys[class_name].append(file_name)
@@ -170,8 +170,12 @@ def fetch_and_transform_image(s3_client, key):
     """
     Fetches an image from S3 and applies necessary transformations.
     """
-    image_stream = Image.open(s3_client.get_s3_object(key)).convert("RGB")
-    return np.asarray(image_stream.resize(IMAGE_SIZE))
+    s3_object = s3_client.get_s3_object(key)
+    img = Image.open(s3_object).convert("RGB")
+
+    img_resized = img.resize(IMAGE_SIZE)
+
+    return img_resized
 
 
 def gather_training_data(s3_client, body):

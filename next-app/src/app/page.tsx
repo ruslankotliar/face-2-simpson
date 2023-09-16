@@ -158,7 +158,15 @@ export default function Home() {
         >
           {({ setFieldValue, isSubmitting }) => (
             <>
-              {isSubmitting && <Loader />}
+              {isSubmitting && (
+                <Loader
+                  width={'200'}
+                  height={'200'}
+                  wrapperClass={
+                    'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50'
+                  }
+                />
+              )}
               <Form className='w-full max-w-sm space-y-6'>
                 <FileInput
                   name={'personImg'}
@@ -166,7 +174,7 @@ export default function Home() {
                   setFieldValue={setFieldValue}
                 />
                 <CheckboxInput
-                  label='Can we store your data?'
+                  label='Data can be stored.'
                   checked={permissionToStore}
                   onChange={setPermissionToStore}
                 />

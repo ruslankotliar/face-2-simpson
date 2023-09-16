@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-
 import { ErrorMessage, FormikErrors } from 'formik';
 import Image from 'next/image';
 import { PredictInitialValues } from '@src/types';
+import CloseIcon from '@src/components/icons/Close';
 
 interface IUploadFile {
   name: string;
@@ -34,18 +34,19 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
 
   return (
     <div className='space-y-6 z-5'>
-      <div className='relative border-2 border-dashed border-secondary rounded-card p-6 hover:border-primary transition-medium duration-200 cursor-pointer'>
+      <div className='relative border-2 border-dashed border-neutral rounded-card p-6 hover:border-primary focus-within:border-highlight transition-medium duration-200 cursor-pointer transform-gpu transition-transform'>
         <input
           type='file'
           name={name}
-          className='absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer hover:bg-secondary hover:bg-opacity-20 focus:bg-opacity-20 transition-medium duration-200'
+          className='absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer'
           accept={accept}
           onChange={handleChangeImage}
         />
+
         {!previewURL ? (
           <div className='text-center text-neutral'>
             <p className='text-subtitle font-secondary'>
-              Click or drag to upload an image
+              Drop It Like It&apos;s Hot
             </p>
           </div>
         ) : (
@@ -58,15 +59,14 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
             />
             <button
               onClick={removeImage}
-              className='absolute top-2 right-2 flex items-center justify-center w-10 h-10 bg-highlight text-white font-bold text-lg focus:outline-none hover:bg-primary active:bg-primary-dark transition-all duration-300 shadow-soft hover:shadow-medium rounded-full'
-              style={{ boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}
+              className='absolute top-2 right-2 flex items-center justify-center text-highlight font-bold text-lg focus:outline-none hover:text-primary active:bg-primary-dark'
             >
-              ×
+              <CloseIcon />
             </button>
           </div>
         )}
       </div>
-      <div className='text-red-500'>
+      <div className='text-tertiary'>
         <ErrorMessage name={name} component='div' />
       </div>
     </div>
