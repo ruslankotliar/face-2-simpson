@@ -18,8 +18,10 @@ import {
   FeedbackData,
   PredictSimpsonData,
   PredictInitialValues,
+  AlertOptions,
+  AlertIconKeys,
 } from '@src/types';
-import SimpsonAnimation from '@src/components/animations/Simpson';
+import Alert from '@src/components/misc/Alert';
 
 const sendFeedback = async function (
   url: string,
@@ -28,7 +30,7 @@ const sendFeedback = async function (
   try {
     await axios.post(url, data);
   } catch (e) {
-    if (e instanceof Error) console.error(e.message);
+    if (e instanceof Error) throw Error(e.message);
   }
 };
 
@@ -52,7 +54,7 @@ const predictSimpson = async function (
 
     return data;
   } catch (e) {
-    if (e instanceof Error) console.error(e.message);
+    if (e instanceof Error) throw Error(e.message);
   }
 };
 
@@ -62,8 +64,8 @@ const initialValues: PredictInitialValues = {
 
 const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   personImg: Yup.mixed<File>()
-    .required('An image is required')
-    .test('fileType', 'Unsupported File Format', (value) => {
+    .required('Image is required!')
+    .test('fileType', 'Unsupported File Format.', (value) => {
       return isValidFileType(
         value.name && value.name.toLowerCase(),
         'personImg'
@@ -71,17 +73,39 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     })
     .test(
       'fileSize',
-      'File Size is too large',
+      'File Size is too large.',
       (value: any) =>
         value && value.size <= Number(FORM_CONSTANTS.MAX_PERSON_IMG_SIZE)
     ),
 });
 
 export default function Home() {
+  const [serverError, setServerError] = useState<string>();
   const [feedbackData, setFeedbackData] = useState<FeedbackData>();
   const [permissionToStore, setPermissionToStore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
+
+  const submitFeedbackToServer = async function (): Promise<void> {
+    try {
+      if (!feedbackData) return;
+      await sendFeedback(
+        generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}),
+        feedbackData
+      );
+    } catch (e) {
+      if (e instanceof Error) setServerError(e.message);
+    }
+  };
+
+  const handleSubmit = async function ({ personImg }: any) {
+    try {
+      const data = await predictSimpson(personImg);
+      receiveFeedback(data);
+    } catch (e) {
+      if (e instanceof Error) setServerError(e.message);
+    }
+  };
 
   const receiveFeedback = function (
     data: PredictSimpsonData | undefined
@@ -89,14 +113,6 @@ export default function Home() {
     if (!data) return;
     setPredictionData(data);
     setShowModal(true);
-  };
-
-  const submitFeedbackToServer = async function (): Promise<void> {
-    if (!feedbackData) return;
-    await sendFeedback(
-      generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}),
-      feedbackData
-    );
   };
 
   const handleApprove = () => {
@@ -129,20 +145,12 @@ export default function Home() {
     setShowModal(false);
   };
 
-  const handleSubmit = async function ({ personImg }: any) {
-    console.log('Submitting...');
-
-    const data = await predictSimpson(personImg);
-    receiveFeedback(data);
-  };
-
   useEffect(() => {
     submitFeedbackToServer();
   }, [feedbackData]);
 
   return (
     <>
-      <SimpsonAnimation />
       <Modal
         show={showModal}
         data={predictionData?.predictionData}
@@ -156,8 +164,17 @@ export default function Home() {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ setFieldValue, isSubmitting }) => (
+          {({ setFieldValue, isSubmitting, errors, setFieldError }) => (
             <>
+              <Alert
+                text={serverError || errors.personImg}
+                type={AlertOptions.error}
+                iconKey={AlertIconKeys.homerError}
+                onAlertClose={(): void => {
+                  setFieldError('personImg', undefined);
+                  setServerError(undefined);
+                }}
+              />
               {isSubmitting && (
                 <Loader
                   width={'200'}

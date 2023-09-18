@@ -35,6 +35,20 @@ type SimpsonCharacter =
   | 'lisa_simpson'
   | 'marge_simpson';
 
+// type AlertOptions = 'loading' | 'success' | 'info' | 'error' | 'warn';
+
+enum AlertOptions {
+  loading = 'loading',
+  success = 'success',
+  info = 'info',
+  error = 'error',
+  warn = 'warn',
+}
+
+enum AlertIconKeys {
+  homerError = 'homerError',
+}
+
 export type {
   StringMap,
   StringArrayMap,
@@ -46,3 +60,5 @@ export type {
   FeedbackData,
   SimpsonCharacter,
 };
+
+export { AlertOptions, AlertIconKeys };
