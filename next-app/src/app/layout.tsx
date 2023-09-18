@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={roboto.className + ' relative'}>
         <MainHeader />
-        <main className='min-h-[calc(100vh-5rem)]'>{children}</main>
+        <main className='h-[calc(100vh-5rem)]'>{children}</main>
       </body>
     </html>
   );
@@ -86,6 +86,7 @@ const NavBar = function () {
           </li>
         ))}
       </ul>
+      <h2 className={`${akbar.className} text-subtitle`}>Menu</h2>
     </nav>
   );
 };

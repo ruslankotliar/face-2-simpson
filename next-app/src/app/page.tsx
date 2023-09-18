@@ -150,7 +150,7 @@ export default function Home() {
         onApprove={handleApprove}
         onDisapprove={handleDisapprove}
       />
-      <div className='flex items-center justify-center min-h-screen bg-white'>
+      <div className='flex items-center justify-center h-full bg-white'>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}

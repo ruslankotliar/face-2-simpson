@@ -1,8 +1,8 @@
 .nav-list-container {
-    width: 100%;
+    width: 150%;
     height: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     transform: translate3d(0, 0, 0);
 }
@@ -48,7 +48,7 @@
 }
 
 .list-item:hover {
-    background: #ff6e42;
+    background: var(--orange);
     color: #fffcfb;
     transform: translate(0.9em, -0.9em);
     transition: all 0.25s linear;
