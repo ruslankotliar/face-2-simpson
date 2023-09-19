@@ -33,7 +33,7 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
   };
 
   return (
-    <div className='relative border-2 border-dashed border-neutral rounded-card p-6 hover:border-primary focus-within:border-highlight transition-medium duration-200 cursor-pointer transform-gpu transition-transform'>
+    <div className='relative border-2 border-dashed border-neutral rounded-card p-6 hover:border-primary duration-200 cursor-pointer transition-colors'>
       <input
         type='file'
         name={name}

@@ -3,7 +3,6 @@
 import HomerErrorAnimation from '@src/components/animations/HomerError';
 import { ALERT_TIMEOUT } from '@src/constants';
 import { AlertIconKeys, AlertOptions } from '@src/types';
-import { set } from 'mongoose';
 import { FC, ReactNode, useEffect, useState } from 'react';
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -27,12 +26,11 @@ const Alert: FC<AlertProps> = function ({ text, type, iconKey, onAlertClose }) {
       icon: icons[iconKey],
       autoClose: ALERT_TIMEOUT,
     });
-  };
 
-  toast.onChange((payload) => {
-    console.log(payload);
-    onAlertClose();
-  });
+    setTimeout(() => {
+      onAlertClose();
+    }, ALERT_TIMEOUT);
+  };
 
   useEffect(() => {
     text && notify();

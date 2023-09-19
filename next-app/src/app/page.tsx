@@ -12,7 +12,7 @@ import CheckboxInput from '@src/components/inputs/Checkbox';
 import FileInput from '@src/components/inputs/FileInput';
 import Loader from '@src/components/misc/Loader';
 import Modal from '@src/components/misc/Modal';
-import { FORM_CONSTANTS } from '@src/constants';
+import { FORM_CONSTANTS, FORM_KEYS } from '@src/constants';
 import { generateFetchURL, isValidFileType } from '@src/helpers';
 import {
   FeedbackData,
@@ -68,7 +68,7 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     .test('fileType', 'Unsupported File Format.', (value) => {
       return isValidFileType(
         value.name && value.name.toLowerCase(),
-        'personImg'
+        FORM_KEYS.PERSON_IMG
       );
     })
     .test(
@@ -114,6 +114,8 @@ export default function Home() {
     setPredictionData(data);
     setShowModal(true);
   };
+
+  const handleAlertClose = () => {};
 
   const handleApprove = () => {
     if (!predictionData) return;
@@ -171,7 +173,7 @@ export default function Home() {
                 type={AlertOptions.error}
                 iconKey={AlertIconKeys.homerError}
                 onAlertClose={(): void => {
-                  setFieldError('personImg', undefined);
+                  setFieldError(FORM_KEYS.PERSON_IMG, undefined);
                   setServerError(undefined);
                 }}
               />
@@ -186,7 +188,7 @@ export default function Home() {
               )}
               <Form className='w-full max-w-sm space-y-6'>
                 <FileInput
-                  name={'personImg'}
+                  name={FORM_KEYS.PERSON_IMG}
                   accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
                   setFieldValue={setFieldValue}
                 />
