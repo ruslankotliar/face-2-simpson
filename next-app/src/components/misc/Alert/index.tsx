@@ -36,7 +36,11 @@ const Alert: FC<AlertProps> = function ({ text, type, iconKey, onAlertClose }) {
     text && notify();
   }, [text, type, iconKey]);
 
-  return <ToastContainer />;
+  return (
+    <div className='absolute'>
+      <ToastContainer />
+    </div>
+  );
 };
 
 export default Alert;

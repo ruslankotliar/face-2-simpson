@@ -1,6 +1,6 @@
 // FORMIK INITIAL VALUES
 interface PredictInitialValues {
-  personImg: File | null;
+  personImg: File | undefined;
 }
 
 export type { PredictInitialValues };

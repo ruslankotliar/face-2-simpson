@@ -4,7 +4,7 @@ export const revalidate = 0;
 
 import * as Yup from 'yup';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 
 import SubmitButton from '@src/components/buttons/SubmitButton';
@@ -12,7 +12,7 @@ import CheckboxInput from '@src/components/inputs/Checkbox';
 import FileInput from '@src/components/inputs/FileInput';
 import Loader from '@src/components/misc/Loader';
 import Modal from '@src/components/misc/Modal';
-import { FORM_CONSTANTS, FORM_KEYS } from '@src/constants';
+import { FORM_CONSTANTS, FORM_KEYS, PROGRESS_BAR_COLORS } from '@src/constants';
 import { generateFetchURL, isValidFileType } from '@src/helpers';
 import {
   FeedbackData,
@@ -22,6 +22,7 @@ import {
   AlertIconKeys,
 } from '@src/types';
 import Alert from '@src/components/misc/Alert';
+import ProgressBar from '@src/components/misc/ProgressBar';
 
 const sendFeedback = async function (
   url: string,
@@ -59,7 +60,7 @@ const predictSimpson = async function (
 };
 
 const initialValues: PredictInitialValues = {
-  personImg: null,
+  personImg: undefined,
 };
 
 const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
@@ -80,6 +81,9 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 });
 
 export default function Home() {
+  const [data, setData] = useState<any>([0, 0, 0, 0]);
+  const [homerRun, setHomerRun] = useState<boolean>(false);
+
   const [serverError, setServerError] = useState<string>();
   const [feedbackData, setFeedbackData] = useState<FeedbackData>();
   const [permissionToStore, setPermissionToStore] = useState(true);
@@ -98,8 +102,21 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = async function ({ personImg }: any) {
+  const handleSubmit = async function ({ personImg }: PredictInitialValues) {
     try {
+      setData([10, 35, 89, 78]);
+      setHomerRun(true);
+      setTimeout(() => {
+        setHomerRun(false);
+      }, 4000);
+
+      console.log('done');
+
+      if (!personImg) {
+        setServerError('Image is required!');
+        return;
+      }
+
       const data = await predictSimpson(personImg);
       receiveFeedback(data);
     } catch (e) {
@@ -114,8 +131,6 @@ export default function Home() {
     setPredictionData(data);
     setShowModal(true);
   };
-
-  const handleAlertClose = () => {};
 
   const handleApprove = () => {
     if (!predictionData) return;
@@ -160,49 +175,100 @@ export default function Home() {
         onApprove={handleApprove}
         onDisapprove={handleDisapprove}
       />
-      <div className='flex items-center justify-center h-full bg-white'>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ setFieldValue, isSubmitting, errors, setFieldError }) => (
-            <>
-              <Alert
-                text={serverError || errors.personImg}
-                type={AlertOptions.error}
-                iconKey={AlertIconKeys.homerError}
-                onAlertClose={(): void => {
-                  setFieldError(FORM_KEYS.PERSON_IMG, undefined);
-                  setServerError(undefined);
-                }}
-              />
-              {isSubmitting && (
-                <Loader
-                  width={'200'}
-                  height={'200'}
-                  wrapperClass={
-                    'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50'
-                  }
+      <div className='flex items-center justify-between h-full w-2/3 bg-grey pl-10 gap-6'>
+        <div className='basis-1/2'>
+          <FileInputForm
+            handleSubmit={handleSubmit}
+            serverError={serverError}
+            setServerError={setServerError}
+            permissionToStore={permissionToStore}
+            setPermissionToStore={setPermissionToStore}
+          />
+        </div>
+        <div className='basis-1/2'>
+          <h2>Results</h2>
+          <div>
+            {data &&
+              data.map((value: any, index: any) => (
+                <ProgressBar
+                  key={index}
+                  colorKey={PROGRESS_BAR_COLORS[index]}
+                  width={value}
+                  homerRun={homerRun}
                 />
+              ))}
+            {predictionData &&
+              Object.entries(predictionData.predictionData).map(
+                ([character, confidence]) => (
+                  <p key={character}>
+                    <strong>
+                      {character.replace('_', ' ').toUpperCase()}:
+                    </strong>
+                    {(confidence * 100).toFixed(2)}%
+                  </p>
+                )
               )}
-              <Form className='w-full max-w-sm space-y-6'>
-                <FileInput
-                  name={FORM_KEYS.PERSON_IMG}
-                  accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
-                  setFieldValue={setFieldValue}
-                />
-                <CheckboxInput
-                  label='Data can be stored.'
-                  checked={permissionToStore}
-                  onChange={setPermissionToStore}
-                />
-                <SubmitButton />
-              </Form>
-            </>
-          )}
-        </Formik>
+          </div>
+        </div>
       </div>
     </>
   );
 }
+
+interface FileInputFormProps {
+  handleSubmit: (values: PredictInitialValues) => void;
+  serverError?: string;
+  setServerError: (error: string | undefined) => void;
+  permissionToStore: boolean;
+  setPermissionToStore: (permission: boolean) => void;
+}
+
+const FileInputForm: FC<FileInputFormProps> = ({
+  handleSubmit,
+  serverError,
+  setServerError,
+  permissionToStore,
+  setPermissionToStore,
+}) => (
+  <Formik
+    initialValues={initialValues}
+    validationSchema={validationSchema}
+    onSubmit={handleSubmit}
+  >
+    {({ setFieldValue, isSubmitting, errors, setFieldError }) => (
+      <>
+        <Alert
+          text={serverError || errors.personImg}
+          type={AlertOptions.error}
+          iconKey={AlertIconKeys.homerError}
+          onAlertClose={(): void => {
+            setFieldError(FORM_KEYS.PERSON_IMG, undefined);
+            setServerError(undefined);
+          }}
+        />
+        {isSubmitting && (
+          <Loader
+            width={'200'}
+            height={'200'}
+            wrapperClass={
+              'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50'
+            }
+          />
+        )}
+        <Form className='w-full max-w-sm space-y-6'>
+          <FileInput
+            name={FORM_KEYS.PERSON_IMG}
+            accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
+            setFieldValue={setFieldValue}
+          />
+          <CheckboxInput
+            label='Data can be stored.'
+            checked={permissionToStore}
+            onChange={setPermissionToStore}
+          />
+          <SubmitButton />
+        </Form>
+      </>
+    )}
+  </Formik>
+);
