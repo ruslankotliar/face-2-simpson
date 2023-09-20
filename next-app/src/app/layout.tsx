@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import SimpsonsSkyBg from '../../public/images/header-bg.png';
+import SimpsonsSkyBg from '@public/images/header-bg.png';
 
 import { akbar, roboto } from './fonts';
 import { CLIENT_NAV_KEYS } from '@src/constants';

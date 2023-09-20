@@ -12,7 +12,13 @@ import CheckboxInput from '@src/components/inputs/Checkbox';
 import FileInput from '@src/components/inputs/FileInput';
 import Loader from '@src/components/misc/Loader';
 import Modal from '@src/components/misc/Modal';
-import { FORM_CONSTANTS, FORM_KEYS, PROGRESS_BAR_COLORS } from '@src/constants';
+import {
+  DEFAULT_PREDICTION_DATA,
+  FORM_CONSTANTS,
+  FORM_KEYS,
+  HOMER_RUN_TIMEOUT,
+  PROGRESS_BAR_COLORS,
+} from '@src/constants';
 import { generateFetchURL, isValidFileType } from '@src/helpers';
 import {
   FeedbackData,
@@ -20,6 +26,7 @@ import {
   PredictInitialValues,
   AlertOptions,
   AlertIconKeys,
+  SimpsonCharacter,
 } from '@src/types';
 import Alert from '@src/components/misc/Alert';
 import ProgressBar from '@src/components/misc/ProgressBar';
@@ -81,13 +88,10 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 });
 
 export default function Home() {
-  const [data, setData] = useState<any>([0, 0, 0, 0]);
   const [homerRun, setHomerRun] = useState<boolean>(false);
-
   const [serverError, setServerError] = useState<string>();
   const [feedbackData, setFeedbackData] = useState<FeedbackData>();
   const [permissionToStore, setPermissionToStore] = useState(true);
-  const [showModal, setShowModal] = useState(false);
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
 
   const submitFeedbackToServer = async function (): Promise<void> {
@@ -104,13 +108,16 @@ export default function Home() {
 
   const handleSubmit = async function ({ personImg }: PredictInitialValues) {
     try {
-      setData([10, 35, 89, 78]);
-      setHomerRun(true);
-      setTimeout(() => {
-        setHomerRun(false);
-      }, 4000);
-
-      console.log('done');
+      receiveFeedback({
+        predictionData: {
+          homer_simpson: 70,
+          marge_simpson: 80,
+          bart_simpson: 30,
+          lisa_simpson: 25,
+        },
+        predictionTime: 0.5,
+        imageBucketKey: '',
+      });
 
       if (!personImg) {
         setServerError('Image is required!');
@@ -129,7 +136,10 @@ export default function Home() {
   ): void {
     if (!data) return;
     setPredictionData(data);
-    setShowModal(true);
+    setHomerRun(true);
+    setTimeout(() => {
+      setHomerRun(false);
+    }, HOMER_RUN_TIMEOUT);
   };
 
   const handleApprove = () => {
@@ -139,7 +149,6 @@ export default function Home() {
       userFeedback: true,
       permissionToStore,
     });
-    setShowModal(false);
   };
 
   const handleDisapprove = () => {
@@ -149,7 +158,6 @@ export default function Home() {
       userFeedback: false,
       permissionToStore,
     });
-    setShowModal(false);
   };
 
   const handleCloseModal = () => {
@@ -159,7 +167,6 @@ export default function Home() {
       userFeedback: null,
       permissionToStore,
     });
-    setShowModal(false);
   };
 
   useEffect(() => {
@@ -168,15 +175,14 @@ export default function Home() {
 
   return (
     <>
-      <Modal
-        show={showModal}
+      {/* <Modal
         data={predictionData?.predictionData}
         onClose={handleCloseModal}
         onApprove={handleApprove}
         onDisapprove={handleDisapprove}
-      />
-      <div className='flex items-center justify-between h-full w-2/3 bg-grey pl-10 gap-6'>
-        <div className='basis-1/2'>
+      /> */}
+      <div className='flex items-center justify-between h-full bg-grey gap-6'>
+        <div className='basis-2/3 flex justify-center items-center'>
           <FileInputForm
             handleSubmit={handleSubmit}
             serverError={serverError}
@@ -186,30 +192,25 @@ export default function Home() {
           />
         </div>
         <div className='basis-1/2'>
-          <h2>Results</h2>
           <div>
-            {data &&
-              data.map((value: any, index: any) => (
-                <ProgressBar
-                  key={index}
-                  colorKey={PROGRESS_BAR_COLORS[index]}
-                  width={value}
-                  homerRun={homerRun}
-                />
+            {Object.entries(
+              predictionData?.predictionData || DEFAULT_PREDICTION_DATA
+            )
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([key, value], index) => (
+                <>
+                  <ProgressBar
+                    label={key as SimpsonCharacter}
+                    key={index}
+                    colorKey={PROGRESS_BAR_COLORS[index]}
+                    width={value}
+                    homerRun={homerRun}
+                  />
+                </>
               ))}
-            {predictionData &&
-              Object.entries(predictionData.predictionData).map(
-                ([character, confidence]) => (
-                  <p key={character}>
-                    <strong>
-                      {character.replace('_', ' ').toUpperCase()}:
-                    </strong>
-                    {(confidence * 100).toFixed(2)}%
-                  </p>
-                )
-              )}
           </div>
         </div>
+        <div className='basis-2/3'></div>
       </div>
     </>
   );
