@@ -11,8 +11,9 @@ import SubmitButton from '@src/components/buttons/SubmitButton';
 import CheckboxInput from '@src/components/inputs/Checkbox';
 import FileInput from '@src/components/inputs/FileInput';
 import Loader from '@src/components/misc/Loader';
-import Modal from '@src/components/misc/Modal';
+
 import {
+  ASK_FEEDBACK_TIMEOUT,
   DEFAULT_PREDICTION_DATA,
   FORM_CONSTANTS,
   FORM_KEYS,
@@ -27,9 +28,11 @@ import {
   AlertOptions,
   AlertIconKeys,
   SimpsonCharacter,
+  CustomNotification,
 } from '@src/types';
 import Alert from '@src/components/misc/Alert';
 import ProgressBar from '@src/components/misc/ProgressBar';
+import LikeButton from '@src/components/buttons/LikeButton';
 
 const sendFeedback = async function (
   url: string,
@@ -89,20 +92,27 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 
 export default function Home() {
   const [homerRun, setHomerRun] = useState<boolean>(false);
-  const [serverError, setServerError] = useState<string>();
-  const [feedbackData, setFeedbackData] = useState<FeedbackData>();
+  const [notification, setNotification] = useState<CustomNotification>();
+  const [userFeedback, setUserFeedback] = useState<boolean | null>(null);
   const [permissionToStore, setPermissionToStore] = useState(true);
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
 
   const submitFeedbackToServer = async function (): Promise<void> {
     try {
-      if (!feedbackData) return;
-      await sendFeedback(
-        generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}),
-        feedbackData
-      );
+      if (!predictionData) return;
+
+      await sendFeedback(generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}), {
+        userFeedback,
+        permissionToStore,
+        ...predictionData,
+      });
     } catch (e) {
-      if (e instanceof Error) setServerError(e.message);
+      if (e instanceof Error)
+        setNotification({
+          content: e.message,
+          type: AlertOptions.error,
+          iconKey: AlertIconKeys.homerError,
+        });
     }
   };
 
@@ -120,14 +130,24 @@ export default function Home() {
       });
 
       if (!personImg) {
-        setServerError('Image is required!');
+        setNotification({
+          content: 'Image is required!',
+          type: AlertOptions.error,
+          iconKey: AlertIconKeys.homerError,
+        });
+
         return;
       }
 
       const data = await predictSimpson(personImg);
       receiveFeedback(data);
     } catch (e) {
-      if (e instanceof Error) setServerError(e.message);
+      if (e instanceof Error)
+        setNotification({
+          content: e.message,
+          type: AlertOptions.error,
+          iconKey: AlertIconKeys.homerError,
+        });
     }
   };
 
@@ -137,97 +157,74 @@ export default function Home() {
     if (!data) return;
     setPredictionData(data);
     setHomerRun(true);
+
     setTimeout(() => {
       setHomerRun(false);
     }, HOMER_RUN_TIMEOUT);
-  };
 
-  const handleApprove = () => {
-    if (!predictionData) return;
-    setFeedbackData({
-      ...predictionData,
-      userFeedback: true,
-      permissionToStore,
-    });
-  };
-
-  const handleDisapprove = () => {
-    if (!predictionData) return;
-    setFeedbackData({
-      ...predictionData,
-      userFeedback: false,
-      permissionToStore,
-    });
-  };
-
-  const handleCloseModal = () => {
-    if (!predictionData) return;
-    setFeedbackData({
-      ...predictionData,
-      userFeedback: null,
-      permissionToStore,
-    });
+    setTimeout(() => {
+      setNotification({
+        content: 'Smash that like button!',
+        type: AlertOptions.warn,
+      });
+    }, ASK_FEEDBACK_TIMEOUT);
   };
 
   useEffect(() => {
     submitFeedbackToServer();
-  }, [feedbackData]);
+  }, [userFeedback]);
 
   return (
-    <>
-      {/* <Modal
-        data={predictionData?.predictionData}
-        onClose={handleCloseModal}
-        onApprove={handleApprove}
-        onDisapprove={handleDisapprove}
-      /> */}
-      <div className='flex items-center justify-between h-full bg-grey gap-6'>
-        <div className='basis-2/3 flex justify-center items-center'>
-          <FileInputForm
-            handleSubmit={handleSubmit}
-            serverError={serverError}
-            setServerError={setServerError}
-            permissionToStore={permissionToStore}
-            setPermissionToStore={setPermissionToStore}
-          />
-        </div>
-        <div className='basis-1/2'>
-          <div>
-            {Object.entries(
-              predictionData?.predictionData || DEFAULT_PREDICTION_DATA
-            )
-              .sort(([a], [b]) => a.localeCompare(b))
-              .map(([key, value], index) => (
-                <>
-                  <ProgressBar
-                    label={key as SimpsonCharacter}
-                    key={index}
-                    colorKey={PROGRESS_BAR_COLORS[index]}
-                    width={value}
-                    homerRun={homerRun}
-                  />
-                </>
-              ))}
-          </div>
-        </div>
-        <div className='basis-2/3'></div>
+    <div className='flex items-center justify-between h-full gap-6 mx-32'>
+      <div className='basis-1/2 flex justify-center items-center'>
+        <FileInputForm
+          handleSubmit={handleSubmit}
+          notification={notification}
+          setNotification={setNotification}
+          permissionToStore={permissionToStore}
+          setPermissionToStore={setPermissionToStore}
+        />
       </div>
-    </>
+      <div className='basis-1/2'>
+        <div>
+          {Object.entries(
+            predictionData?.predictionData || DEFAULT_PREDICTION_DATA
+          )
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([key, value], index) => (
+              <div
+                key={`${index}#${key}`}
+                className='flex gap-10 justify-between items-center w-full'
+              >
+                <ProgressBar
+                  label={key as SimpsonCharacter}
+                  colorKey={PROGRESS_BAR_COLORS[index]}
+                  width={value}
+                  homerRun={homerRun}
+                />
+                <div className='mt-6'>
+                  <LikeButton id={`${index}#${key}`} />
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
 interface FileInputFormProps {
   handleSubmit: (values: PredictInitialValues) => void;
-  serverError?: string;
-  setServerError: (error: string | undefined) => void;
+  notification?: CustomNotification;
+  setNotification: (value: CustomNotification | undefined) => void;
   permissionToStore: boolean;
   setPermissionToStore: (permission: boolean) => void;
 }
 
 const FileInputForm: FC<FileInputFormProps> = ({
   handleSubmit,
-  serverError,
-  setServerError,
+  notification,
+  setNotification,
   permissionToStore,
   setPermissionToStore,
 }) => (
@@ -239,12 +236,12 @@ const FileInputForm: FC<FileInputFormProps> = ({
     {({ setFieldValue, isSubmitting, errors, setFieldError }) => (
       <>
         <Alert
-          text={serverError || errors.personImg}
-          type={AlertOptions.error}
-          iconKey={AlertIconKeys.homerError}
+          content={notification?.content || errors.personImg}
+          type={notification?.type}
+          iconKey={notification?.iconKey}
           onAlertClose={(): void => {
             setFieldError(FORM_KEYS.PERSON_IMG, undefined);
-            setServerError(undefined);
+            setNotification(undefined);
           }}
         />
         {isSubmitting && (

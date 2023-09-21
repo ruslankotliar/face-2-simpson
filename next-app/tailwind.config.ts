@@ -12,9 +12,10 @@ const config: Config = {
         neutral: '#D1D5DB',
       },
       fontSize: {
-        title: '2rem',
-        subtitle: '1.5rem',
-        caption: '0.875rem',
+        title: '2.5rem',
+        subtitle: '2rem',
+        caption: '1.25rem',
+        small: '0.875rem',
       },
       boxShadow: {
         soft: '0 4px 6px rgba(0, 0, 0, 0.1)',

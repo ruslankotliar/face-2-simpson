@@ -2,28 +2,33 @@
 
 import HomerErrorAnimation from '@src/components/animations/HomerError';
 import { ALERT_TIMEOUT } from '@src/constants';
-import { AlertIconKeys, AlertOptions } from '@src/types';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { AlertIconKeys, CustomNotification } from '@src/types';
+import { FC, ReactNode, useEffect } from 'react';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-interface AlertProps {
-  text: string | undefined;
-  type: AlertOptions;
-  iconKey: AlertIconKeys;
+interface AlertProps extends CustomNotification {
   onAlertClose: () => void;
+  closeOnClick?: boolean;
 }
 
-const Alert: FC<AlertProps> = function ({ text, type, iconKey, onAlertClose }) {
+const Alert: FC<AlertProps> = function ({
+  content,
+  type,
+  iconKey,
+  onAlertClose,
+}) {
   const notify = function () {
+    if (!content || !type) return;
+
     const icons: Record<AlertIconKeys, ReactNode> = {
       homerError: <HomerErrorAnimation />,
     };
 
-    toast[type](text, {
+    toast[type](content, {
       position: toast.POSITION.TOP_CENTER,
-      icon: icons[iconKey],
+      icon: iconKey ? icons[iconKey] : undefined,
       autoClose: ALERT_TIMEOUT,
     });
 
@@ -33,12 +38,12 @@ const Alert: FC<AlertProps> = function ({ text, type, iconKey, onAlertClose }) {
   };
 
   useEffect(() => {
-    text && notify();
-  }, [text, type, iconKey]);
+    content && notify();
+  }, [content, type, iconKey]);
 
   return (
     <div className='absolute'>
-      <ToastContainer />
+      <ToastContainer style={{ width: 'max-content' }} />
     </div>
   );
 };

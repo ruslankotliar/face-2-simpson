@@ -38,7 +38,7 @@ export default function RootLayout({
 const MainHeader = function () {
   return (
     <>
-      <div className='absolute right-60 top-48 h-fit w-fit z-20'>
+      <div className='absolute left-40 top-40 h-fit w-fit z-20'>
         <NavBar />
       </div>
 

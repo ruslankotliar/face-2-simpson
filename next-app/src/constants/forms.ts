@@ -24,6 +24,7 @@ const PREDICTION_TIME_CHART_UNITS = {
 
 const ALERT_TIMEOUT = 5000;
 const HOMER_RUN_TIMEOUT = 2500;
+const ASK_FEEDBACK_TIMEOUT = 6000;
 
 const DEFAULT_PREDICTION_DATA: Record<SimpsonCharacter, number> = {
   lisa_simpson: 0,
@@ -45,4 +46,5 @@ export {
   FORM_KEYS,
   HOMER_RUN_TIMEOUT,
   DEFAULT_PREDICTION_DATA,
+  ASK_FEEDBACK_TIMEOUT,
 };
