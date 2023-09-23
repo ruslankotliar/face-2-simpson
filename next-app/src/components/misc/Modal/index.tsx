@@ -1,22 +1,16 @@
-import { SimpsonCharacter } from '@src/types';
 import { FC } from 'react';
 
+import { SimpsonCharacter } from '@src/types';
+
 interface ModalProps {
-  show: boolean;
   onClose: () => void;
   onApprove: () => void;
   onDisapprove: () => void;
   data: Record<SimpsonCharacter, number> | undefined;
 }
 
-const Modal: FC<ModalProps> = ({
-  show,
-  onClose,
-  onApprove,
-  onDisapprove,
-  data,
-}) => {
-  if (!show || !data) return null;
+const Modal: FC<ModalProps> = ({ onClose, onApprove, onDisapprove, data }) => {
+  if (!data) return null;
 
   const handleInnerClick = (e: React.MouseEvent) => {
     e.stopPropagation();

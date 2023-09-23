@@ -22,7 +22,8 @@ import {
 import SelectInput from '@src/components/inputs/SelectInput';
 import { PREDICTION_TIME_CHART_UNITS, CHART_STYLES } from '@src/constants';
 import { generateFetchURL, capitalizeWord } from '@src/helpers';
-import { TimeUnit } from '@src/types';
+import { SimpsonCharacter, TimeUnit } from '@src/types';
+import formatCharacterName from '@src/helpers/formatCharacterName';
 
 ChartJS.register(
   CategoryScale,
@@ -78,10 +79,7 @@ const PredictionTimeChart = function () {
     const modifiedResponse: [string, PredictionTimePoint[]][] = Object.entries(
       res
     ).map(([char, charData]) => [
-      char
-        .split('_')
-        .map((w) => capitalizeWord(w))
-        .join(' '),
+      formatCharacterName(char as SimpsonCharacter),
       charData.map(({ createdAt, predictionTime }) => ({
         createdAt: dayjs(createdAt).format(dateFormat),
         predictionTime,

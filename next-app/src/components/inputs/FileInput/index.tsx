@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ErrorMessage, FormikErrors } from 'formik';
+import { FormikErrors } from 'formik';
 import Image from 'next/image';
 import { PredictInitialValues } from '@src/types';
 import CloseIcon from '@src/components/icons/Close';
@@ -28,47 +28,42 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
   };
 
   const removeImage = () => {
-    setFieldValue(name, undefined);
+    setFieldValue(name, null, false);
     setPreviewURL(null);
   };
 
   return (
-    <div className='space-y-6 z-5'>
-      <div className='relative border-2 border-dashed border-neutral rounded-card p-6 hover:border-primary focus-within:border-highlight transition-medium duration-200 cursor-pointer transform-gpu transition-transform'>
-        <input
-          type='file'
-          name={name}
-          className='absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer'
-          accept={accept}
-          onChange={handleChangeImage}
-        />
+    <div className='relative border-2 border-dashed border-neutral rounded-card p-6 hover:border-primary duration-200 cursor-pointer transition-colors'>
+      <input
+        type='file'
+        name={name}
+        className='absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer'
+        accept={accept}
+        onChange={handleChangeImage}
+      />
 
-        {!previewURL ? (
-          <div className='text-center text-neutral'>
-            <p className='text-subtitle font-secondary'>
-              Drop It Like It&apos;s Hot
-            </p>
-          </div>
-        ) : (
-          <div className='w-full h-40 rounded-card overflow-hidden relative'>
-            <Image
-              src={previewURL}
-              alt='Preview'
-              fill
-              style={{ objectFit: 'contain' }}
-            />
-            <button
-              onClick={removeImage}
-              className='absolute top-2 right-2 flex items-center justify-center text-highlight font-bold text-lg focus:outline-none hover:text-primary active:bg-primary-dark'
-            >
-              <CloseIcon />
-            </button>
-          </div>
-        )}
-      </div>
-      <div className='text-tertiary'>
-        <ErrorMessage name={name} component='div' />
-      </div>
+      {!previewURL ? (
+        <div className='text-center text-neutral'>
+          <p className='text-subtitle font-secondary'>
+            Drop It Like It&apos;s Hot
+          </p>
+        </div>
+      ) : (
+        <div className='w-full h-40 rounded-card overflow-hidden relative'>
+          <Image
+            src={previewURL}
+            alt='Preview'
+            fill
+            style={{ objectFit: 'contain' }}
+          />
+          <button
+            onClick={removeImage}
+            className='absolute top-2 right-2 flex items-center justify-center text-highlight font-bold text-lg focus:outline-none hover:text-primary active:bg-primary-dark'
+          >
+            <CloseIcon />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

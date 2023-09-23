@@ -1,6 +1,15 @@
+import { ReactNode } from 'react';
+import { AlertIconKeys, AlertOptions } from './misc';
+
 // FORMIK INITIAL VALUES
 interface PredictInitialValues {
-  personImg: File | null;
+  personImg: File | undefined;
 }
 
-export type { PredictInitialValues };
+interface CustomNotification {
+  content?: string | ReactNode;
+  type?: AlertOptions;
+  iconKey?: AlertIconKeys;
+}
+
+export type { PredictInitialValues, CustomNotification };

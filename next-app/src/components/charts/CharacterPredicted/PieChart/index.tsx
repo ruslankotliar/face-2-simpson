@@ -13,22 +13,19 @@ import {
 } from 'chart.js';
 import { CHART_STYLES } from '@src/constants';
 import { capitalizeWord } from '@src/helpers';
+import formatCharacterName from '@src/helpers/formatCharacterName';
+import { SimpsonCharacter } from '@src/types';
 
 ChartJS.register(CategoryScale, Tooltip, Legend, Title, ArcElement);
 
 interface CharacterPredictionChartData {
-  _id: string; // This is the characterPredicted
+  _id: SimpsonCharacter; // This is the characterPredicted
   count: number;
 }
 
 const PieChart = function ({ data }: { data: CharacterPredictionChartData[] }) {
   const chartData: ChartData<'pie'> = {
-    labels: data?.map(({ _id }) =>
-      _id
-        .split('_')
-        .map((w) => capitalizeWord(w))
-        .join(' ')
-    ),
+    labels: data?.map(({ _id }) => formatCharacterName(_id)),
     datasets: [
       {
         label: 'Times Predicted',

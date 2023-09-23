@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import SimpsonsSkyBg from '../../public/images/header-bg.png';
+import SimpsonsSkyBg from '@public/images/header-bg.png';
 
 import { akbar, roboto } from './fonts';
 import { CLIENT_NAV_KEYS } from '@src/constants';
@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className={roboto.className + ' relative'}>
         <MainHeader />
-        <main className='min-h-[calc(100vh-5rem)]'>{children}</main>
+        <main className='h-[calc(100vh-5rem)]'>{children}</main>
       </body>
     </html>
   );
@@ -38,7 +38,7 @@ export default function RootLayout({
 const MainHeader = function () {
   return (
     <>
-      <div className='absolute right-60 top-48 h-fit w-fit z-20'>
+      <div className='absolute right-40 top-40 h-fit w-fit z-20'>
         <NavBar />
       </div>
 
@@ -86,6 +86,7 @@ const NavBar = function () {
           </li>
         ))}
       </ul>
+      <h2 className={`${akbar.className} text-subtitle`}>Menu</h2>
     </nav>
   );
 };
