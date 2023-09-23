@@ -14,11 +14,12 @@ import {
 import { CHART_STYLES } from '@src/constants';
 import { capitalizeWord } from '@src/helpers';
 import formatCharacterName from '@src/helpers/formatCharacterName';
+import { SimpsonCharacter } from '@src/types';
 
 ChartJS.register(CategoryScale, Tooltip, Legend, Title, ArcElement);
 
 interface CharacterPredictionChartData {
-  _id: string; // This is the characterPredicted
+  _id: SimpsonCharacter; // This is the characterPredicted
   count: number;
 }
 
