@@ -10,18 +10,19 @@ import bartRunAnimation from '@public/animations/run/bart_simpson.gif';
 import lisaRunAnimation from '@public/animations/run/lisa_simpson.gif';
 import margeRunAnimation from '@public/animations/run/marge_simpson.gif';
 import float2int from '@src/helpers/float2int';
+import formatCharacterName from '@src/helpers/formatCharacterName';
 
 interface ProgressBarProps {
   colorKey: string;
   width: number;
-  homerRun: boolean;
+  charactersRun: boolean;
   label: SimpsonCharacter;
 }
 
 const ProgressBar: FC<ProgressBarProps> = ({
   colorKey,
   width,
-  homerRun,
+  charactersRun,
   label,
 }) => {
   const icons: Record<SimpsonCharacter, StaticImageData> = {
@@ -33,10 +34,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
   return (
     <div className={styles['chart']}>
       <h5 className={`${akbar.className} text-caption absolute`}>
-        {label
-          .split('_')
-          .map((w) => capitalizeWord(w))
-          .join(' ')}
+        {formatCharacterName(label)}
       </h5>
       <div
         className={`${styles['bar']} ${styles[`bar-${float2int(width)}`]} ${
@@ -66,14 +64,14 @@ const ProgressBar: FC<ProgressBarProps> = ({
             transform:
               'translateY(-8.5em) translateZ(5em) rotateX(10deg) rotateY(0deg)',
             transition: 'margin 3s ease-in-out, opacity 1s ease-in-out',
-            opacity: homerRun ? 1 : 0,
+            opacity: charactersRun ? 1 : 0,
           }}
         >
           <Image
             alt='Running Homer Simpson animation'
             src={icons[label]}
             fill
-            objectFit='contain'
+            style={{ objectFit: 'contain' }}
           />
         </div>
       </div>

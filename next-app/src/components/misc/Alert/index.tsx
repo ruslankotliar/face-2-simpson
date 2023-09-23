@@ -39,6 +39,7 @@ const Alert: FC<AlertProps> = function ({
 
   useEffect(() => {
     content && notify();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content, type, iconKey]);
 
   return (

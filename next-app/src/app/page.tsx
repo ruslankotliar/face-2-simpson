@@ -15,12 +15,18 @@ import Loader from '@src/components/misc/Loader';
 import {
   ASK_FEEDBACK_TIMEOUT,
   DEFAULT_PREDICTION_DATA,
+  DISPLAY_SPEECH_BUBBLE_TIMEOUT,
   FORM_CONSTANTS,
   FORM_KEYS,
   HOMER_RUN_TIMEOUT,
   PROGRESS_BAR_COLORS,
+  SET_DEFAULT_USER_FEEDBACK,
 } from '@src/constants';
-import { generateFetchURL, isValidFileType } from '@src/helpers';
+import {
+  generateFetchURL,
+  getMaxSimilarChar,
+  isValidFileType,
+} from '@src/helpers';
 import {
   FeedbackData,
   PredictSimpsonData,
@@ -33,13 +39,24 @@ import {
 import Alert from '@src/components/misc/Alert';
 import ProgressBar from '@src/components/misc/ProgressBar';
 import LikeButton from '@src/components/buttons/LikeButton';
+import SpeechBubble from '@src/components/misc/SpeechBubble';
+import DislikeButton from '@src/components/buttons/DislikeButton';
 
 const sendFeedback = async function (
   url: string,
   data: FeedbackData
 ): Promise<void> {
   try {
-    await axios.post(url, data);
+    await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      keepalive: true,
+    });
+
+    // await axios.post(url, data);
   } catch (e) {
     if (e instanceof Error) throw Error(e.message);
   }
@@ -91,21 +108,30 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
 });
 
 export default function Home() {
-  const [homerRun, setHomerRun] = useState<boolean>(false);
+  const [charactersRun, setCharactersRun] = useState<boolean>(false);
+  const [displaySpeechBubble, setDisplaySpeechBubble] =
+    useState<boolean>(false);
   const [notification, setNotification] = useState<CustomNotification>();
-  const [userFeedback, setUserFeedback] = useState<boolean | null>(null);
+  const [userFeedback, setUserFeedback] = useState<boolean | null>();
   const [permissionToStore, setPermissionToStore] = useState(true);
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
 
-  const submitFeedbackToServer = async function (): Promise<void> {
+  const submitFeedbackToServer = async function (
+    data: PredictSimpsonData | undefined = predictionData,
+    feedback: boolean | null | undefined = userFeedback
+  ): Promise<void> {
     try {
-      if (!predictionData) return;
+      console.log(data, feedback);
+      if (!data || feedback === undefined) return;
+      console.log('sending user feedback', feedback);
 
       await sendFeedback(generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}), {
-        userFeedback,
+        userFeedback: feedback,
         permissionToStore,
-        ...predictionData,
+        ...data,
       });
+
+      setUserFeedback(undefined);
     } catch (e) {
       if (e instanceof Error)
         setNotification({
@@ -116,7 +142,9 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = async function ({ personImg }: PredictInitialValues) {
+  const handleSubmit = async function ({
+    personImg,
+  }: PredictInitialValues): Promise<void> {
     try {
       receiveFeedback({
         predictionData: {
@@ -139,8 +167,9 @@ export default function Home() {
         return;
       }
 
-      const data = await predictSimpson(personImg);
-      receiveFeedback(data);
+      // const data = await predictSimpson(personImg);
+      // receiveFeedback(data);
+      return;
     } catch (e) {
       if (e instanceof Error)
         setNotification({
@@ -156,35 +185,63 @@ export default function Home() {
   ): void {
     if (!data) return;
     setPredictionData(data);
-    setHomerRun(true);
 
+    setCharactersRun(true);
     setTimeout(() => {
-      setHomerRun(false);
+      setCharactersRun(false);
     }, HOMER_RUN_TIMEOUT);
 
     setTimeout(() => {
-      setNotification({
-        content: 'Smash that like button!',
-        type: AlertOptions.warn,
-      });
+      setDisplaySpeechBubble(true);
+      setTimeout(() => {
+        setDisplaySpeechBubble(false);
+      }, DISPLAY_SPEECH_BUBBLE_TIMEOUT);
     }, ASK_FEEDBACK_TIMEOUT);
+
+    setTimeout(setDefaultUserFeedback, SET_DEFAULT_USER_FEEDBACK);
+    return;
+  };
+
+  const handleClickFeedbackHeart = function (value: boolean): void {
+    predictionData
+      ? setUserFeedback(value)
+      : setNotification({
+          content: 'Please predict first!',
+          type: AlertOptions.warn,
+        });
+    return;
+  };
+
+  const setDefaultUserFeedback = (): void =>
+    userFeedback === undefined ? setUserFeedback(null) : undefined;
+
+  const handleUnload = function (): void {
+    if (predictionData && userFeedback === undefined) {
+      submitFeedbackToServer(predictionData, null);
+      // navigator.sendBeacon(
+      //   generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}),
+      //   JSON.stringify({
+      //     userFeedback: null,
+      //     permissionToStore,
+      //     ...predictionData,
+      //   })
+      // );
+    }
   };
 
   useEffect(() => {
     submitFeedbackToServer();
   }, [userFeedback]);
 
+  useEffect(() => {
+    window.addEventListener('unload', handleUnload);
+    return () => {
+      window.removeEventListener('unload', handleUnload);
+    };
+  }, []);
+
   return (
     <div className='flex items-center justify-between h-full gap-6 mx-32'>
-      <div className='basis-1/2 flex justify-center items-center'>
-        <FileInputForm
-          handleSubmit={handleSubmit}
-          notification={notification}
-          setNotification={setNotification}
-          permissionToStore={permissionToStore}
-          setPermissionToStore={setPermissionToStore}
-        />
-      </div>
       <div className='basis-1/2'>
         <div>
           {Object.entries(
@@ -196,18 +253,50 @@ export default function Home() {
                 key={`${index}#${key}`}
                 className='flex gap-10 justify-between items-center w-full'
               >
-                <ProgressBar
-                  label={key as SimpsonCharacter}
-                  colorKey={PROGRESS_BAR_COLORS[index]}
-                  width={value}
-                  homerRun={homerRun}
-                />
-                <div className='mt-6'>
-                  <LikeButton id={`${index}#${key}`} />
+                <div className='w-[calc(100%-160px)]'>
+                  <ProgressBar
+                    label={key as SimpsonCharacter}
+                    colorKey={PROGRESS_BAR_COLORS[index]}
+                    width={value}
+                    charactersRun={charactersRun}
+                  />
+                </div>
+                <div className='w-[120px]'>
+                  {!predictionData ||
+                  getMaxSimilarChar(predictionData.predictionData) === key ? (
+                    <div className='mt-6 relative flex'>
+                      {displaySpeechBubble ? (
+                        <div className='absolute bottom-full right-full translate-x-1/2 transition-all'>
+                          <SpeechBubble content='Smash like if you agree!' />
+                        </div>
+                      ) : null}
+                      <div className='flex items-center justify-center'>
+                        <LikeButton
+                          onClick={() => handleClickFeedbackHeart(true)}
+                          id={`like#${index}#${key}`}
+                          isDisabled={!predictionData}
+                        />
+                        <DislikeButton
+                          onClick={() => handleClickFeedbackHeart(false)}
+                          id={`dislike#${index}#${key}`}
+                          isDisabled={!predictionData}
+                        />
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             ))}
         </div>
+      </div>
+      <div className='basis-1/2 flex justify-center items-center'>
+        <FileInputForm
+          handleSubmit={handleSubmit}
+          notification={notification}
+          setNotification={setNotification}
+          permissionToStore={permissionToStore}
+          setPermissionToStore={setPermissionToStore}
+        />
       </div>
     </div>
   );
