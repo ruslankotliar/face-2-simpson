@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Image, { StaticImageData } from 'next/image';
 import styles from './styles.module.css';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { akbar } from '@src/app/fonts';
 import { capitalizeWord } from '@src/helpers';
 import { SimpsonCharacter } from '@src/types';
@@ -25,21 +26,30 @@ const ProgressBar: FC<ProgressBarProps> = ({
   charactersRun,
   label,
 }) => {
+  const [currentWidth, setCurrentWidth] = useState<number>(0);
+  const [isGreater, setIsGreater] = useState<boolean>(false);
+
   const icons: Record<SimpsonCharacter, StaticImageData> = {
     homer_simpson: homerRunAnimation,
     marge_simpson: margeRunAnimation,
     bart_simpson: bartRunAnimation,
     lisa_simpson: lisaRunAnimation,
   };
+
+  useEffect(() => {
+    setIsGreater(width > currentWidth);
+    setCurrentWidth(width);
+  }, [width]);
+
   return (
     <div className={styles['chart']}>
       <h5 className={`${akbar.className} text-caption absolute`}>
         {formatCharacterName(label)}
       </h5>
       <div
-        className={`${styles['bar']} ${styles[`bar-${float2int(width)}`]} ${
-          styles[colorKey]
-        }`}
+        className={`${styles['bar']} ${
+          styles[`bar-${float2int(currentWidth)}`]
+        } ${styles[colorKey]}`}
       >
         <div className={`${styles['face']} ${styles['top']}`}>
           <div className={styles['growing-bar']}></div>
@@ -60,9 +70,10 @@ const ProgressBar: FC<ProgressBarProps> = ({
           style={{
             height: '6rem',
             width: '6rem',
-            marginLeft: float2int(width) - 2 + '%',
+            marginLeft: float2int(currentWidth) - 2 + '%',
             transform:
-              'translateY(-8.5em) translateZ(5em) rotateX(10deg) rotateY(0deg)',
+              'translateY(-8.5em) translateZ(5em) rotateX(10deg) rotateY(0deg)' +
+              (isGreater ? ' scale(1, 1)' : ' scale(-1, 1)'),
             transition: 'margin 3s ease-in-out, opacity 1s ease-in-out',
             opacity: charactersRun ? 1 : 0,
           }}
