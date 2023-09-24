@@ -262,7 +262,7 @@ export default function Home() {
                   <ProgressBar
                     label={key as SimpsonCharacter}
                     colorKey={PROGRESS_BAR_COLORS[index]}
-                    width={value}
+                    width={value * 100}
                     charactersRun={charactersRun}
                   />
                 </div>
