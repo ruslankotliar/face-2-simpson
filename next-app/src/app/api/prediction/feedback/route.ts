@@ -15,27 +15,25 @@ export async function POST(req: NextRequest) {
       imageBucketKey,
     } = await req.json();
 
-    console.log('feedback on server', userFeedback);
-
     const characterPredicted = getMaxSimilarChar(predictionData);
 
-    // if (permissionToStore === true) {
-    //   await connectToDB();
-    //   await ImageCounter.findByIdAndUpdate(
-    //     {
-    //       _id: characterPredicted,
-    //     },
-    //     { $inc: { seq: 1 } },
-    //     { upsert: true, new: true, setDefaultsOnInsert: true }
-    //   );
+    if (permissionToStore === true) {
+      await connectToDB();
+      await ImageCounter.findByIdAndUpdate(
+        {
+          _id: characterPredicted,
+        },
+        { $inc: { seq: 1 } },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
 
-    //   await Prediction.create({
-    //     predictionTime,
-    //     characterPredicted,
-    //     imageBucketKey,
-    //     userFeedback,
-    //   });
-    // }
+      await Prediction.create({
+        predictionTime,
+        characterPredicted,
+        imageBucketKey,
+        userFeedback,
+      });
+    }
 
     return NextResponse.json(null);
   } catch (e) {

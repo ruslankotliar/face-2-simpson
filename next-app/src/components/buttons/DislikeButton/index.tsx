@@ -1,22 +1,26 @@
-import { FC, MouseEvent } from 'react';
+import { ChangeEvent, FC, MouseEvent } from 'react';
 import styles from './styles.module.css';
 
 import DislikeIcon from '@src/components/icons/Dislike';
 
 interface DislikeButtonProps {
   id: string;
-  isDisabled?: boolean;
-  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
+  onClick: (e: ChangeEvent<HTMLInputElement>, value: boolean) => void;
+  userFeedback: boolean | null | undefined;
 }
 
-const DislikeButton: FC<DislikeButtonProps> = ({ id, isDisabled, onClick }) => (
+const DislikeButton: FC<DislikeButtonProps> = ({
+  id,
+  onClick,
+  userFeedback,
+}) => (
   <div className='w-[60px] flex items-center justify-center'>
     <input
       type='checkbox'
       id={id}
-      disabled={isDisabled}
+      checked={userFeedback === false}
       className={styles['checkbox-dislike']}
-      onClick={onClick}
+      onChange={(e) => onClick(e, false)}
     />
     <label htmlFor={id}>
       <DislikeIcon styles={styles} />

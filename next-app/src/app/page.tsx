@@ -4,7 +4,7 @@ export const revalidate = 0;
 
 import * as Yup from 'yup';
 import axios from 'axios';
-import { FC, useEffect, useState } from 'react';
+import { ChangeEvent, FC, MouseEvent, useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 
 import SubmitButton from '@src/components/buttons/SubmitButton';
@@ -20,7 +20,7 @@ import {
   FORM_KEYS,
   HOMER_RUN_TIMEOUT,
   PROGRESS_BAR_COLORS,
-  SET_DEFAULT_USER_FEEDBACK,
+  SET_DEFAULT_USER_FEEDBACK_TIMEOUT,
 } from '@src/constants';
 import {
   generateFetchURL,
@@ -111,6 +111,7 @@ export default function Home() {
   const [charactersRun, setCharactersRun] = useState<boolean>(false);
   const [displaySpeechBubble, setDisplaySpeechBubble] =
     useState<boolean>(false);
+  const [predictionStored, setPredictionStored] = useState<boolean>(false);
   const [notification, setNotification] = useState<CustomNotification>();
   const [userFeedback, setUserFeedback] = useState<boolean | null>();
   const [permissionToStore, setPermissionToStore] = useState(true);
@@ -121,17 +122,14 @@ export default function Home() {
     feedback: boolean | null | undefined = userFeedback
   ): Promise<void> {
     try {
-      console.log(data, feedback);
       if (!data || feedback === undefined) return;
-      console.log('sending user feedback', feedback);
-
       await sendFeedback(generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}), {
         userFeedback: feedback,
         permissionToStore,
         ...data,
       });
 
-      setUserFeedback(undefined);
+      setPredictionStored(true);
     } catch (e) {
       if (e instanceof Error)
         setNotification({
@@ -146,16 +144,9 @@ export default function Home() {
     personImg,
   }: PredictInitialValues): Promise<void> {
     try {
-      receiveFeedback({
-        predictionData: {
-          homer_simpson: 70,
-          marge_simpson: 80,
-          bart_simpson: 30,
-          lisa_simpson: 25,
-        },
-        predictionTime: 0.5,
-        imageBucketKey: '',
-      });
+      if (predictionData && !predictionStored) {
+        submitFeedbackToServer(predictionData, null);
+      }
 
       if (!personImg) {
         setNotification({
@@ -167,8 +158,8 @@ export default function Home() {
         return;
       }
 
-      // const data = await predictSimpson(personImg);
-      // receiveFeedback(data);
+      const data = await predictSimpson(personImg);
+      receiveFeedback(data);
       return;
     } catch (e) {
       if (e instanceof Error)
@@ -183,7 +174,20 @@ export default function Home() {
   const receiveFeedback = function (
     data: PredictSimpsonData | undefined
   ): void {
-    if (!data) return;
+    if (!data) {
+      setNotification({
+        content: 'Predicted data is missing!',
+        type: AlertOptions.error,
+        iconKey: AlertIconKeys.homerError,
+      });
+
+      return;
+    }
+
+    // reset previous prediction
+    setPredictionStored(false);
+    setUserFeedback(undefined);
+
     setPredictionData(data);
 
     setCharactersRun(true);
@@ -198,47 +202,48 @@ export default function Home() {
       }, DISPLAY_SPEECH_BUBBLE_TIMEOUT);
     }, ASK_FEEDBACK_TIMEOUT);
 
-    setTimeout(setDefaultUserFeedback, SET_DEFAULT_USER_FEEDBACK);
     return;
   };
 
-  const handleClickFeedbackHeart = function (value: boolean): void {
-    predictionData
-      ? setUserFeedback(value)
-      : setNotification({
-          content: 'Please predict first!',
+  const handleClickFeedbackHeart = function (
+    e: ChangeEvent<HTMLInputElement>,
+    value: boolean
+  ): void {
+    if (predictionData) {
+      if (predictionStored) {
+        e.preventDefault();
+        setNotification({
+          content: 'Feedback already stored.',
           type: AlertOptions.warn,
         });
-    return;
-  };
-
-  const setDefaultUserFeedback = (): void =>
-    userFeedback === undefined ? setUserFeedback(null) : undefined;
-
-  const handleUnload = function (): void {
-    if (predictionData && userFeedback === undefined) {
-      submitFeedbackToServer(predictionData, null);
-      // navigator.sendBeacon(
-      //   generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}),
-      //   JSON.stringify({
-      //     userFeedback: null,
-      //     permissionToStore,
-      //     ...predictionData,
-      //   })
-      // );
+      } else {
+        setUserFeedback(value);
+      }
+    } else {
+      e.preventDefault();
+      setNotification({
+        content: 'Please predict first!',
+        type: AlertOptions.warn,
+      });
     }
+    return;
   };
 
   useEffect(() => {
     submitFeedbackToServer();
   }, [userFeedback]);
 
+  // send feedback to server on page unload
   useEffect(() => {
-    window.addEventListener('unload', handleUnload);
-    return () => {
-      window.removeEventListener('unload', handleUnload);
-    };
-  }, []);
+    const handleUnload = () => submitFeedbackToServer(predictionData, null);
+
+    if (predictionData && userFeedback === undefined) {
+      window.addEventListener('unload', handleUnload);
+      return () => {
+        window.removeEventListener('unload', handleUnload);
+      };
+    }
+  }, [predictionData, userFeedback]);
 
   return (
     <div className='flex items-center justify-between h-full gap-6 mx-32'>
@@ -267,19 +272,19 @@ export default function Home() {
                     <div className='mt-6 relative flex'>
                       {displaySpeechBubble ? (
                         <div className='absolute bottom-full right-full translate-x-1/2 transition-all'>
-                          <SpeechBubble content='Smash like if you agree!' />
+                          <SpeechBubble content='Do you agree with results?' />
                         </div>
                       ) : null}
                       <div className='flex items-center justify-center'>
                         <LikeButton
-                          onClick={() => handleClickFeedbackHeart(true)}
+                          userFeedback={userFeedback}
+                          onClick={handleClickFeedbackHeart}
                           id={`like#${index}#${key}`}
-                          isDisabled={!predictionData}
                         />
                         <DislikeButton
-                          onClick={() => handleClickFeedbackHeart(false)}
+                          userFeedback={userFeedback}
+                          onClick={handleClickFeedbackHeart}
                           id={`dislike#${index}#${key}`}
-                          isDisabled={!predictionData}
                         />
                       </div>
                     </div>
