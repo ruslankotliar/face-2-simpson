@@ -46,33 +46,6 @@ const CHART_STYLES: { [key: string]: any } = {
   },
 };
 
-// const PROGRESS_BAR_STYLES = {
-//   yellow: {
-//     color: 'rgba(241, 196, 15, 0.6)',
-//     shadow: 'rgba(241, 196, 15, 0.8)',
-//   },
-//   red: {
-//     color: 'rgba(236, 0, 140, 0.6)',
-//     shadow: 'rgba(236, 0, 140, 0.8)',
-//   },
-//   cyan: {
-//     color: 'rgba(87, 202, 244, 0.6)',
-//     shadow: '#57caf4',
-//   },
-//   navy: {
-//     color: 'rgba(10, 64, 105, 0.6)',
-//     shadow: 'rgba(10, 64, 105, 0.8)',
-//   },
-//   lime: {
-//     color: 'rgba(118, 201, 0, 0.6)',
-//     shadow: '#76c900',
-//   },
-//   white: {
-//     color: 'rgba(254, 254, 254, 0.6)',
-//     shadow: '#fefefe',
-//   },
-// };
-
 const PROGRESS_BAR_COLORS = ['yellow', 'red', 'cyan', 'navy', 'lime', 'white'];
 
 export { CHART_STYLES, PROGRESS_BAR_COLORS };

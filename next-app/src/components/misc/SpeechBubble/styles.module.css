@@ -35,13 +35,13 @@
 
 .thought:after {
     bottom: -10px;
-    right: 26px;
+    right: 70px;
     width: 30px;
     height: 30px;
-    box-shadow: 40px -34px 0 0 var(--orange),
+    box-shadow: 80px -34px 0 0 var(--orange),
         -28px -6px 0 -2px var(--orange),
         -24px 17px 0 -6px var(--orange),
-        -5px 25px 0 -10px var(--orange);
+        -35px 30px 0 -10px var(--orange);
 
 }
 

@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FC } from 'react';
 import styles from './styles.module.css';
 
 import LikeIcon from '@src/components/icons/Like';
