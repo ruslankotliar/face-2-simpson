@@ -14,13 +14,11 @@ import Loader from '@src/components/misc/Loader';
 
 import {
   ASK_FEEDBACK_TIMEOUT,
-  DEFAULT_PREDICTION_DATA,
   DISPLAY_SPEECH_BUBBLE_TIMEOUT,
   FORM_CONSTANTS,
   FORM_KEYS,
   HOMER_RUN_TIMEOUT,
   PROGRESS_BAR_COLORS,
-  SET_DEFAULT_USER_FEEDBACK_TIMEOUT,
 } from '@src/constants';
 import {
   generateFetchURL,
@@ -41,6 +39,7 @@ import ProgressBar from '@src/components/misc/ProgressBar';
 import LikeButton from '@src/components/buttons/LikeButton';
 import SpeechBubble from '@src/components/misc/SpeechBubble';
 import DislikeButton from '@src/components/buttons/DislikeButton';
+import float2int from '@src/helpers/float2int';
 
 const sendFeedback = async function (
   url: string,
@@ -55,8 +54,6 @@ const sendFeedback = async function (
       },
       keepalive: true,
     });
-
-    // await axios.post(url, data);
   } catch (e) {
     if (e instanceof Error) throw Error(e.message);
   }
@@ -147,6 +144,17 @@ export default function Home() {
       if (predictionData && !predictionStored) {
         submitFeedbackToServer(predictionData, null);
       }
+
+      // receiveFeedback({
+      //   predictionData: {
+      //     lisa_simpson: Math.random(),
+      //     homer_simpson: Math.random(),
+      //     bart_simpson: Math.random(),
+      //     marge_simpson: Math.random(),
+      //   },
+      //   predictionTime: 10,
+      //   imageBucketKey: '',
+      // });
 
       if (!personImg) {
         setNotification({
@@ -246,55 +254,32 @@ export default function Home() {
   }, [predictionData, userFeedback]);
 
   return (
-    <div className='flex items-center justify-between h-full gap-6 mx-32'>
-      <div className='basis-1/2'>
-        <div>
-          {Object.entries(
-            predictionData?.predictionData || DEFAULT_PREDICTION_DATA
-          )
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([key, value], index) => (
-              <div
-                key={`${index}#${key}`}
-                className='flex gap-10 justify-between items-center w-full'
-              >
-                <div className='w-[calc(100%-160px)]'>
-                  <ProgressBar
-                    label={key as SimpsonCharacter}
-                    colorKey={PROGRESS_BAR_COLORS[index]}
-                    width={value * 100}
-                    charactersRun={charactersRun}
-                  />
-                </div>
-                <div className='w-[120px]'>
-                  {!predictionData ||
-                  getMaxSimilarChar(predictionData.predictionData) === key ? (
-                    <div className='mt-6 relative flex'>
-                      {displaySpeechBubble ? (
-                        <div className='absolute bottom-full right-full translate-x-1/2 transition-all'>
-                          <SpeechBubble content='Do you agree with results?' />
-                        </div>
-                      ) : null}
-                      <div className='flex items-center justify-center'>
-                        <LikeButton
-                          userFeedback={userFeedback}
-                          onClick={handleClickFeedbackHeart}
-                          id={`like#${index}#${key}`}
-                        />
-                        <DislikeButton
-                          userFeedback={userFeedback}
-                          onClick={handleClickFeedbackHeart}
-                          id={`dislike#${index}#${key}`}
-                        />
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            ))}
-        </div>
+    <div className='h-full px-32 flex items-center justify-between overflow-hidden'>
+      <div
+        className={
+          predictionData
+            ? 'flex items-center w-1/2 h-full transition-all transform origin-left scale-x-1 duration-[500ms] relative'
+            : 'flex items-center w-0 h-full transition-all transform origin-left scale-x-0 duration-[500ms]'
+        }
+      >
+        {predictionData ? (
+          <ProgressBarWrapper
+            predictionData={predictionData?.predictionData}
+            charactersRun={charactersRun}
+            displaySpeechBubble={displaySpeechBubble}
+            userFeedback={userFeedback}
+            handleClickFeedbackHeart={handleClickFeedbackHeart}
+          />
+        ) : null}
       </div>
-      <div className='basis-1/2 flex justify-center items-center'>
+
+      <div
+        className={
+          predictionData
+            ? 'basis-1/2 flex items-center justify-center w-full h-full transition-all duration-[500ms]'
+            : 'basis-full flex items-center justify-center w-full h-full transition-all duration-[500ms]'
+        }
+      >
         <FileInputForm
           handleSubmit={handleSubmit}
           notification={notification}
@@ -364,3 +349,86 @@ const FileInputForm: FC<FileInputFormProps> = ({
     )}
   </Formik>
 );
+
+interface ProgressBarWrapperProps {
+  predictionData: Record<SimpsonCharacter, number>;
+  charactersRun: boolean;
+  displaySpeechBubble: boolean;
+  userFeedback: boolean | null | undefined;
+  handleClickFeedbackHeart: (
+    e: ChangeEvent<HTMLInputElement>,
+    value: boolean
+  ) => void;
+}
+
+const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
+  predictionData,
+  charactersRun,
+  displaySpeechBubble,
+  userFeedback,
+  handleClickFeedbackHeart,
+}) => {
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isVisibleFeedback, setIsVisibleFeedback] = useState<boolean>(false);
+
+  useEffect(() => {
+    !isVisible &&
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 500);
+  }, []);
+
+  useEffect(() => {
+    displaySpeechBubble && setIsVisibleFeedback(true);
+  }, [displaySpeechBubble]);
+
+  return (
+    <div className='w-full'>
+      {Object.entries(predictionData)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, value], index) => (
+          <div
+            key={`${index}#${key}`}
+            className='flex gap-10 justify-between items-center w-full'
+          >
+            <div className='w-[calc(100%-160px)]'>
+              <ProgressBar
+                isVisible={isVisible}
+                label={key as SimpsonCharacter}
+                colorKey={PROGRESS_BAR_COLORS[index]}
+                width={float2int(value * 100)}
+                charactersRun={charactersRun}
+                delay={float2int(value * 1000)}
+              />
+            </div>
+            {isVisible ? (
+              <div className='w-[120px]'>
+                {isVisibleFeedback &&
+                getMaxSimilarChar(predictionData) === key ? (
+                  <div className='mt-6 relative flex'>
+                    {displaySpeechBubble ? (
+                      <div className='absolute bottom-full right-full translate-x-full transition-all'>
+                        <SpeechBubble content='Do you agree?' />
+                      </div>
+                    ) : null}
+                    <div className='flex items-center justify-center'>
+                      <LikeButton
+                        userFeedback={userFeedback}
+                        onClick={handleClickFeedbackHeart}
+                        id={`like#${index}#${key}`}
+                      />
+                      <DislikeButton
+                        userFeedback={userFeedback}
+                        onClick={handleClickFeedbackHeart}
+                        id={`dislike#${index}#${key}`}
+                      />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        ))}
+    </div>
+  );
+};

@@ -1,15 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import Image, { StaticImageData } from 'next/image';
-import styles from './styles.module.css';
 import { FC, useEffect, useState } from 'react';
-import { akbar } from '@src/app/fonts';
-import { capitalizeWord } from '@src/helpers';
-import { SimpsonCharacter } from '@src/types';
+import Image, { StaticImageData } from 'next/image';
 
+import styles from './styles.module.css';
+
+import { akbar, roboto } from '@src/app/fonts';
+import { SimpsonCharacter } from '@src/types';
 import homerRunAnimation from '@public/animations/run/homer_simpson.gif';
 import bartRunAnimation from '@public/animations/run/bart_simpson.gif';
 import lisaRunAnimation from '@public/animations/run/lisa_simpson.gif';
 import margeRunAnimation from '@public/animations/run/marge_simpson.gif';
+
 import float2int from '@src/helpers/float2int';
 import formatCharacterName from '@src/helpers/formatCharacterName';
 
@@ -18,6 +19,8 @@ interface ProgressBarProps {
   width: number;
   charactersRun: boolean;
   label: SimpsonCharacter;
+  isVisible: boolean;
+  delay: number;
 }
 
 const ProgressBar: FC<ProgressBarProps> = ({
@@ -25,9 +28,12 @@ const ProgressBar: FC<ProgressBarProps> = ({
   width,
   charactersRun,
   label,
+  isVisible,
+  delay,
 }) => {
   const [currentWidth, setCurrentWidth] = useState<number>(0);
   const [isGreater, setIsGreater] = useState<boolean>(false);
+  const [accuracy, setAccuracy] = useState<number>(0);
 
   const icons: Record<SimpsonCharacter, StaticImageData> = {
     homer_simpson: homerRunAnimation,
@@ -41,14 +47,50 @@ const ProgressBar: FC<ProgressBarProps> = ({
     setCurrentWidth(width);
   }, [width]);
 
+  const updateAccuracyInterval = function () {
+    const interval = setInterval(() => {
+      if (accuracy < width) {
+        setAccuracy((prev) => Math.min(prev + 0.1, width));
+      } else if (accuracy > width) {
+        setAccuracy((prev) => Math.max(prev - 0.1, width));
+      } else {
+        setAccuracy((prev) => float2int(prev));
+        clearInterval(interval); // Clear interval when accuracy matches width
+      }
+    }, 1);
+
+    return interval; // Return interval ID for external clearance if needed
+  };
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (isVisible) {
+      intervalId = updateAccuracyInterval();
+    }
+
+    return () => clearInterval(intervalId); // Cleanup on unmount or when dependencies change
+  }, [isVisible, width]);
+
   return (
     <div className={styles['chart']}>
-      <h5 className={`${akbar.className} text-caption absolute`}>
-        {formatCharacterName(label)}
-      </h5>
+      <div className='w-full flex justify-between items-center absolute'>
+        <h5
+          className={`${akbar.className} ${
+            isVisible
+              ? 'translate-x-0 opacity-1'
+              : '-translate-x-full opacity-0'
+          } text-caption transform transition-all duration-100`}
+          style={{ transitionDelay: delay + 'ms' }}
+        >
+          {formatCharacterName(label)}
+        </h5>
+        <span className={`${roboto.className} text-small`}>
+          {accuracy !== width ? accuracy.toFixed(1) : width}%
+        </span>
+      </div>
       <div
         className={`${styles['bar']} ${
-          styles[`bar-${float2int(currentWidth)}`]
+          styles[`bar-${isVisible ? currentWidth : 0}`]
         } ${styles[colorKey]}`}
       >
         <div className={`${styles['face']} ${styles['top']}`}>
@@ -70,12 +112,12 @@ const ProgressBar: FC<ProgressBarProps> = ({
           style={{
             height: '6rem',
             width: '6rem',
-            marginLeft: float2int(currentWidth) - 2 + '%',
+            marginLeft: isVisible ? currentWidth + '%' : 'none',
             transform:
               'translateY(-8.5em) translateZ(5em) rotateX(10deg) rotateY(0deg)' +
-              (isGreater ? ' scale(1, 1)' : ' scale(-1, 1)'),
-            transition: 'margin 3s ease-in-out, opacity 1s ease-in-out',
-            opacity: charactersRun ? 1 : 0,
+              (isGreater ? ' scaleX(1)' : ' scaleX(-1)'),
+            transition: 'margin-left 3s ease-in-out, opacity 500ms ease-in-out',
+            opacity: isVisible && charactersRun ? 1 : 0,
           }}
         >
           <Image
