@@ -54,8 +54,6 @@ const sendFeedback = async function (
       },
       keepalive: true,
     });
-
-    // await axios.post(url, data);
   } catch (e) {
     if (e instanceof Error) throw Error(e.message);
   }
@@ -147,16 +145,16 @@ export default function Home() {
         submitFeedbackToServer(predictionData, null);
       }
 
-      receiveFeedback({
-        predictionData: {
-          lisa_simpson: Math.random(),
-          homer_simpson: Math.random(),
-          bart_simpson: Math.random(),
-          marge_simpson: Math.random(),
-        },
-        predictionTime: 10,
-        imageBucketKey: '',
-      });
+      // receiveFeedback({
+      //   predictionData: {
+      //     lisa_simpson: Math.random(),
+      //     homer_simpson: Math.random(),
+      //     bart_simpson: Math.random(),
+      //     marge_simpson: Math.random(),
+      //   },
+      //   predictionTime: 10,
+      //   imageBucketKey: '',
+      // });
 
       if (!personImg) {
         setNotification({
