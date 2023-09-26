@@ -5,12 +5,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 const useQueryString = function () {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams()! as any;
+  const searchParams = useSearchParams();
 
   const createQueryString = useCallback(
-    (name: string, value: string): string => {
+    (name: string, value: string | number | boolean = ''): string => {
       const params = new URLSearchParams(searchParams);
-      params.set(name, value);
+      params.set(name, value.toString());
 
       return `${pathname}?${params.toString()}`;
     },
@@ -19,6 +19,20 @@ const useQueryString = function () {
 
   const updateQueryString = (path: string): void => router.push(path);
 
-  return { createQueryString, updateQueryString };
+  const getQueryParam = (name: string): string | null => searchParams.get(name);
+
+  const deleteQueryParam = function (name: string) {
+    const params = new URLSearchParams(searchParams);
+    params.delete(name);
+
+    return `${pathname}?${params.toString()}`;
+  };
+
+  return {
+    createQueryString,
+    updateQueryString,
+    getQueryParam,
+    deleteQueryParam,
+  };
 };
 export default useQueryString;

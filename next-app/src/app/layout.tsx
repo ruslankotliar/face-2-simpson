@@ -49,11 +49,12 @@ const MainHeader = function () {
           fill
           style={{ objectFit: 'cover' }}
           className='absolute top-0 left-0 w-full h-full z-10'
+          priority={true}
         />
         <nav className='px-10 z-20 flex justify-center w-full items-center'>
           <Link href={'/'}>
             <h1
-              className={`${akbar.className} font-simpsons text-center text-title`}
+              className={`${akbar.className} font-simpsons text-center text-title transition-transform hover:scale-105`}
             >
               Face-2-Simpson
             </h1>

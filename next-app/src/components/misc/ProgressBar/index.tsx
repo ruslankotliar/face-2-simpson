@@ -42,11 +42,6 @@ const ProgressBar: FC<ProgressBarProps> = ({
     lisa_simpson: lisaRunAnimation,
   };
 
-  useEffect(() => {
-    setIsGreater(width > currentWidth);
-    setCurrentWidth(width);
-  }, [width]);
-
   const updateAccuracyInterval = function () {
     const interval = setInterval(() => {
       if (accuracy < width) {
@@ -66,25 +61,37 @@ const ProgressBar: FC<ProgressBarProps> = ({
     let intervalId: NodeJS.Timeout;
     if (isVisible) {
       intervalId = updateAccuracyInterval();
+    } else if (width === 0) {
+      setAccuracy(0);
     }
 
     return () => clearInterval(intervalId); // Cleanup on unmount or when dependencies change
   }, [isVisible, width]);
 
+  useEffect(() => {
+    setIsGreater(width >= currentWidth);
+    setCurrentWidth(width);
+    console.log(width);
+  }, [width]);
+
   return (
     <div className={styles['chart']}>
-      <div className='w-full flex justify-between items-center absolute'>
+      <div className='w-full flex justify-between items-center absolute text-caption'>
         <h5
           className={`${akbar.className} ${
             isVisible
               ? 'translate-x-0 opacity-1'
               : '-translate-x-full opacity-0'
-          } text-caption transform transition-all duration-100`}
+          } transform transition-all duration-150`}
           style={{ transitionDelay: delay + 'ms' }}
         >
           {formatCharacterName(label)}
         </h5>
-        <span className={`${roboto.className} text-small`}>
+        <span
+          className={`${roboto.className} ${
+            isVisible ? 'opacity-1' : 'opacity-0'
+          } transition-opacity duration-200`}
+        >
           {accuracy !== width ? accuracy.toFixed(1) : width}%
         </span>
       </div>
@@ -93,30 +100,39 @@ const ProgressBar: FC<ProgressBarProps> = ({
           styles[`bar-${isVisible ? currentWidth : 0}`]
         } ${styles[colorKey]}`}
       >
-        <div className={`${styles['face']} ${styles['top']}`}>
-          <div className={styles['growing-bar']}></div>
-        </div>
-        <div className={`${styles['face']} ${styles['side-0']}`}>
-          <div className={styles['growing-bar']}></div>
-        </div>
-        <div className={`${styles['face']} ${styles['floor']}`}>
-          <div className={styles['growing-bar']}></div>
-        </div>
+        {['top', 'side-0', 'floor'].map((side) => (
+          <div key={side} className={`${styles['face']} ${styles[side]}`}>
+            <div
+              className={`${styles['growing-bar']} ${
+                width !== 0 ? 'duration-3000' : 'duration-0'
+              }`}
+            ></div>
+          </div>
+        ))}
 
-        <div className={`${styles['face']} ${styles['side-a']}`}></div>
-        <div className={`${styles['face']} ${styles['side-b']}`}></div>
+        {['side-a', 'side-b'].map((side) => (
+          <div key={side} className={`${styles['face']} ${styles[side]}`}></div>
+        ))}
+
         <div className={`${styles['face']} ${styles['side-1']}`}>
-          <div className={styles['growing-bar']}></div>
+          <div
+            className={`${styles['growing-bar']} ${
+              width !== 0 ? 'duration-3000' : 'duration-300'
+            }`}
+          ></div>
         </div>
         <div
           style={{
+            position: 'absolute',
             height: '6rem',
             width: '6rem',
-            marginLeft: isVisible ? currentWidth + '%' : 'none',
+            marginLeft: isVisible ? currentWidth + '%' : 0,
             transform:
               'translateY(-8.5em) translateZ(5em) rotateX(10deg) rotateY(0deg)' +
               (isGreater ? ' scaleX(1)' : ' scaleX(-1)'),
-            transition: 'margin-left 3s ease-in-out, opacity 500ms ease-in-out',
+            transition: `margin-left ${
+              width !== 0 ? '3s' : '0s'
+            } ease-in-out, opacity 500ms ease-in-out`,
             opacity: isVisible && charactersRun ? 1 : 0,
           }}
         >
@@ -125,6 +141,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
             src={icons[label]}
             fill
             style={{ objectFit: 'contain' }}
+            sizes='6rem 6rem'
           />
         </div>
       </div>

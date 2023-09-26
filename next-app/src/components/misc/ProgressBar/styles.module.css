@@ -56,7 +56,8 @@
 }
 
 .growing-bar {
-    transition: all 3s ease-in-out;
+    transition-property: all;
+    transition-timing-function: ease-in-out;
     background-color: rgba(236, 0, 140, 0.6);
     width: 100%;
     height: 2em;
