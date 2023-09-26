@@ -44,7 +44,7 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
 
       {!previewURL ? (
         <div className='text-center text-neutral'>
-          <p className='text-subtitle font-secondary'>Upload your image</p>
+          <p className='text-subtitle font-secondary'>Upload your picture</p>
         </div>
       ) : (
         <div className='w-full h-40 rounded-card overflow-hidden relative'>

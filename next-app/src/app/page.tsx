@@ -4,7 +4,7 @@ export const revalidate = 0;
 
 import * as Yup from 'yup';
 import axios from 'axios';
-import { ChangeEvent, FC, MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 
 import SubmitButton from '@src/components/buttons/SubmitButton';
@@ -12,13 +12,17 @@ import CheckboxInput from '@src/components/inputs/Checkbox';
 import FileInput from '@src/components/inputs/FileInput';
 import Loader from '@src/components/misc/Loader';
 
+import { akbar } from './fonts';
+
 import {
   ASK_FEEDBACK_TIMEOUT,
+  DEFAULT_PREDICTION_DATA,
   DISPLAY_SPEECH_BUBBLE_TIMEOUT,
   FORM_CONSTANTS,
   FORM_KEYS,
   HOMER_RUN_TIMEOUT,
   PROGRESS_BAR_COLORS,
+  QUERY_KEYS,
 } from '@src/constants';
 import {
   generateFetchURL,
@@ -40,6 +44,7 @@ import LikeButton from '@src/components/buttons/LikeButton';
 import SpeechBubble from '@src/components/misc/SpeechBubble';
 import DislikeButton from '@src/components/buttons/DislikeButton';
 import float2int from '@src/helpers/float2int';
+import useQueryString from '@src/hooks/useQueryString';
 
 const sendFeedback = async function (
   url: string,
@@ -104,7 +109,7 @@ const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
     ),
 });
 
-export default function Home() {
+export default function Main() {
   const [charactersRun, setCharactersRun] = useState<boolean>(false);
   const [displaySpeechBubble, setDisplaySpeechBubble] =
     useState<boolean>(false);
@@ -113,6 +118,12 @@ export default function Home() {
   const [userFeedback, setUserFeedback] = useState<boolean | null>();
   const [permissionToStore, setPermissionToStore] = useState(true);
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
+  const [isVisibleProgressBar, setIsVisibleProgressBar] =
+    useState<boolean>(false);
+  const [isVisibleAbout, setIsVisibleAbout] = useState<boolean>(true);
+
+  const { createQueryString, updateQueryString, getQueryParam } =
+    useQueryString();
 
   const submitFeedbackToServer = async function (
     data: PredictSimpsonData | undefined = predictionData,
@@ -192,7 +203,6 @@ export default function Home() {
       return;
     }
 
-    // reset previous prediction
     setPredictionStored(false);
     setUserFeedback(undefined);
 
@@ -237,6 +247,18 @@ export default function Home() {
     return;
   };
 
+  const resetPageData = function (): void {
+    console.log('Resetting page data...');
+    setIsVisibleProgressBar(false);
+    setIsVisibleAbout(true);
+    setPredictionData(undefined);
+    setPermissionToStore(true);
+    setUserFeedback(null);
+    setPredictionStored(false);
+    setDisplaySpeechBubble(false);
+    setCharactersRun(false);
+  };
+
   useEffect(() => {
     submitFeedbackToServer();
   }, [userFeedback]);
@@ -253,42 +275,67 @@ export default function Home() {
     }
   }, [predictionData, userFeedback]);
 
+  useEffect(() => {
+    if (predictionData && !isVisibleProgressBar) {
+      const path = createQueryString(QUERY_KEYS.WITH_PROGRESS_BAR);
+      updateQueryString(path);
+
+      setIsVisibleAbout(false);
+      setTimeout(() => {
+        setIsVisibleProgressBar(true);
+      }, 500);
+    }
+  }, [predictionData]);
+
+  useEffect(() => {
+    const withProgressBar = getQueryParam(QUERY_KEYS.WITH_PROGRESS_BAR);
+    if (withProgressBar === null && predictionData) {
+      resetPageData();
+    }
+  }, [getQueryParam(QUERY_KEYS.WITH_PROGRESS_BAR)]);
+
   return (
-    <div className='h-full px-32 flex items-center justify-between overflow-hidden'>
-      <div
-        className={
-          predictionData
-            ? 'flex items-center w-1/2 h-full transition-all transform origin-left scale-x-1 duration-[500ms] relative'
-            : 'flex items-center w-0 h-full transition-all transform origin-left scale-x-0 duration-[500ms]'
-        }
-      >
-        {predictionData ? (
+    <>
+      <div className='absolute left-24 top-32'>
+        <About isVisible={isVisibleAbout} />
+      </div>
+      <div className='h-full px-32 flex items-center justify-between overflow-hidden'>
+        <div
+          className={
+            predictionData
+              ? 'flex items-center w-1/2 h-full transition-all transform origin-left scale-x-1 duration-[500ms] relative'
+              : 'flex items-center w-0 h-full transition-all transform origin-left scale-x-0 duration-[500ms]'
+          }
+        >
           <ProgressBarWrapper
-            predictionData={predictionData?.predictionData}
+            predictionData={
+              predictionData?.predictionData || DEFAULT_PREDICTION_DATA
+            }
             charactersRun={charactersRun}
             displaySpeechBubble={displaySpeechBubble}
             userFeedback={userFeedback}
             handleClickFeedbackHeart={handleClickFeedbackHeart}
+            isVisible={isVisibleProgressBar}
           />
-        ) : null}
-      </div>
+        </div>
 
-      <div
-        className={
-          predictionData
-            ? 'basis-1/2 flex items-center justify-center w-full h-full transition-all duration-[500ms]'
-            : 'basis-full flex items-center justify-center w-full h-full transition-all duration-[500ms]'
-        }
-      >
-        <FileInputForm
-          handleSubmit={handleSubmit}
-          notification={notification}
-          setNotification={setNotification}
-          permissionToStore={permissionToStore}
-          setPermissionToStore={setPermissionToStore}
-        />
+        <div
+          className={
+            predictionData
+              ? 'basis-1/2 flex items-center justify-center w-full h-full transition-all duration-[500ms]'
+              : 'basis-full flex items-center justify-center w-full h-full transition-all duration-[500ms]'
+          }
+        >
+          <FileInputForm
+            handleSubmit={handleSubmit}
+            notification={notification}
+            setNotification={setNotification}
+            permissionToStore={permissionToStore}
+            setPermissionToStore={setPermissionToStore}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -343,7 +390,7 @@ const FileInputForm: FC<FileInputFormProps> = ({
             checked={permissionToStore}
             onChange={setPermissionToStore}
           />
-          <SubmitButton />
+          <SubmitButton isDisabled={isSubmitting} />
         </Form>
       </>
     )}
@@ -359,6 +406,7 @@ interface ProgressBarWrapperProps {
     e: ChangeEvent<HTMLInputElement>,
     value: boolean
   ) => void;
+  isVisible: boolean;
 }
 
 const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
@@ -367,16 +415,9 @@ const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
   displaySpeechBubble,
   userFeedback,
   handleClickFeedbackHeart,
+  isVisible,
 }) => {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isVisibleFeedback, setIsVisibleFeedback] = useState<boolean>(false);
-
-  useEffect(() => {
-    !isVisible &&
-      setTimeout(() => {
-        setIsVisible(true);
-      }, 500);
-  }, []);
 
   useEffect(() => {
     displaySpeechBubble && setIsVisibleFeedback(true);
@@ -429,6 +470,36 @@ const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
             ) : null}
           </div>
         ))}
+    </div>
+  );
+};
+
+interface AboutProps {
+  isVisible: boolean;
+}
+
+const About: FC<AboutProps> = function ({ isVisible }) {
+  return (
+    <div
+      className={`${
+        isVisible ? 'opacity-1' : 'opacity-0'
+      } max-w-md transition-opacity transition-duration-200`}
+    >
+      <div className='w-fit'>
+        <h1 className={`${akbar.className} text-subtitle font-bold`}>About</h1>
+      </div>
+      <div className='text-caption transform -rotate-[15deg]'>
+        <p className='text-lg font-medium'>
+          Find out which{' '}
+          <span className='text-primary'>Simpsons character</span> you look like
+          <br />
+          with our <span className='text-primary'>machine learning</span> app.
+        </p>
+        <p className='text-lg font-medium'>
+          Upload a <span className='text-primary'>picture</span> of yourself to
+          get started.
+        </p>
+      </div>
     </div>
   );
 };

@@ -35,6 +35,8 @@ const config: Config = {
         fast: '200ms',
         medium: '500ms',
         slow: '1000ms',
+        '3000': '3000ms',
+        '0': '0ms',
       },
       spacing: {
         18: '4.5rem',

@@ -27,4 +27,8 @@ const CLIENT_NAV_KEYS: {
   },
 ];
 
-export { CLIENT_NAV_KEYS };
+const QUERY_KEYS = {
+  WITH_PROGRESS_BAR: 'withProgressBar',
+};
+
+export { CLIENT_NAV_KEYS, QUERY_KEYS };
