@@ -75,8 +75,8 @@ const ProgressBar: FC<ProgressBarProps> = ({
   }, [width]);
 
   return (
-    <div className={styles['chart']}>
-      <div className='w-full flex justify-between items-center absolute text-caption'>
+    <div className={`${styles['chart']} text-[0.5rem] md:text-[0.7rem]`}>
+      <div className='w-full flex justify-between items-center absolute text-base'>
         <h5
           className={`${akbar.className} ${
             isVisible
@@ -122,14 +122,11 @@ const ProgressBar: FC<ProgressBarProps> = ({
           ></div>
         </div>
         <div
+          className={`absolute h-18 w-18 md:h-24 md:w-24 transform translate-y-[-10em] md:translate-y-[-8.5em] translate-z-[5em] ${
+            isGreater ? 'scale-x-100' : '-scale-x-100'
+          }`}
           style={{
-            position: 'absolute',
-            height: '6rem',
-            width: '6rem',
             marginLeft: isVisible ? currentWidth + '%' : 0,
-            transform:
-              'translateY(-8.5em) translateZ(5em) rotateX(10deg) rotateY(0deg)' +
-              (isGreater ? ' scaleX(1)' : ' scaleX(-1)'),
             transition: `margin-left ${
               width !== 0 ? '3s' : '0s'
             } ease-in-out, opacity 500ms ease-in-out`,
@@ -141,7 +138,6 @@ const ProgressBar: FC<ProgressBarProps> = ({
             src={icons[label]}
             fill
             style={{ objectFit: 'contain' }}
-            sizes='6rem 6rem'
           />
         </div>
       </div>

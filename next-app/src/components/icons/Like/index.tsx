@@ -2,7 +2,7 @@ const LikeIcon = function ({ styles }: any) {
   return (
     <svg
       id='heart-svg'
-      className={styles['heart-svg']}
+      className={`${styles['heart-svg']} w-[40px] md:w-[60px]`}
       viewBox='467 392 58 57'
       xmlns='http://www.w3.org/2000/svg'
     >

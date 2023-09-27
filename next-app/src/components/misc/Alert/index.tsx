@@ -44,7 +44,7 @@ const Alert: FC<AlertProps> = function ({
 
   return (
     <div className='absolute'>
-      <ToastContainer style={{ width: 'max-content' }} />
+      <ToastContainer />
     </div>
   );
 };

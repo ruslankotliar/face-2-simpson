@@ -15,8 +15,6 @@
     line-height: 1;
     list-style: none;
     overflow: hidden;
-    padding-left: 16px;
-    padding-right: 16px;
     position: relative;
     text-align: left;
     text-decoration: none;
@@ -26,19 +24,40 @@
     touch-action: manipulation;
     white-space: nowrap;
     will-change: box-shadow, transform;
-    font-size: 18px;
+    font-size: 16px;
+    /* slightly reduced for mobile devices */
+    padding-left: 12px;
+    /* reduced for smaller screens */
+    padding-right: 12px;
+    /* reduced for smaller screens */
 }
 
-.submit-button:focus {
-    box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+
+
+@media (hover: hover) {
+    .submit-button:hover {
+        box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, var(--orange) 0 -3px 0 inset;
+        transform: translateY(-2px);
+    }
+
+    .submit-button:active {
+        box-shadow: #D6D6E7 0 3px 7px inset;
+        transform: translateY(2px);
+    }
+
+    .submit-button:focus {
+        box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+    }
 }
 
-.submit-button:hover {
-    box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, var(--orange) 0 -3px 0 inset;
-    transform: translateY(-2px);
-}
 
-.submit-button:active {
-    box-shadow: #D6D6E7 0 3px 7px inset;
-    transform: translateY(2px);
+@media (min-width: 768px) {
+    .submit-button {
+        font-size: 18px;
+        /* original size for larger screens */
+        padding-left: 16px;
+        /* original padding for larger screens */
+        padding-right: 16px;
+        /* original padding for larger screens */
+    }
 }

@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, MouseEvent } from 'react';
+import { ChangeEvent, FC } from 'react';
 import styles from './styles.module.css';
 
 import DislikeIcon from '@src/components/icons/Dislike';
@@ -14,7 +14,7 @@ const DislikeButton: FC<DislikeButtonProps> = ({
   onClick,
   userFeedback,
 }) => (
-  <div className='w-[60px] flex items-center justify-center'>
+  <div className='w-[40px] md:w-[60px] flex items-center justify-center'>
     <input
       type='checkbox'
       id={id}

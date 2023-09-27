@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 
 const config: Config = {
   content: [
@@ -12,11 +13,14 @@ const config: Config = {
         neutral: '#D1D5DB',
       },
       fontSize: {
-        title: '2.5rem',
-        subtitle: '2rem',
-        caption: '1.25rem',
-        small: '0.875rem',
+        xxl: '3rem', // Suitable for main headers
+        xl: '2.25rem', // Suitable for sub-headers or large headings
+        lg: '1.5rem', // Suitable for smaller headers or emphasized text
+        base: '1rem', // Standard size for body text
+        sm: '0.875rem', // Suitable for slightly smaller text like captions or footnotes
+        xs: '0.75rem', // Suitable for the smallest readable text
       },
+
       boxShadow: {
         soft: '0 4px 6px rgba(0, 0, 0, 0.1)',
         medium: '0 6px 15px rgba(0, 0, 0, 0.15)',
@@ -52,7 +56,19 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ matchUtilities, theme }) {
+      matchUtilities(
+        {
+          'translate-z': (value) => ({
+            '--tw-translate-z': value,
+            transform: ` translate3d(var(--tw-translate-x), var(--tw-translate-y), var(--tw-translate-z)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))`,
+          }), // this is actual CSS
+        },
+        { values: theme('translate'), supportsNegativeValues: true }
+      );
+    }),
+  ],
 };
 
 export default config;
