@@ -20,11 +20,11 @@ const CLIENT_NAV_KEYS: {
     iconKey: 'github',
     newTab: true,
   },
-  {
-    path: '/retrain',
-    name: 'Retrain',
-    iconKey: 'retrain',
-  },
+  // {
+  //   path: '/retrain',
+  //   name: 'Retrain',
+  //   iconKey: 'retrain',
+  // },
 ];
 
 const QUERY_KEYS = {

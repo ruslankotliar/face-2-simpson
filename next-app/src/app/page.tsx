@@ -117,6 +117,11 @@ export default function Main() {
   const [notification, setNotification] = useState<CustomNotification>();
   const [userFeedback, setUserFeedback] = useState<boolean | null>();
   const [permissionToStore, setPermissionToStore] = useState(true);
+  // const [predictionData, setPredictionData] = useState<PredictSimpsonData>({
+  //   predictionData: DEFAULT_PREDICTION_DATA,
+  //   predictionTime: 0,
+  //   imageBucketKey: '',
+  // });
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
   const [isVisibleProgressBar, setIsVisibleProgressBar] =
     useState<boolean>(false);
@@ -296,15 +301,20 @@ export default function Main() {
 
   return (
     <>
-      <div className='absolute left-24 top-32'>
+      <div className='absolute bottom-4 left-0 md:left-24 md:top-32 md:w-fit'>
         <About isVisible={isVisibleAbout} />
       </div>
-      <div className='h-full px-32 flex items-center justify-between overflow-hidden'>
+
+      <div
+        className={`min-h-[calc(100vh-3.5rem)] h-full px-4 py-4 md:py-0 md:px-32 flex flex-grow-0 flex-col md:flex-row items-center ${
+          predictionData ? 'justify-start gap-5' : 'justify-center'
+        } md:justify-between overflow-hidden`}
+      >
         <div
           className={
             predictionData
-              ? 'flex items-center w-1/2 h-full transition-all transform origin-left scale-x-1 duration-[500ms] relative'
-              : 'flex items-center w-0 h-full transition-all transform origin-left scale-x-0 duration-[500ms]'
+              ? 'flex items-start md:items-center w-full md:w-1/2 md:h-full transition-all transform origin-left scale-x-1 duration-[500ms] relative'
+              : 'flex items-start md:items-center w-0 h-0 md:h-full transition-all transform origin-left scale-x-0 duration-[500ms]'
           }
         >
           <ProgressBarWrapper
@@ -322,16 +332,18 @@ export default function Main() {
         <div
           className={
             predictionData
-              ? 'basis-1/2 flex items-center justify-center w-full h-full transition-all duration-[500ms]'
-              : 'basis-full flex items-center justify-center w-full h-full transition-all duration-[500ms]'
+              ? 'basis-1/2 flex items-start md:items-center justify-start md:justify-center w-full h-full transition-all duration-[500ms]'
+              : 'basis-full flex items-start md:items-center justify-center w-full h-full transition-all duration-[500ms]'
           }
         >
           <FileInputForm
+            setIsVisibleAbout={setIsVisibleAbout}
             handleSubmit={handleSubmit}
             notification={notification}
             setNotification={setNotification}
             permissionToStore={permissionToStore}
             setPermissionToStore={setPermissionToStore}
+            isDataPredicted={!!predictionData}
           />
         </div>
       </div>
@@ -345,6 +357,8 @@ interface FileInputFormProps {
   setNotification: (value: CustomNotification | undefined) => void;
   permissionToStore: boolean;
   setPermissionToStore: (permission: boolean) => void;
+  setIsVisibleAbout: (isVisible: boolean) => void;
+  isDataPredicted: boolean;
 }
 
 const FileInputForm: FC<FileInputFormProps> = ({
@@ -353,6 +367,8 @@ const FileInputForm: FC<FileInputFormProps> = ({
   setNotification,
   permissionToStore,
   setPermissionToStore,
+  setIsVisibleAbout,
+  isDataPredicted,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -379,18 +395,28 @@ const FileInputForm: FC<FileInputFormProps> = ({
             }
           />
         )}
-        <Form className='w-full max-w-sm space-y-6'>
-          <FileInput
-            name={FORM_KEYS.PERSON_IMG}
-            accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
-            setFieldValue={setFieldValue}
-          />
-          <CheckboxInput
-            label='Data can be stored.'
-            checked={permissionToStore}
-            onChange={setPermissionToStore}
-          />
-          <SubmitButton isDisabled={isSubmitting} />
+        <Form
+          className={`w-full max-w-sm md:max-w-sm flex ${
+            isDataPredicted ? 'gap-6' : 'gap-4'
+          } flex-col`}
+        >
+          <div>
+            <FileInput
+              name={FORM_KEYS.PERSON_IMG}
+              accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
+              setFieldValue={setFieldValue}
+              setIsVisibleAbout={setIsVisibleAbout}
+              isDataPredicted={isDataPredicted}
+            />
+          </div>
+          <div className='flex flex-row justify-between'>
+            <CheckboxInput
+              label='Data can be stored.'
+              checked={permissionToStore}
+              onChange={setPermissionToStore}
+            />
+            <SubmitButton isDisabled={isSubmitting} />
+          </div>
         </Form>
       </>
     )}
@@ -430,9 +456,9 @@ const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
         .map(([key, value], index) => (
           <div
             key={`${index}#${key}`}
-            className='flex gap-10 justify-between items-center w-full'
+            className='flex gap-4 md:gap-10 justify-between items-center w-full'
           >
-            <div className='w-[calc(100%-160px)]'>
+            <div className='w-[calc(100%-16px-80px)]'>
               <ProgressBar
                 isVisible={isVisible}
                 label={key as SimpsonCharacter}
@@ -443,14 +469,19 @@ const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
               />
             </div>
             {isVisible ? (
-              <div className='w-[120px]'>
+              <div className='w-[80px] md:w-[120px]'>
                 {isVisibleFeedback &&
                 getMaxSimilarChar(predictionData) === key ? (
                   <div className='mt-6 relative flex'>
                     {displaySpeechBubble ? (
-                      <div className='absolute bottom-full right-full translate-x-full transition-all'>
-                        <SpeechBubble content='Do you agree?' />
-                      </div>
+                      <>
+                        <div className='absolute bottom-full right-0 md:right-full md:translate-x-full transition-all block md:hidden'>
+                          <SpeechBubble content='Agree?' />
+                        </div>
+                        <div className='absolute bottom-full right-0 md:right-full md:translate-x-full transition-all hidden md:block'>
+                          <SpeechBubble content='Do you agree?' />
+                        </div>
+                      </>
                     ) : null}
                     <div className='flex items-center justify-center'>
                       <LikeButton
@@ -483,19 +514,21 @@ const About: FC<AboutProps> = function ({ isVisible }) {
     <div
       className={`${
         isVisible ? 'opacity-1' : 'opacity-0'
-      } max-w-md transition-opacity transition-duration-200`}
+      } px-4 md:px-0 w-screen md:max-w-md transition-opacity transition-duration-200`}
     >
       <div className='w-fit'>
-        <h1 className={`${akbar.className} text-subtitle font-bold`}>About</h1>
+        <h1 className={`${akbar.className} text-base md:text-xl font-bold`}>
+          About
+        </h1>
       </div>
-      <div className='text-caption transform -rotate-[15deg]'>
-        <p className='text-lg font-medium'>
+      <div className='text-sm transform md:-rotate-[15deg] md:font-medium'>
+        <p>
           Find out which{' '}
           <span className='text-primary'>Simpsons character</span> you look like
           <br />
           with our <span className='text-primary'>machine learning</span> app.
         </p>
-        <p className='text-lg font-medium'>
+        <p>
           Upload a <span className='text-primary'>picture</span> of yourself to
           get started.
         </p>

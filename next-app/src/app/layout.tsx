@@ -14,6 +14,7 @@ import NavHomeIcon from '@src/components/icons/NavHome';
 import { ReactNode } from 'react';
 import NavDashboardIcon from '@src/components/icons/NavDashboard';
 import NavGitHubIcon from '@src/components/icons/NavGitHub';
+import BurgerMenu from '@src/components/misc/BurgerMenu';
 
 export const metadata: Metadata = {
   title: 'Predict Simpson',
@@ -29,7 +30,9 @@ export default function RootLayout({
     <html lang='en'>
       <body className={roboto.className + ' relative'}>
         <MainHeader />
-        <main className='h-[calc(100vh-5rem)]'>{children}</main>
+        <main className='min-h-[calc(100vh-3.5rem)] md:min-h-[calc(100vh-5rem)] h-full overflow-hidden'>
+          {children}
+        </main>
       </body>
     </html>
   );
@@ -38,11 +41,11 @@ export default function RootLayout({
 const MainHeader = function () {
   return (
     <>
-      <div className='absolute right-32 top-32 h-fit w-fit z-20'>
+      <div className='hidden md:block absolute md:right-32 md:top-32 h-fit w-fit z-20'>
         <NavBar />
       </div>
 
-      <header className='bg-black h-20 flex items-center relative w-screen'>
+      <header className='bg-black h-14 md:h-20 flex items-center relative w-screen'>
         <Image
           src={SimpsonsSkyBg}
           alt='Header cloud background'
@@ -51,14 +54,19 @@ const MainHeader = function () {
           className='absolute top-0 left-0 w-full h-full z-10'
           priority={true}
         />
-        <nav className='px-10 z-20 flex justify-center w-full items-center'>
-          <Link href={'/'}>
-            <h1
-              className={`${akbar.className} font-simpsons text-center text-title transition-transform hover:scale-105`}
-            >
-              Face-2-Simpson
-            </h1>
-          </Link>
+        <nav className='px-6 md:px-0 z-20 flex justify-between md:justify-center w-full items-center'>
+          <div>
+            <Link href={'/'}>
+              <h1
+                className={`${akbar.className} font-simpsons text-center text-lg md:text-xxl transition-transform hover:scale-105`}
+              >
+                Face-2-Simpson
+              </h1>
+            </Link>
+          </div>
+          <div className='block md:hidden'>
+            <BurgerMenu />
+          </div>
         </nav>
       </header>
     </>
@@ -87,7 +95,7 @@ const NavBar = function () {
           </li>
         ))}
       </ul>
-      <h2 className={`${akbar.className} text-subtitle`}>Menu</h2>
+      <h2 className={`${akbar.className} text-xl`}>Menu</h2>
     </nav>
   );
 };

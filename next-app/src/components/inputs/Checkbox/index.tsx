@@ -15,7 +15,9 @@ const CheckboxInput: FC<CheckboxProps> = function ({
   onChange,
 }) {
   return (
-    <div className='flex justify-between gap-2 items-center w-fit'>
+    <div
+      className={`flex flex-row justify-between gap-4 items-start md:items-center w-fit`}
+    >
       <div className={styles['checkbox-wrapper-63']}>
         <label className={styles['switch']}>
           <input
@@ -32,7 +34,7 @@ const CheckboxInput: FC<CheckboxProps> = function ({
 
       <label
         htmlFor='data-can-be-stored'
-        className={`${akbar.className} text-caption ml-2`}
+        className={`${akbar.className} text-base md:ml-2`}
       >
         {label}
       </label>
