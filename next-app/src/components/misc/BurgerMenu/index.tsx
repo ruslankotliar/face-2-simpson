@@ -14,8 +14,6 @@ const BurgerMenu = function () {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(styles['menu']);
-
   const handleSetOpen = () => setIsOpen((value) => !value);
 
   const icons: Record<string, ReactNode> = {
