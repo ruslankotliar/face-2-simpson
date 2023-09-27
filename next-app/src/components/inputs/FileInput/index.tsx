@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import { FormikErrors } from 'formik';
 import Image from 'next/image';
@@ -33,7 +34,11 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
   };
 
   return (
-    <div className='relative border-2 border-dashed border-neutral rounded-card p-6 hover:border-primary duration-200 cursor-pointer transition-colors'>
+    <div
+      className={`relative ${
+        !previewURL ? 'border-2 border-dashed' : ''
+      } border-neutral rounded-card p-6 hover:border-primary duration-200 cursor-pointer transition-colors h-fit w-full`}
+    >
       <input
         type='file'
         name={name}
@@ -47,13 +52,8 @@ const FileInput = function ({ setFieldValue, name, accept }: IUploadFile) {
           <p className='text-subtitle font-secondary'>Upload your picture</p>
         </div>
       ) : (
-        <div className='w-full h-40 rounded-card overflow-hidden relative'>
-          <Image
-            src={previewURL}
-            alt='Preview'
-            fill
-            style={{ objectFit: 'contain' }}
-          />
+        <div className='w-full rounded-card overflow-hidden relative shadow-image'>
+          <img src={previewURL} alt='Preview' className='w-full h-fit' />
           <button
             onClick={removeImage}
             className='absolute top-2 right-2 flex items-center justify-center text-highlight font-bold text-lg focus:outline-none hover:text-primary active:bg-primary-dark'

@@ -21,6 +21,7 @@ const config: Config = {
         soft: '0 4px 6px rgba(0, 0, 0, 0.1)',
         medium: '0 6px 15px rgba(0, 0, 0, 0.15)',
         hard: '0 10px 25px rgba(0, 0, 0, 0.2)',
+        image: '0px 25px 50px -12px rgba(0, 0, 0, 0.3) ',
       },
       borderRadius: {
         card: '10px',
