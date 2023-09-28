@@ -301,20 +301,20 @@ export default function Main() {
 
   return (
     <>
-      <div className='absolute bottom-4 left-0 md:left-24 md:top-32 md:w-fit'>
+      <div className='hidden md:block absolute left-24 top-32 w-fit'>
         <About isVisible={isVisibleAbout} />
       </div>
 
       <div
-        className={`min-h-[calc(100vh-3.5rem)] h-full px-4 py-4 md:py-0 md:px-32 flex flex-grow-0 flex-col md:flex-row items-center ${
-          predictionData ? 'justify-start gap-5' : 'justify-center'
-        } md:justify-between overflow-hidden`}
+        className={`h-[calc(100vh-3.5rem)] px-4 py-4 md:py-0 md:px-32 flex flex-col md:flex-row items-center justify-between ${
+          predictionData ? 'gap-5' : 'gap-0'
+        }`}
       >
         <div
           className={
             predictionData
-              ? 'flex items-start md:items-center w-full md:w-1/2 md:h-full transition-all transform origin-left scale-x-1 duration-[500ms] relative'
-              : 'flex items-start md:items-center w-0 h-0 md:h-full transition-all transform origin-left scale-x-0 duration-[500ms]'
+              ? 'flex flex-none items-start md:items-center w-full h-fit md:w-1/2 md:h-full transition-all transform origin-left scale-x-1 duration-500 relative'
+              : 'flex items-start md:items-center w-0 h-0 md:h-full transition-all transform origin-left scale-x-0 duration-500'
           }
         >
           <ProgressBarWrapper
@@ -329,13 +329,7 @@ export default function Main() {
           />
         </div>
 
-        <div
-          className={
-            predictionData
-              ? 'basis-1/2 flex items-start md:items-center justify-start md:justify-center w-full h-full transition-all duration-[500ms]'
-              : 'basis-full flex items-start md:items-center justify-center w-full h-full transition-all duration-[500ms]'
-          }
-        >
+        <div className='flex flex-1 flex-grow items-center md:items-center justify-stretch md:justify-center w-full duration-500 min-h-0 h-full md:h-fit'>
           <FileInputForm
             setIsVisibleAbout={setIsVisibleAbout}
             handleSubmit={handleSubmit}
@@ -345,6 +339,11 @@ export default function Main() {
             setPermissionToStore={setPermissionToStore}
             isDataPredicted={!!predictionData}
           />
+        </div>
+        <div
+          className={`${isVisibleAbout ? 'block mt-4' : 'hidden'} md:hidden`}
+        >
+          <About isVisible={isVisibleAbout} />
         </div>
       </div>
     </>
@@ -396,11 +395,11 @@ const FileInputForm: FC<FileInputFormProps> = ({
           />
         )}
         <Form
-          className={`w-full max-w-sm md:max-w-sm flex ${
+          className={`w-full h-full min-h-0 md:max-w-sm flex flex-col flex-1 justify-center ${
             isDataPredicted ? 'gap-6' : 'gap-4'
-          } flex-col`}
+          }`}
         >
-          <div>
+          <div className='flex flex-1 min-h-0'>
             <FileInput
               name={FORM_KEYS.PERSON_IMG}
               accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
@@ -409,7 +408,7 @@ const FileInputForm: FC<FileInputFormProps> = ({
               isDataPredicted={isDataPredicted}
             />
           </div>
-          <div className='flex flex-row justify-between'>
+          <div className='flex flex-none flex-row justify-between'>
             <CheckboxInput
               label='Data can be stored.'
               checked={permissionToStore}

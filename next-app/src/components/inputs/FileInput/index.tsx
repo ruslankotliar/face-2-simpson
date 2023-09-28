@@ -47,9 +47,7 @@ const FileInput: FC<IUploadFile> = function ({
     <div
       className={`relative ${
         !previewURL ? 'border-2 border-dashed' : ''
-      } border-neutral rounded-card ${
-        isDataPredicted ? 'px-12' : 'px-0'
-      } hover:border-primary duration-200 cursor-pointer transition-colors h-full w-full`}
+      } border-neutral rounded-card hover:border-primary duration-200 cursor-pointer transition-colors flex flex-1 justify-center items-stretch min-h-0 w-full h-full`}
     >
       <input
         type='file'
@@ -58,19 +56,22 @@ const FileInput: FC<IUploadFile> = function ({
         accept={accept}
         onChange={handleChangeImage}
       />
-
       {!previewURL ? (
-        <div className='text-center text-neutral h-full flex items-center justify-center'>
-          <p className='text-lg md:text-xl mx-2 font-secondary p-6'>
+        <div className='text-center text-neutral flex items-center justify-center'>
+          <p className='text-lg md:text-xl mx-2 font-secondary p-6 py-8'>
             Upload your picture
           </p>
         </div>
       ) : (
-        <div className='md:w-full rounded-card overflow-hidden relative shadow-image'>
-          <img src={previewURL} alt='Preview' className='w-full h-fit' />
+        <div className='relative md:w-full flex items-center justify-center'>
+          <img
+            src={previewURL}
+            alt='Preview'
+            className='h-full md:w-full object-cover rounded-card shadow-image'
+          />
           <button
             onClick={removeImage}
-            className='absolute top-2 right-2 flex items-center justify-center text-highlight font-bold text-lg focus:outline-none hover:text-primary active:bg-primary-dark'
+            className={`absolute top-2 left-2 flex items-center justify-center text-highlight font-bold text-sm md:text-lg focus:outline-none hover:text-primary active:bg-primary-dark`}
           >
             <CloseIcon />
           </button>
