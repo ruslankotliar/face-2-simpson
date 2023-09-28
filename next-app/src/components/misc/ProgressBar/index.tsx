@@ -122,7 +122,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
           ></div>
         </div>
         <div
-          className={`absolute h-18 w-18 md:h-24 md:w-24 transform translate-y-[-10em] md:translate-y-[-8.5em] translate-z-[5em] ${
+          className={`absolute h-18 w-18 md:h-24 md:w-24 transform translate-y-[-10em] md:translate-y-[-8.5em] translate-z-[5em] md:translate-z-[6em] ${
             isGreater ? 'scale-x-100' : '-scale-x-100'
           }`}
           style={{
@@ -130,7 +130,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
             transition: `margin-left ${
               width !== 0 ? '3s' : '0s'
             } ease-in-out, opacity 500ms ease-in-out`,
-            opacity: isVisible && charactersRun ? 1 : 0,
+            // opacity: isVisible && charactersRun ? 1 : 0,
           }}
         >
           <Image

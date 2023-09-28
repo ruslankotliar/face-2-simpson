@@ -161,16 +161,16 @@ export default function Main() {
         submitFeedbackToServer(predictionData, null);
       }
 
-      // receiveFeedback({
-      //   predictionData: {
-      //     lisa_simpson: Math.random(),
-      //     homer_simpson: Math.random(),
-      //     bart_simpson: Math.random(),
-      //     marge_simpson: Math.random(),
-      //   },
-      //   predictionTime: 10,
-      //   imageBucketKey: '',
-      // });
+      receiveFeedback({
+        predictionData: {
+          lisa_simpson: Math.random(),
+          homer_simpson: Math.random(),
+          bart_simpson: Math.random(),
+          marge_simpson: Math.random(),
+        },
+        predictionTime: 10,
+        imageBucketKey: '',
+      });
 
       if (!personImg) {
         setNotification({
