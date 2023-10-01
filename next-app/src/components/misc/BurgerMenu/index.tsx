@@ -66,6 +66,7 @@ const BurgerMenu = function () {
       >
         <input
           checked={isOpen}
+          onChange={() => setIsOpen(!isOpen)}
           type='checkbox'
           role='button'
           aria-label='Display the menu'

@@ -3,8 +3,6 @@
 import dayjs from 'dayjs';
 import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 
-
-
 import { Line } from 'react-chartjs-2';
 
 import {
@@ -18,7 +16,7 @@ import {
   Tooltip,
   Legend,
   ChartOptions,
-  ChartData,
+  ChartData
 } from 'chart.js';
 import { CHART_STYLES } from '@src/constants';
 
@@ -51,9 +49,9 @@ const LineChart = function ({ data }: { data: ModelAccuracyPoint[] }) {
         borderColor: CHART_STYLES.MODEL_ACCURACY.CHART_COLOR,
         borderWidth: 2,
         pointRadius: 3,
-        pointHoverRadius: 5,
-      },
-    ],
+        pointHoverRadius: 5
+      }
+    ]
   };
 
   const options: ChartOptions<'line'> = {
@@ -64,62 +62,62 @@ const LineChart = function ({ data }: { data: ModelAccuracyPoint[] }) {
         display: false,
         position: 'top',
         labels: {
-          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
-        },
+          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR // Softened color
+        }
       },
       title: {
         display: true,
         text: 'Model Accuracy',
-        color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
+        color: CHART_STYLES.DEFAULT.SOFTENED_COLOR // Softened color
       },
       tooltip: {
-        mode: 'index',
-      },
+        mode: 'index'
+      }
     },
     scales: {
       x: {
-        type: 'time',
+        type: 'timeseries',
         time: {
           parser: dateFormat,
           unit: 'day',
           displayFormats: {
-            day: 'MMM DD',
-          },
+            day: 'MMM DD'
+          }
         },
         grid: {
-          color: CHART_STYLES.DEFAULT.GRID_COLOR,
-        },
+          color: CHART_STYLES.DEFAULT.GRID_COLOR
+        }
       },
       y: {
         grace: '1%',
         title: {
           display: true,
           text: 'Accuracy (%)',
-          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color
+          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR // Softened color
         },
         ticks: {
           color: CHART_STYLES.DEFAULT.SOFTENED_COLOR, // Softened color,
           callback: function (value: number | string) {
             return value + '%';
-          },
+          }
         },
         grid: {
-          color: CHART_STYLES.DEFAULT.GRID_COLOR,
-        },
-      },
+          color: CHART_STYLES.DEFAULT.GRID_COLOR
+        }
+      }
     },
     elements: {
       line: {
-        tension: 0.25,
+        tension: 0.25
       },
       point: {
-        backgroundColor: CHART_STYLES.MODEL_ACCURACY.CHART_COLOR, // Updated color for a modern look
-      },
+        backgroundColor: CHART_STYLES.MODEL_ACCURACY.CHART_COLOR // Updated color for a modern look
+      }
     },
     animation: {
       duration: 500,
-      easing: 'easeInOutQuad',
-    },
+      easing: 'easeInOutQuad'
+    }
   };
 
   return <Line data={chartData} options={options} />;
