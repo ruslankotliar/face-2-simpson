@@ -9,10 +9,9 @@ import {
   Title,
   ArcElement,
   ChartOptions,
-  ChartData,
+  ChartData
 } from 'chart.js';
 import { CHART_STYLES } from '@src/constants';
-import { capitalizeWord } from '@src/helpers';
 import formatCharacterName from '@src/helpers/formatCharacterName';
 import { SimpsonCharacter } from '@src/types';
 
@@ -30,9 +29,9 @@ const PieChart = function ({ data }: { data: CharacterPredictionChartData[] }) {
       {
         label: 'Times Predicted',
         data: data?.map(({ count }) => count),
-        backgroundColor: CHART_STYLES.CHARACTER_PREDICTED.BACKGROUND,
-      },
-    ],
+        backgroundColor: CHART_STYLES.CHARACTER_PREDICTED.BACKGROUND
+      }
+    ]
   };
 
   const options: ChartOptions<'pie'> = {
@@ -42,13 +41,13 @@ const PieChart = function ({ data }: { data: CharacterPredictionChartData[] }) {
       legend: {
         position: 'top' as 'top',
         labels: {
-          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR,
-        },
+          color: CHART_STYLES.DEFAULT.SOFTENED_COLOR
+        }
       },
       title: {
         display: true,
         text: 'Predicted Simpsons Characters Distribution',
-        color: CHART_STYLES.DEFAULT.SOFTENED_COLOR,
+        color: CHART_STYLES.DEFAULT.SOFTENED_COLOR
       },
       tooltip: {
         mode: 'point',
@@ -59,23 +58,10 @@ const PieChart = function ({ data }: { data: CharacterPredictionChartData[] }) {
             const percentage = Math.round((Number(parsed) / sum) * 100) + '%';
             if (parsed !== null) label += percentage;
             return label;
-          },
-        },
-      },
-      // datalabels: {
-      //   formatter: (value, ctx) => {
-      //     let datasets = ctx.chart.data.datasets;
-      //     if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
-      //       let sum = datasets[0].data.reduce((a, b) => a + b, 0);
-      //       let percentage = Math.round((value / sum) * 100) + '%';
-      //       return percentage;
-      //     } else {
-      //       return percentage;
-      //     }
-      //   },
-      //   color: '#fff',
-      // },
-    },
+          }
+        }
+      }
+    }
   };
   return <Pie data={chartData} options={options} />;
 };

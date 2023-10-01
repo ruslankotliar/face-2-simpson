@@ -23,17 +23,14 @@ interface FeedbackData extends PredictSimpsonData {
 
 type RequestParams = {
   unit?: TimeUnit;
+  bin?: number;
 };
 
 type RequestSearchParams = {};
 
 type TimeUnit = 'day' | 'month' | 'year';
 
-type SimpsonCharacter =
-  | 'bart_simpson'
-  | 'homer_simpson'
-  | 'lisa_simpson'
-  | 'marge_simpson';
+type SimpsonCharacter = 'bart_simpson' | 'homer_simpson' | 'lisa_simpson' | 'marge_simpson';
 
 // type AlertOptions = 'loading' | 'success' | 'info' | 'error' | 'warn';
 
@@ -42,11 +39,11 @@ enum AlertOptions {
   success = 'success',
   info = 'info',
   error = 'error',
-  warn = 'warn',
+  warn = 'warn'
 }
 
 enum AlertIconKeys {
-  homerError = 'homerError',
+  homerError = 'homerError'
 }
 
 export type {
@@ -58,7 +55,7 @@ export type {
   RequestSearchParams,
   TimeUnit,
   FeedbackData,
-  SimpsonCharacter,
+  SimpsonCharacter
 };
 
 export { AlertOptions, AlertIconKeys };

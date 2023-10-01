@@ -5,11 +5,11 @@ const predictionSchema = new mongoose.Schema(
     predictionTime: {
       // measured in milliseconds or whichever unit is appropriate
       type: Number,
-      required: true,
+      required: true
     },
     characterPredicted: {
       type: String,
-      required: true,
+      required: true
     },
     //   userId: {
     //     // associate the prediction with a specific user
@@ -17,21 +17,22 @@ const predictionSchema = new mongoose.Schema(
     //     ref: 'User',
     //   },
     imageBucketKey: {
-      type: String,
+      type: String
     },
     userFeedback: {
       type: Boolean,
       default: null,
-      required: false,
-    },
+      required: false
+    }
   },
   {
     // add createdAt and updatedAt timestamps
-    timestamps: { createdAt: true, updatedAt: false },
+    timestamps: { createdAt: true, updatedAt: false }
   }
 );
 
-const Prediction =
-  mongoose.models.Prediction || mongoose.model('Prediction', predictionSchema);
+predictionSchema.index({ createdAt: 1, characterPredicted: 1 });
+
+const Prediction = mongoose.models.Prediction || mongoose.model('Prediction', predictionSchema);
 
 export { Prediction };

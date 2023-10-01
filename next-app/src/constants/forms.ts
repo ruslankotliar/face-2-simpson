@@ -1,25 +1,25 @@
-import { SimpsonCharacter, StringArrayMap } from '@src/types';
+import { SimpsonCharacter, StringArrayMap, TimeUnit } from '@src/types';
 
 const FORM_CONSTANTS = {
   MAX_PERSON_IMG_SIZE: 10 * 1024 * 1024, // 10MB in bytes
-  ACCEPT_PERSON_IMG_EXTENSIONS: '.jpeg, .png',
+  ACCEPT_PERSON_IMG_EXTENSIONS: '.jpeg, .png'
 };
 
 const VALID_FILE_EXTENSIONS: StringArrayMap = {
-  personImg: ['png', 'jpeg', 'jpg'],
+  personImg: ['png', 'jpeg', 'jpg']
 };
 
 const FILENAME_KEYS = {
   PURPOSE: {
     TRAIN: 'train',
-    TEST: 'test',
-  },
+    TEST: 'test'
+  }
 };
 
 const PREDICTION_TIME_CHART_UNITS = {
   DAY: 'day',
   MONTH: 'month',
-  YEAR: 'year',
+  YEAR: 'year'
 };
 
 const ALERT_TIMEOUT = 4000;
@@ -32,12 +32,20 @@ const DEFAULT_PREDICTION_DATA: Record<SimpsonCharacter, number> = {
   lisa_simpson: 0,
   bart_simpson: 0,
   homer_simpson: 0,
-  marge_simpson: 0,
+  marge_simpson: 0
 };
 
 const FORM_KEYS = {
-  PERSON_IMG: 'personImg',
+  PERSON_IMG: 'personImg'
 };
+
+const MAX_BIN_GROUP: Record<TimeUnit, number> = {
+  day: 30,
+  month: 11,
+  year: 3
+};
+const MIN_BIN_GROUP = 1;
+const MIN_BIN_IS_TOOLTIP_VISIBLE = 10;
 
 export {
   FORM_CONSTANTS,
@@ -51,4 +59,7 @@ export {
   ASK_FEEDBACK_TIMEOUT,
   DISPLAY_SPEECH_BUBBLE_TIMEOUT,
   SET_DEFAULT_USER_FEEDBACK_TIMEOUT,
+  MIN_BIN_GROUP,
+  MAX_BIN_GROUP,
+  MIN_BIN_IS_TOOLTIP_VISIBLE
 };
