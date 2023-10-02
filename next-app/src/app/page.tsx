@@ -22,13 +22,9 @@ import {
   FORM_KEYS,
   HOMER_RUN_TIMEOUT,
   PROGRESS_BAR_COLORS,
-  QUERY_KEYS,
+  QUERY_KEYS
 } from '@src/constants';
-import {
-  generateFetchURL,
-  getMaxSimilarChar,
-  isValidFileType,
-} from '@src/helpers';
+import { generateFetchURL, getMaxSimilarChar, isValidFileType } from '@src/helpers';
 import {
   FeedbackData,
   PredictSimpsonData,
@@ -36,7 +32,7 @@ import {
   AlertOptions,
   AlertIconKeys,
   SimpsonCharacter,
-  CustomNotification,
+  CustomNotification
 } from '@src/types';
 import Alert from '@src/components/misc/Alert';
 import ProgressBar from '@src/components/misc/ProgressBar';
@@ -46,41 +42,33 @@ import DislikeButton from '@src/components/buttons/DislikeButton';
 import float2int from '@src/helpers/float2int';
 import useQueryString from '@src/hooks/useQueryString';
 
-const sendFeedback = async function (
-  url: string,
-  data: FeedbackData
-): Promise<void> {
+const sendFeedback = async function (url: string, data: FeedbackData): Promise<void> {
   try {
     await fetch(url, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      keepalive: true,
+      keepalive: true
     });
   } catch (e) {
     if (e instanceof Error) throw Error(e.message);
   }
 };
 
-const predictSimpson = async function (
-  personImg: File
-): Promise<PredictSimpsonData | undefined> {
+const predictSimpson = async function (personImg: File): Promise<PredictSimpsonData | undefined> {
   try {
     console.log('Generating presigned url...');
     const {
-      data: { key, url },
+      data: { key, url }
     } = await axios.post(generateFetchURL('UPLOAD_IMAGE', {}, {}));
 
     console.log('Uploading image...');
     await axios.put(url, personImg);
 
     console.log('Requesting prediction...');
-    const { data } = await axios.post(
-      generateFetchURL('REQUEST_PREDICTION', {}, {}),
-      { key }
-    );
+    const { data } = await axios.post(generateFetchURL('REQUEST_PREDICTION', {}, {}), { key });
 
     return data;
   } catch (e) {
@@ -89,30 +77,25 @@ const predictSimpson = async function (
 };
 
 const initialValues: PredictInitialValues = {
-  personImg: undefined,
+  personImg: undefined
 };
 
 const validationSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   personImg: Yup.mixed<File>()
     .required('Image is required!')
     .test('fileType', 'Unsupported File Format.', (value) => {
-      return isValidFileType(
-        value.name && value.name.toLowerCase(),
-        FORM_KEYS.PERSON_IMG
-      );
+      return isValidFileType(value.name && value.name.toLowerCase(), FORM_KEYS.PERSON_IMG);
     })
     .test(
       'fileSize',
       'File Size is too large.',
-      (value: any) =>
-        value && value.size <= Number(FORM_CONSTANTS.MAX_PERSON_IMG_SIZE)
-    ),
+      (value: any) => value && value.size <= Number(FORM_CONSTANTS.MAX_PERSON_IMG_SIZE)
+    )
 });
 
 export default function Main() {
   const [charactersRun, setCharactersRun] = useState<boolean>(false);
-  const [displaySpeechBubble, setDisplaySpeechBubble] =
-    useState<boolean>(false);
+  const [displaySpeechBubble, setDisplaySpeechBubble] = useState<boolean>(false);
   const [predictionStored, setPredictionStored] = useState<boolean>(false);
   const [notification, setNotification] = useState<CustomNotification>();
   const [userFeedback, setUserFeedback] = useState<boolean | null>();
@@ -123,12 +106,10 @@ export default function Main() {
   //   imageBucketKey: '',
   // });
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
-  const [isVisibleProgressBar, setIsVisibleProgressBar] =
-    useState<boolean>(false);
+  const [isVisibleProgressBar, setIsVisibleProgressBar] = useState<boolean>(false);
   const [isVisibleAbout, setIsVisibleAbout] = useState<boolean>(true);
 
-  const { createQueryString, updateQueryString, getQueryParam } =
-    useQueryString();
+  const { createQueryString, updateQueryString, getQueryParam } = useQueryString();
 
   const submitFeedbackToServer = async function (
     data: PredictSimpsonData | undefined = predictionData,
@@ -139,7 +120,7 @@ export default function Main() {
       await sendFeedback(generateFetchURL('SEND_PREDICTION_FEEDBACK', {}, {}), {
         userFeedback: feedback,
         permissionToStore,
-        ...data,
+        ...data
       });
 
       setPredictionStored(true);
@@ -148,14 +129,12 @@ export default function Main() {
         setNotification({
           content: e.message,
           type: AlertOptions.error,
-          iconKey: AlertIconKeys.homerError,
+          iconKey: AlertIconKeys.homerError
         });
     }
   };
 
-  const handleSubmit = async function ({
-    personImg,
-  }: PredictInitialValues): Promise<void> {
+  const handleSubmit = async function ({ personImg }: PredictInitialValues): Promise<void> {
     try {
       if (predictionData && !predictionStored) {
         submitFeedbackToServer(predictionData, null);
@@ -166,17 +145,17 @@ export default function Main() {
           lisa_simpson: Math.random(),
           homer_simpson: Math.random(),
           bart_simpson: Math.random(),
-          marge_simpson: Math.random(),
+          marge_simpson: Math.random()
         },
         predictionTime: 10,
-        imageBucketKey: '',
+        imageBucketKey: ''
       });
 
       if (!personImg) {
         setNotification({
           content: 'Image is required!',
           type: AlertOptions.error,
-          iconKey: AlertIconKeys.homerError,
+          iconKey: AlertIconKeys.homerError
         });
 
         return;
@@ -190,19 +169,17 @@ export default function Main() {
         setNotification({
           content: e.message,
           type: AlertOptions.error,
-          iconKey: AlertIconKeys.homerError,
+          iconKey: AlertIconKeys.homerError
         });
     }
   };
 
-  const receiveFeedback = function (
-    data: PredictSimpsonData | undefined
-  ): void {
+  const receiveFeedback = function (data: PredictSimpsonData | undefined): void {
     if (!data) {
       setNotification({
         content: 'Predicted data is missing!',
         type: AlertOptions.error,
-        iconKey: AlertIconKeys.homerError,
+        iconKey: AlertIconKeys.homerError
       });
 
       return;
@@ -237,7 +214,7 @@ export default function Main() {
         e.preventDefault();
         setNotification({
           content: 'Feedback already stored.',
-          type: AlertOptions.warn,
+          type: AlertOptions.warn
         });
       } else {
         setUserFeedback(value);
@@ -246,7 +223,7 @@ export default function Main() {
       e.preventDefault();
       setNotification({
         content: 'Please predict first!',
-        type: AlertOptions.warn,
+        type: AlertOptions.warn
       });
     }
     return;
@@ -301,7 +278,7 @@ export default function Main() {
 
   return (
     <>
-      <div className='hidden md:block absolute left-24 top-32 w-fit'>
+      <div className="hidden md:block absolute left-24 top-32 w-fit">
         <About isVisible={isVisibleAbout} />
       </div>
 
@@ -318,9 +295,7 @@ export default function Main() {
           }
         >
           <ProgressBarWrapper
-            predictionData={
-              predictionData?.predictionData || DEFAULT_PREDICTION_DATA
-            }
+            predictionData={predictionData?.predictionData || DEFAULT_PREDICTION_DATA}
             charactersRun={charactersRun}
             displaySpeechBubble={displaySpeechBubble}
             userFeedback={userFeedback}
@@ -329,7 +304,7 @@ export default function Main() {
           />
         </div>
 
-        <div className='flex flex-1 flex-grow items-center md:items-center justify-stretch md:justify-center w-full duration-500 min-h-0 h-full md:h-fit'>
+        <div className="flex flex-1 flex-grow items-center md:items-center justify-stretch md:justify-center w-full duration-500 min-h-0 h-full md:h-fit">
           <FileInputForm
             setIsVisibleAbout={setIsVisibleAbout}
             handleSubmit={handleSubmit}
@@ -340,9 +315,7 @@ export default function Main() {
             isDataPredicted={!!predictionData}
           />
         </div>
-        <div
-          className={`${isVisibleAbout ? 'block mt-4' : 'hidden'} md:hidden`}
-        >
+        <div className={`${isVisibleAbout ? 'block mt-4' : 'hidden'} md:hidden`}>
           <About isVisible={isVisibleAbout} />
         </div>
       </div>
@@ -367,13 +340,9 @@ const FileInputForm: FC<FileInputFormProps> = ({
   permissionToStore,
   setPermissionToStore,
   setIsVisibleAbout,
-  isDataPredicted,
+  isDataPredicted
 }) => (
-  <Formik
-    initialValues={initialValues}
-    validationSchema={validationSchema}
-    onSubmit={handleSubmit}
-  >
+  <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
     {({ setFieldValue, isSubmitting, errors, setFieldError }) => (
       <>
         <Alert
@@ -389,9 +358,7 @@ const FileInputForm: FC<FileInputFormProps> = ({
           <Loader
             width={'200'}
             height={'200'}
-            wrapperClass={
-              'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50'
-            }
+            wrapperClass={'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50'}
           />
         )}
         <Form
@@ -399,18 +366,19 @@ const FileInputForm: FC<FileInputFormProps> = ({
             isDataPredicted ? 'gap-6' : 'gap-4'
           }`}
         >
-          <div className='flex flex-1 min-h-0'>
+          <div className="flex flex-1 min-h-0">
             <FileInput
               name={FORM_KEYS.PERSON_IMG}
               accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
               setFieldValue={setFieldValue}
               setIsVisibleAbout={setIsVisibleAbout}
               isDataPredicted={isDataPredicted}
+              isSubmitting={isSubmitting}
             />
           </div>
-          <div className='flex flex-none flex-row justify-between'>
+          <div className="flex flex-none flex-row justify-between">
             <CheckboxInput
-              label='Data can be stored.'
+              label="Data can be stored."
               checked={permissionToStore}
               onChange={setPermissionToStore}
             />
@@ -427,10 +395,7 @@ interface ProgressBarWrapperProps {
   charactersRun: boolean;
   displaySpeechBubble: boolean;
   userFeedback: boolean | null | undefined;
-  handleClickFeedbackHeart: (
-    e: ChangeEvent<HTMLInputElement>,
-    value: boolean
-  ) => void;
+  handleClickFeedbackHeart: (e: ChangeEvent<HTMLInputElement>, value: boolean) => void;
   isVisible: boolean;
 }
 
@@ -440,7 +405,7 @@ const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
   displaySpeechBubble,
   userFeedback,
   handleClickFeedbackHeart,
-  isVisible,
+  isVisible
 }) => {
   const [isVisibleFeedback, setIsVisibleFeedback] = useState<boolean>(false);
 
@@ -449,15 +414,15 @@ const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
   }, [displaySpeechBubble]);
 
   return (
-    <div className='w-full'>
+    <div className="w-full">
       {Object.entries(predictionData)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, value], index) => (
           <div
             key={`${index}#${key}`}
-            className='flex gap-4 md:gap-10 justify-between items-center w-full'
+            className="flex gap-4 md:gap-10 justify-between items-center w-full"
           >
-            <div className='w-[calc(100%-16px-80px)]'>
+            <div className="w-[calc(100%-16px-80px)]">
               <ProgressBar
                 isVisible={isVisible}
                 label={key as SimpsonCharacter}
@@ -468,21 +433,20 @@ const ProgressBarWrapper: FC<ProgressBarWrapperProps> = ({
               />
             </div>
             {isVisible ? (
-              <div className='w-[80px] md:w-[120px]'>
-                {isVisibleFeedback &&
-                getMaxSimilarChar(predictionData) === key ? (
-                  <div className='mt-6 relative flex'>
+              <div className="w-[80px] md:w-[120px]">
+                {isVisibleFeedback && getMaxSimilarChar(predictionData) === key ? (
+                  <div className="mt-6 relative flex">
                     {displaySpeechBubble ? (
                       <>
-                        <div className='absolute bottom-full right-0 md:right-full md:translate-x-full transition-all block md:hidden'>
-                          <SpeechBubble content='Agree?' />
+                        <div className="absolute bottom-full right-0 md:right-full md:translate-x-full transition-all block md:hidden">
+                          <SpeechBubble content="Agree?" />
                         </div>
-                        <div className='absolute bottom-full right-0 md:right-full md:translate-x-full transition-all hidden md:block'>
-                          <SpeechBubble content='Do you agree?' />
+                        <div className="absolute bottom-full right-0 md:right-full md:translate-x-full transition-all hidden md:block">
+                          <SpeechBubble content="Do you agree?" />
                         </div>
                       </>
                     ) : null}
-                    <div className='flex items-center justify-center'>
+                    <div className="flex items-center justify-center">
                       <LikeButton
                         userFeedback={userFeedback}
                         onClick={handleClickFeedbackHeart}
@@ -515,21 +479,17 @@ const About: FC<AboutProps> = function ({ isVisible }) {
         isVisible ? 'opacity-1' : 'opacity-0'
       } px-4 md:px-0 w-screen md:max-w-md transition-opacity transition-duration-200`}
     >
-      <div className='w-fit'>
-        <h1 className={`${akbar.className} text-base md:text-xl font-bold`}>
-          About
-        </h1>
+      <div className="w-fit">
+        <h1 className={`${akbar.className} text-base md:text-xl font-bold`}>About</h1>
       </div>
-      <div className='text-sm transform md:-rotate-[15deg] md:font-medium'>
+      <div className="text-sm md:text-base transform md:-rotate-[15deg] md:font-medium">
         <p>
-          Find out which{' '}
-          <span className='text-primary'>Simpsons character</span> you look like
+          Find out which <span className="text-primary">Simpsons character</span> you look like
           <br />
-          with our <span className='text-primary'>machine learning</span> app.
+          with our <span className="text-primary">machine learning</span> app.
         </p>
         <p>
-          Upload a <span className='text-primary'>picture</span> of yourself to
-          get started.
+          Upload a <span className="text-primary">picture</span> of yourself to get started.
         </p>
       </div>
     </div>

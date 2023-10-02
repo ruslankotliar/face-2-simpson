@@ -15,6 +15,7 @@ interface IUploadFile {
   ) => Promise<FormikErrors<PredictInitialValues> | void>;
   setIsVisibleAbout: (value: boolean) => void;
   isDataPredicted: boolean;
+  isSubmitting: boolean;
 }
 
 const FileInput: FC<IUploadFile> = function ({
@@ -23,6 +24,7 @@ const FileInput: FC<IUploadFile> = function ({
   accept,
   setIsVisibleAbout,
   isDataPredicted,
+  isSubmitting
 }) {
   const [previewURL, setPreviewURL] = useState<string | null>(null);
 
@@ -50,24 +52,24 @@ const FileInput: FC<IUploadFile> = function ({
       } border-neutral rounded-card hover:border-primary duration-200 cursor-pointer transition-colors flex flex-1 justify-center items-stretch min-h-0 w-full h-full`}
     >
       <input
-        type='file'
+        type="file"
         name={name}
-        className='absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer'
+        className="absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer"
         accept={accept}
         onChange={handleChangeImage}
       />
       {!previewURL ? (
-        <div className='text-center text-neutral flex items-center justify-center'>
-          <p className='text-lg md:text-xl mx-2 font-secondary p-6 py-8'>
-            Upload your picture
-          </p>
+        <div className="text-center text-neutral flex items-center justify-center">
+          <p className="text-lg md:text-xl mx-2 font-secondary p-6 py-8">Upload your picture</p>
         </div>
       ) : (
-        <div className='relative md:w-full flex items-center justify-center'>
+        <div className="relative md:w-full flex items-center justify-center">
           <img
             src={previewURL}
-            alt='Preview'
-            className='h-full md:w-full object-cover rounded-card shadow-image'
+            alt="Preview"
+            className={`h-full md:w-full object-cover rounded-card shadow-image ${
+              isSubmitting ? 'blur-sm' : 'blur-none'
+            }`}
           />
           <button
             onClick={removeImage}
