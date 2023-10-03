@@ -32,6 +32,55 @@ SimpsonCharacter = Union[
     "bart_simpson", "homer_simpson", "lisa_simpson", "marge_simpson"
 ]
 
+def lambda_detect_face(event, context):
+    try:
+        from models import detect_face
+
+        """
+        Lambda function to predict the Simpson character from an image.
+        """
+        s3_client = S3Client(s3)
+
+        body_encoded = event["body"]
+        body_str = base64.b64decode(body_encoded).decode("utf-8")
+        body_obj = json.loads(body_str)
+
+        img_key = body_obj.get("signedKey", None)
+
+        if not img_key:
+            raise Exception("No image key provided")
+
+        s3_object = s3_client.get_s3_object(img_key)
+        img = Image.open(s3_object)
+
+        big_points, small_points  = detect_face(img)
+
+        detected_face_data = [big_points, small_points]
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps(
+                {
+                    "detected_face_data": detected_face_data,
+                }
+            ),
+        }
+
+    except ClientError as e:
+        print(f"An error occurred with AWS: {e}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": "An error occurred with AWS services."}),
+        }
+
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps(
+                {"error": "An unexpected error occurred. Please try again later."}
+            ),
+        }
 
 def lambda_predict_image(event, context):
     try:
