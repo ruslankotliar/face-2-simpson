@@ -42,6 +42,35 @@ import DislikeButton from '@src/components/buttons/DislikeButton';
 import float2int from '@src/helpers/float2int';
 import useQueryString from '@src/hooks/useQueryString';
 
+const uploadImage = async function (personImg: File): Promise<string | undefined> {
+  try {
+    console.log('Generating presigned url...');
+    const {
+      data: { key, url }
+    } = await axios.post(generateFetchURL('UPLOAD_IMAGE', {}, {}));
+
+    console.log('Uploading image...');
+    await axios.put(url, personImg);
+
+    return key;
+  } catch (e) {
+    if (e instanceof Error) throw Error(e.message);
+  }
+};
+
+const detectFace = async function (url: string, key: string): Promise<any | undefined> {
+  try {
+    console.log('Detecting face...');
+    const {
+      data: { detectedFaceData }
+    } = await axios.post(url, { key });
+
+    return detectedFaceData;
+  } catch (e) {
+    if (e instanceof Error) throw Error(e.message);
+  }
+};
+
 const sendFeedback = async function (url: string, data: FeedbackData): Promise<void> {
   try {
     await fetch(url, {
@@ -57,18 +86,13 @@ const sendFeedback = async function (url: string, data: FeedbackData): Promise<v
   }
 };
 
-const predictSimpson = async function (personImg: File): Promise<PredictSimpsonData | undefined> {
+const predictSimpson = async function (
+  url: string,
+  key: string
+): Promise<PredictSimpsonData | undefined> {
   try {
-    console.log('Generating presigned url...');
-    const {
-      data: { key, url }
-    } = await axios.post(generateFetchURL('UPLOAD_IMAGE', {}, {}));
-
-    console.log('Uploading image...');
-    await axios.put(url, personImg);
-
     console.log('Requesting prediction...');
-    const { data } = await axios.post(generateFetchURL('REQUEST_PREDICTION', {}, {}), { key });
+    const { data } = await axios.post(url, { key });
 
     return data;
   } catch (e) {
@@ -100,11 +124,6 @@ export default function Main() {
   const [notification, setNotification] = useState<CustomNotification>();
   const [userFeedback, setUserFeedback] = useState<boolean | null>();
   const [permissionToStore, setPermissionToStore] = useState(true);
-  // const [predictionData, setPredictionData] = useState<PredictSimpsonData>({
-  //   predictionData: DEFAULT_PREDICTION_DATA,
-  //   predictionTime: 0,
-  //   imageBucketKey: '',
-  // });
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
   const [isVisibleProgressBar, setIsVisibleProgressBar] = useState<boolean>(false);
   const [isVisibleAbout, setIsVisibleAbout] = useState<boolean>(true);
@@ -161,8 +180,17 @@ export default function Main() {
         return;
       }
 
-      const data = await predictSimpson(personImg);
+      const key = await uploadImage(personImg);
+      if (!key) {
+        console.error('Key is missing!');
+        return;
+      }
+      const detectedFaceData = await detectFace(generateFetchURL('DETECT_FACE', {}, {}), key);
+      console.log(detectedFaceData);
+
+      const data = await predictSimpson(generateFetchURL('REQUEST_PREDICTION', {}, {}), key);
       receiveFeedback(data);
+
       return;
     } catch (e) {
       if (e instanceof Error)
