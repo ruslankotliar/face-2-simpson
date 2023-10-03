@@ -1,21 +1,27 @@
-import './globals.css';
-import styles from './styles.module.css';
-
-import type { Metadata } from 'next';
-
+import { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import SimpsonsSkyBg from '@public/images/header-bg.png';
+// Styles
+import './globals.css';
+import styles from './styles.module.css';
 
+// Types
+import type { Metadata } from 'next';
+
+// Fonts
 import { akbar, roboto } from './fonts';
 import { CLIENT_NAV_KEYS } from '@src/constants';
 import NavHomeIcon from '@src/components/icons/NavHome';
-import { ReactNode } from 'react';
+
+// Images
+import SimpsonsSkyBg from '@public/images/header-bg.png';
+
+// Icons
 import NavDashboardIcon from '@src/components/icons/NavDashboard';
 import NavGitHubIcon from '@src/components/icons/NavGitHub';
 import BurgerMenu from '@src/components/misc/BurgerMenu';
-import NavLinkedInIcon from '@src/components/icons/NavLinkedIn';
+import DevelopersIcon from '@src/components/icons/Developers';
 
 export const metadata: Metadata = {
   title: 'Predict Simpson',
@@ -75,7 +81,7 @@ const NavBar = function () {
     home: <NavHomeIcon />,
     dashboard: <NavDashboardIcon />,
     github: <NavGitHubIcon />,
-    linkedin: <NavLinkedInIcon />
+    developers: <DevelopersIcon />
   };
 
   return (

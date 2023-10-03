@@ -1,15 +1,28 @@
 'use client';
 
-import { useRef, MouseEvent, useState, FC } from 'react';
+import { useRef, MouseEvent, useState, FC, ReactNode } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+
+// Constants
+
+// Styles
 import styles from './styles.module.css';
-import Image, { StaticImageData } from 'next/image';
+
+// Icons
+import NavGitHubIcon from '@src/components/icons/NavGitHub';
+import NavLinkedInIcon from '@src/components/icons/NavLinkedIn';
+import PortfolioIcon from '@src/components/icons/Portfolio';
+import EmailIcon from '@src/components/icons/Email';
+
+// Types
+import { DeveloperData } from '@src/types';
 
 interface AboutCardProps {
-  img: StaticImageData;
-  href: string;
+  dev: DeveloperData;
 }
 
-const AboutCard: FC<AboutCardProps> = ({ img, href }) => {
+const AboutCard: FC<AboutCardProps> = ({ dev: { img, buttons, name, area, position } }) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const innerCardRef = useRef<HTMLSpanElement | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -22,6 +35,13 @@ const AboutCard: FC<AboutCardProps> = ({ img, href }) => {
     y: 0
   });
   const [dropShadowColor, setDropShadowColor] = useState<string>('rgba(0, 0, 0, 0.3)');
+
+  const icons: Record<string, ReactNode> = {
+    email: <EmailIcon />,
+    github: <NavGitHubIcon />,
+    linkedin: <NavLinkedInIcon />,
+    portfolio: <PortfolioIcon />
+  };
 
   const calculateAngle = (e: MouseEvent) => {
     const attr = cardRef.current?.getAttribute('data-filter-color');
@@ -103,11 +123,17 @@ const AboutCard: FC<AboutCardProps> = ({ img, href }) => {
         }}
       >
         <span className={styles['flip-inner-card']}>
-          <h3>About</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sit amet est nunc.</p>
+          <h3>Responsibilities</h3>
           <span onClick={() => setIsFlipped(false)} className={styles['unflip']}>
             Unflip
           </span>
+          <ul className="ml-4 mt-2">
+            {area.map((a) => (
+              <li key={a} className={styles['area-list-item']}>
+                {a}
+              </li>
+            ))}
+          </ul>
         </span>
       </span>
       <span
@@ -130,21 +156,19 @@ const AboutCard: FC<AboutCardProps> = ({ img, href }) => {
             </span>
           </span>
           <span className={styles['bottom-section']}>
-            <span className={styles['name']}>Jane Smith</span>
+            <span className={styles['name']}>{name}</span>
             <span className={styles['area']}>
-              <span className={styles['area-container']}>Engineering</span>
+              <span className={styles['area-container']}>{position}</span>
             </span>
-            <span className={styles['buttons']}>
-              <a href="https://twitter.com/smpnjn" target="_blank" className="twitter main">
-                <i className="fa-light fa-hashtag"></i>
-              </a>
-              <a href="https://twitter.com/smpnjn" target="_blank" className="twitter">
-                <i className="fa-light fa-code-merge"></i>
-              </a>
-              <a href="https://twitter.com/smpnjn" target="_blank" className="message">
-                <i className="fa-light fa-messages"></i> Message
-              </a>
-            </span>
+            <ul className={styles['buttons']}>
+              {buttons.map(({ href, iconKey, newTab }) => (
+                <li key={`${iconKey}#${href}#${newTab}`}>
+                  <Link href={href} target={newTab ? '_blank' : '_self'}>
+                    {icons[iconKey as keyof typeof icons]}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </span>
         </span>
         <span className={styles['user-icon']}>
