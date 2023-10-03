@@ -1,3 +1,5 @@
+import { StaticImageData } from 'next/image';
+
 interface StringMap {
   [key: string]: string;
 }
@@ -46,6 +48,14 @@ enum AlertIconKeys {
   homerError = 'homerError'
 }
 
+interface DeveloperData {
+  img: StaticImageData;
+  buttons: { href: string; iconKey: string; newTab: boolean }[];
+  name: string;
+  position: string;
+  area: string[];
+}
+
 export type {
   StringMap,
   StringArrayMap,
@@ -55,7 +65,8 @@ export type {
   RequestSearchParams,
   TimeUnit,
   FeedbackData,
-  SimpsonCharacter
+  SimpsonCharacter,
+  DeveloperData
 };
 
 export { AlertOptions, AlertIconKeys };

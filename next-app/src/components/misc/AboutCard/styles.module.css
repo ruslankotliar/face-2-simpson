@@ -5,7 +5,6 @@
     padding: 2rem;
     width: 50%;
     text-align: center;
-
 }
 
 .white-container {
@@ -24,8 +23,7 @@
     transform-style: preserve-3d;
     padding: 0;
     height: auto;
-    margin: 0 2rem 4rem 0;
-    width: 18rem;
+    width: 24rem;
     height: 25rem;
     float: left;
     transition: all 0.2s ease-out;
@@ -120,7 +118,7 @@
     margin-top: 0;
 }
 
-.flip-inner-card p {
+.flip-inner-card li {
     color: rgba(255, 255, 255, 0.6);
     font-weight: 400;
     line-height: 1.5rem;
@@ -246,15 +244,19 @@
 .buttons {
     float: left;
     width: calc(100% - 2rem);
+    padding-inline: 2rem;
     position: absolute;
     bottom: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     left: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.buttons>a {
+.buttons>li {
     border: none;
     width: auto;
     background: #2d2d62;
@@ -267,34 +269,38 @@
     line-height: 1rem;
     transition: all 0.1s ease-out;
     transform: scale(1);
-    padding: 0.75rem 1rem;
-    margin: 0 1rem 0 0;
     border-radius: 100px;
+    width: 4rem;
+    height: 3rem;
     text-decoration: none;
 }
 
-.buttons .main {
-    background: #3d26e7;
-}
-
-.buttons>.main:hover {
-    background: #614df1;
-}
-
-.buttons>a:hover {
+.buttons>li:hover {
     background: #494989;
 }
 
-.buttons .message svg {
-    margin: 0 0.5rem 0 0;
+
+.area-list-item {
+    list-style-image: url('../../../../public/icons/bullet-bulletpoint.svg');
 }
 
-.buttons .message {
-    margin: 0;
-}
+
 
 @media screen and (max-width: 1000px) {
     #dark-light-container>div {
         width: 100%;
+    }
+
+    .card {
+        width: 20rem;
+    }
+
+    .buttons {
+        padding-inline: 1rem;
+    }
+
+    .buttons>li {
+        width: 3rem;
+        height: 3rem;
     }
 }

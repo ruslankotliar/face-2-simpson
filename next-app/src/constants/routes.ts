@@ -21,9 +21,9 @@ const CLIENT_NAV_KEYS: {
     newTab: true
   },
   {
-    path: '/linkedIn',
-    name: 'LinkedIn',
-    iconKey: 'linkedin'
+    path: '/developers',
+    name: 'Developers',
+    iconKey: 'developers'
   }
 ];
 
