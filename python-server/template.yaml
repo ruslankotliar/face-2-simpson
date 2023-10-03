@@ -3,40 +3,16 @@ Transform: AWS::Serverless-2016-10-31
 Description: Python 3.10 based SAM Template for PyTorch ML Prediction Model Server
 
 Resources:
-  PredictImageFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      MemorySize: 1024
-      Timeout: 30
-      PackageType: Image
-      ImageConfig:
-        Command: ['app.lambda_predict_image']
-      # need this to run docker on mac
-      # Architectures: ['arm64']
-      Environment:
-        Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
-      Events:
-        ApiEndpoint:
-          Type: HttpApi
-          Properties:
-            Path: /predict
-            Method: post
-    Metadata:
-      Dockerfile: ./lambdas/prediction/Dockerfile
-      DockerContext: ./
-      DockerTag: python3.10-v1-1
-
-  RetrainModelFunction:
+  DetectFaceFunction:
     Type: AWS::Serverless::Function
     Properties:
       MemorySize: 2048
-      Timeout: 840
+      Timeout: 30
       PackageType: Image
       ImageConfig:
-        Command: ['app.lambda_retrain_function']
+        Command: ['app.lambda_detect_face']
       # need this to run docker on mac
-      # Architectures: ['arm64']
+      Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-imgs
@@ -44,38 +20,88 @@ Resources:
         ApiEndpoint:
           Type: HttpApi
           Properties:
-            Path: /retrain
+            Path: /detect-face
             Method: post
     Metadata:
       Dockerfile: ./lambdas/prediction/Dockerfile
       DockerContext: ./
-      DockerTag: python3.10-v1-2
-
-  GeneratePresignedUrlFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      MemorySize: 128
-      Timeout: 5
-      PackageType: Image
-      ImageConfig:
-        Command: ['app.lambda_generate_presigned_url']
-      # need this to run docker on mac
-      # Architectures: ['arm64']
-      Environment:
-        Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
-      Events:
-        ApiEndpoint:
-          Type: HttpApi
-          Properties:
-            Path: /generate-presigned-url
-            Method: post
-    Metadata:
-      Dockerfile: ./lambdas/presigned_url/Dockerfile
-      DockerContext: ./
       DockerTag: python3.10-v1-1
+  # PredictImageFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     MemorySize: 2048
+  #     Timeout: 30
+  #     PackageType: Image
+  #     ImageConfig:
+  #       Command: ['app.lambda_predict_image']
+  #     # need this to run docker on mac
+  #     Architectures: ['arm64']
+  #     Environment:
+  #       Variables:
+  #         AMAZON_BUCKET: face-2-simpson-imgs
+  #     Events:
+  #       ApiEndpoint:
+  #         Type: HttpApi
+  #         Properties:
+  #           Path: /predict
+  #           Method: post
+  #   Metadata:
+  #     Dockerfile: ./lambdas/prediction/Dockerfile
+  #     DockerContext: ./
+  #     DockerTag: python3.10-v1-1
+
+  # RetrainModelFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     MemorySize: 2048
+  #     Timeout: 840
+  #     PackageType: Image
+  #     ImageConfig:
+  #       Command: ['app.lambda_retrain_function']
+  #     # need this to run docker on mac
+  #     Architectures: ['arm64']
+  #     Environment:
+  #       Variables:
+  #         AMAZON_BUCKET: face-2-simpson-imgs
+  #     Events:
+  #       ApiEndpoint:
+  #         Type: HttpApi
+  #         Properties:
+  #           Path: /retrain
+  #           Method: post
+  #   Metadata:
+  #     Dockerfile: ./lambdas/prediction/Dockerfile
+  #     DockerContext: ./
+  #     DockerTag: python3.10-v1-2
+
+  # GeneratePresignedUrlFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     MemorySize: 128
+  #     Timeout: 5
+  #     PackageType: Image
+  #     ImageConfig:
+  #       Command: ['app.lambda_generate_presigned_url']
+  #     # need this to run docker on mac
+  #     Architectures: ['arm64']
+  #     Environment:
+  #       Variables:
+  #         AMAZON_BUCKET: face-2-simpson-imgs
+  #     Events:
+  #       ApiEndpoint:
+  #         Type: HttpApi
+  #         Properties:
+  #           Path: /generate-presigned-url
+  #           Method: post
+  #   Metadata:
+  #     Dockerfile: ./lambdas/presigned_url/Dockerfile
+  #     DockerContext: ./
+  #     DockerTag: python3.10-v1-1
 
 Outputs:
+  DetectFaceApi:
+    Description: 'API Gateway endpoint URL for Prod stage for detect-face function'
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/detect-face'
   PredictApi:
     Description: 'API Gateway endpoint URL for Prod stage for predict function'
     Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/predict'

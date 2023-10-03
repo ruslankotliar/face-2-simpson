@@ -310,6 +310,17 @@ export default function Main() {
         <About isVisible={isVisibleAbout} />
       </div>
 
+      <button
+        onClick={async () =>
+          await detectFace(
+            generateFetchURL('DETECT_FACE', {}, {}),
+            'test/bart_simpson/0b27a8a4-eda0-4d8a-98f4-fcc5580cabff'
+          )
+        }
+      >
+        DAvid Lox
+      </button>
+
       <div
         className={`h-[calc(100vh-3.5rem)] px-4 py-4 md:py-0 md:px-32 flex flex-col md:flex-row items-center justify-between ${
           predictionData ? 'gap-5' : 'gap-0'

@@ -32,6 +32,7 @@ SimpsonCharacter = Union[
     "bart_simpson", "homer_simpson", "lisa_simpson", "marge_simpson"
 ]
 
+
 def lambda_detect_face(event, context):
     try:
         from models import detect_face
@@ -53,7 +54,7 @@ def lambda_detect_face(event, context):
         s3_object = s3_client.get_s3_object(img_key)
         img = Image.open(s3_object)
 
-        big_points, small_points  = detect_face(img)
+        big_points, small_points = detect_face(img)
 
         detected_face_data = [big_points, small_points]
 
@@ -81,6 +82,7 @@ def lambda_detect_face(event, context):
                 {"error": "An unexpected error occurred. Please try again later."}
             ),
         }
+
 
 def lambda_predict_image(event, context):
     try:

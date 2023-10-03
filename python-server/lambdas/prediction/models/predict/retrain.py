@@ -159,9 +159,7 @@ def build_and_retrain_model(images, class_idx, old_test, num_epochs=10):
         best_epoch = np.argmax(model_results["test_acc"]) + 1
         print("The best epoch is ", best_epoch)
 
-        model = create_mobilenet(
-            num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED
-        )
+        model = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
 
         model.load_state_dict(
             torch.load(f=MODEL_PATH, map_location=torch.device("cpu"))

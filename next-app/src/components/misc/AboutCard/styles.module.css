@@ -36,13 +36,21 @@
     background: rgba(0, 0, 0, 0.1);
     font-size: 1rem;
     position: absolute;
-    top: 1rem;
-    right: 1rem;
     padding: 0.5rem 0.75rem;
     border-radius: 100px;
     line-height: 1rem;
     cursor: pointer;
     transition: all 0.1s ease-out;
+}
+
+.flip {
+    top: 1rem;
+    left: 1rem;
+}
+
+.unflip {
+    top: 1rem;
+    right: 1rem;
 }
 
 .blastoise .flip,
