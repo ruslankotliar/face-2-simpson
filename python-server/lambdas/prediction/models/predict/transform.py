@@ -3,6 +3,8 @@ from torchvision import models, transforms
 import torchvision.transforms.functional as TF
 import cv2
 
+from .exceptions import NoFaceDetected, MultipleFacesDetected
+
 class Transforms():
     def __init__(self, model_kind='classification'):
         model_kind_dict = {'classification', 'facial_markings'}
@@ -18,12 +20,15 @@ class Transforms():
     def crop_face(self, image):
 
         imgtest = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-        image_array = np.array(imgtest, "uint8")
 
         faces = self.facecascade.detectMultiScale(imgtest,
                                                   scaleFactor=1.1, minNeighbors=3)
 
-        assert len(faces) == 1, 'Face is not detected or multiple faces'
+        if len(faces) == 0:
+            raise NoFaceDetected()
+
+        elif len(faces) > 1:
+            raise MultipleFacesDetected()
 
         left, top, width, height = faces[0]
 

@@ -5,6 +5,7 @@ import boto3
 import base64
 
 from botocore.exceptions import ClientError
+from models.predict.exceptions import NoFaceDetected, MultipleFacesDetected
 
 import numpy as np
 from io import BytesIO
@@ -12,6 +13,7 @@ from PIL import Image
 from typing import Dict, Union
 
 from utils import S3Client
+
 
 s3 = boto3.client("s3")
 
@@ -83,6 +85,12 @@ def lambda_detect_face(event, context):
             ),
         }
 
+    except (NoFaceDetected, MultipleFacesDetected) as e:
+        print(f"An error occurred with image: {e}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": "An error occurred with AWS services."}),
+        }
 
 def lambda_predict_image(event, context):
     try:
