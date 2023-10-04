@@ -314,7 +314,7 @@ export default function Main() {
         onClick={async () =>
           await detectFace(
             generateFetchURL('DETECT_FACE', {}, {}),
-            'test/bart_simpson/0b27a8a4-eda0-4d8a-98f4-fcc5580cabff'
+            'Screenshot 2023-10-04 at 22.11.43.png'
           )
         }
       >

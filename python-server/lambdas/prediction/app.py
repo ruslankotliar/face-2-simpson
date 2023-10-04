@@ -76,6 +76,13 @@ def lambda_detect_face(event, context):
             "body": json.dumps({"error": "An error occurred with AWS services."}),
         }
 
+    except (NoFaceDetected, MultipleFacesDetected) as e:
+        print(f"An error occurred with image: {e}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)}),
+        }
+
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return {
@@ -85,12 +92,6 @@ def lambda_detect_face(event, context):
             ),
         }
 
-    except (NoFaceDetected, MultipleFacesDetected) as e:
-        print(f"An error occurred with image: {e}")
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"error": "An error occurred with AWS services."}),
-        }
 
 def lambda_predict_image(event, context):
     try:
