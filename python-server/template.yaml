@@ -3,11 +3,34 @@ Transform: AWS::Serverless-2016-10-31
 Description: Python 3.10 based SAM Template for PyTorch ML Prediction Model Server
 
 Resources:
+  DetectFaceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 3008
+      Timeout: 60
+      PackageType: Image
+      ImageConfig:
+        Command: ['app.lambda_detect_face']
+      # need this to run docker on mac
+      # Architectures: ['arm64']
+      Environment:
+        Variables:
+          AMAZON_BUCKET: face-2-simpson-images
+      Events:
+        ApiEndpoint:
+          Type: HttpApi
+          Properties:
+            Path: /detect-face
+            Method: post
+    Metadata:
+      Dockerfile: ./lambdas/prediction/Dockerfile
+      DockerContext: ./
+      DockerTag: python3.10-v1-1
   PredictImageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      MemorySize: 1024
-      Timeout: 30
+      MemorySize: 3008
+      Timeout: 60
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_predict_image']
@@ -15,7 +38,7 @@ Resources:
       # Architectures: ['arm64']
       Environment:
         Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
+          AMAZON_BUCKET: face-2-simpson-images
       Events:
         ApiEndpoint:
           Type: HttpApi
@@ -30,7 +53,7 @@ Resources:
   RetrainModelFunction:
     Type: AWS::Serverless::Function
     Properties:
-      MemorySize: 2048
+      MemorySize: 3008
       Timeout: 840
       PackageType: Image
       ImageConfig:
@@ -39,7 +62,7 @@ Resources:
       # Architectures: ['arm64']
       Environment:
         Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
+          AMAZON_BUCKET: face-2-simpson-images
       Events:
         ApiEndpoint:
           Type: HttpApi
@@ -55,7 +78,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       MemorySize: 128
-      Timeout: 5
+      Timeout: 15
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_generate_presigned_url']
@@ -63,7 +86,7 @@ Resources:
       # Architectures: ['arm64']
       Environment:
         Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
+          AMAZON_BUCKET: face-2-simpson-images
       Events:
         ApiEndpoint:
           Type: HttpApi
@@ -76,6 +99,9 @@ Resources:
       DockerTag: python3.10-v1-1
 
 Outputs:
+  DetectFaceApi:
+    Description: 'API Gateway endpoint URL for Prod stage for detect-face function'
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/detect-face'
   PredictApi:
     Description: 'API Gateway endpoint URL for Prod stage for predict function'
     Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/predict'

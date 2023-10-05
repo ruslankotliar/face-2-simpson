@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from .model import create_mobilenet
 from .retrain_functions import *
 from .early_stopper import EarlyStopper
+from .transform import Transforms
 
 import numpy as np
 import os
@@ -111,7 +112,7 @@ def build_and_retrain_model(images, class_idx, old_test, num_epochs=10):
     )
 
     # Build a model
-    model, transformer = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
+    model = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
 
     # Load a state dict of the previous model
     model.load_state_dict(torch.load(f=MODEL_PATH, map_location=torch.device("cpu")))
@@ -158,9 +159,7 @@ def build_and_retrain_model(images, class_idx, old_test, num_epochs=10):
         best_epoch = np.argmax(model_results["test_acc"]) + 1
         print("The best epoch is ", best_epoch)
 
-        model, transformer = create_mobilenet(
-            num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED
-        )
+        model = create_mobilenet(num_classes=NUM_OF_CLASSES, seed=RANDOM_SEED)
 
         model.load_state_dict(
             torch.load(f=MODEL_PATH, map_location=torch.device("cpu"))

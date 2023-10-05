@@ -1,5 +1,5 @@
 import { PYTHON_API_ROUTES } from '@src/constants';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export const signUrl = async function () {
   try {
@@ -7,6 +7,6 @@ export const signUrl = async function () {
 
     return data;
   } catch (e) {
-    if (e instanceof Error) throw Error(e.message);
+    if (e instanceof AxiosError) throw new Error(e.response?.data.error);
   }
 };

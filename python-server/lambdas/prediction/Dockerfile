@@ -4,6 +4,8 @@ COPY ./lambdas/prediction .
 COPY ./utils/s3_client/app.py ./utils/s3_client.py
 COPY ./utils/s3_client/__init__.py ./utils/__init__.py
 
+RUN yum update && yum -y install mesa-libGL
+
 RUN pip install -r requirements.txt
 
 ENV PYTHONPATH="$PYTHONPATH"

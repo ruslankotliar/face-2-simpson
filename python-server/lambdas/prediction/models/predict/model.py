@@ -1,15 +1,8 @@
 from torchvision import models, transforms
 from torch import nn
 
-def create_mobilenet(num_classes,
-                     seed=42):
+def create_mobilenet(num_classes):
   model = models.mobilenet_v2()
-  transformer = transforms.Compose([
-      transforms.Resize(256),
-      transforms.CenterCrop(224),
-      transforms.ToTensor(),
-      transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-  ])
 
   for param in model.parameters():
     param.requires_grad = False
@@ -19,4 +12,21 @@ def create_mobilenet(num_classes,
       nn.Linear(1280, num_classes, bias=True)
       )
 
-  return model, transformer
+  return model
+
+def create_detect_model(num_classes=136):
+    class FaceLandmarksExtended(nn.Module):
+        def __init__(self, num_classes=136):
+            super().__init__()
+            self.model = models.resnet18()
+
+            self.model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+
+            self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+
+        def forward(self, x):
+            x = self.model(x)
+            return x
+
+    return FaceLandmarksExtended(num_classes)
+

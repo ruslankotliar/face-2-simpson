@@ -3,6 +3,6 @@ version = 0.1
 stack_name = "face-2-simpson-python-server"
 resolve_s3 = true
 s3_prefix = "face-2-simpson-python-server"
-region = "us-east-2"
+region = "eu-central-1"
 capabilities = "CAPABILITY_IAM"
-image_repositories = ["PredictImageFunction=967407585142.dkr.ecr.us-east-2.amazonaws.com/samapp7427b055/predictimagefunction6a67af7arepo", "RetrainModelFunction=967407585142.dkr.ecr.us-east-2.amazonaws.com/samapp7427b055/retrainmodelfunction57dd9888repo", "GeneratePresignedUrlFunction=967407585142.dkr.ecr.us-east-2.amazonaws.com/face2simpsonpythonserver9517458a/generatepresignedurlfunction05197b4frepo"]
+image_repositories = ["DetectFaceFunction=967407585142.dkr.ecr.eu-central-1.amazonaws.com/face2simpsonpythonserver9517458a/detectfacefunction5cd4957drepo", "PredictImageFunction=967407585142.dkr.ecr.eu-central-1.amazonaws.com/face2simpsonpythonserver9517458a/predictimagefunction6a67af7arepo", "RetrainModelFunction=967407585142.dkr.ecr.eu-central-1.amazonaws.com/face2simpsonpythonserver9517458a/retrainmodelfunction57dd9888repo", "GeneratePresignedUrlFunction=967407585142.dkr.ecr.eu-central-1.amazonaws.com/face2simpsonpythonserver9517458a/generatepresignedurlfunction05197b4frepo"]
