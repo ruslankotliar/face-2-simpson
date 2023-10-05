@@ -195,7 +195,10 @@ export default function Main() {
       console.log(detectedFaceResponse);
       setDetectedFaceData(detectedFaceResponse);
 
-      const predictionResponse = await predictSimpson(generateFetchURL('REQUEST_PREDICTION', {}, {}), key);
+      const predictionResponse = await predictSimpson(
+        generateFetchURL('REQUEST_PREDICTION', {}, {}),
+        key
+      );
       receiveFeedback(predictionResponse);
 
       return;
@@ -352,6 +355,7 @@ export default function Main() {
 
         <div className="flex flex-1 flex-grow items-center md:items-center justify-stretch md:justify-center w-full duration-500 min-h-0 h-full md:h-fit">
           <FileInputForm
+            resetPageData={resetPageData}
             setIsVisibleAbout={setIsVisibleAbout}
             handleSubmit={handleSubmit}
             notification={notification}
@@ -376,6 +380,7 @@ interface FileInputFormProps {
   permissionToStore: boolean;
   setPermissionToStore: (permission: boolean) => void;
   setIsVisibleAbout: (isVisible: boolean) => void;
+  resetPageData: () => void;
   isDataPredicted: boolean;
 }
 
@@ -386,7 +391,8 @@ const FileInputForm: FC<FileInputFormProps> = ({
   permissionToStore,
   setPermissionToStore,
   setIsVisibleAbout,
-  isDataPredicted
+  isDataPredicted,
+  resetPageData
 }) => (
   <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
     {({ setFieldValue, isSubmitting, errors, setFieldError }) => (
@@ -418,6 +424,7 @@ const FileInputForm: FC<FileInputFormProps> = ({
               accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
               setFieldValue={setFieldValue}
               setIsVisibleAbout={setIsVisibleAbout}
+              resetPageData={resetPageData}
               isDataPredicted={isDataPredicted}
               isSubmitting={isSubmitting}
             />
