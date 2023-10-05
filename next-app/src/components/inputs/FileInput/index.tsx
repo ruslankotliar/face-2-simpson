@@ -14,6 +14,7 @@ interface IUploadFile {
     shouldValidate?: boolean | undefined
   ) => Promise<FormikErrors<PredictInitialValues> | void>;
   setIsVisibleAbout: (value: boolean) => void;
+  resetPageData: () => void;
   isDataPredicted: boolean;
   isSubmitting: boolean;
 }
@@ -23,7 +24,7 @@ const FileInput: FC<IUploadFile> = function ({
   name,
   accept,
   setIsVisibleAbout,
-  isDataPredicted,
+  resetPageData,
   isSubmitting
 }) {
   const [previewURL, setPreviewURL] = useState<string | null>(null);
@@ -42,7 +43,7 @@ const FileInput: FC<IUploadFile> = function ({
   const removeImage = () => {
     setFieldValue(name, null, false);
     setPreviewURL(null);
-    setIsVisibleAbout(true);
+    resetPageData();
   };
 
   return (
