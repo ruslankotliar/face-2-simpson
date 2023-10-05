@@ -320,17 +320,6 @@ export default function Main() {
         <About isVisible={isVisibleAbout} />
       </div>
 
-      <button
-        onClick={async () =>
-          await detectFace(
-            generateFetchURL('DETECT_FACE', {}, {}),
-            'Screenshot 2023-10-04 at 22.11.43.png'
-          )
-        }
-      >
-        DAvid Lox
-      </button>
-
       <div
         className={`h-[calc(100vh-3.5rem)] px-4 py-4 md:py-0 md:px-32 flex flex-col md:flex-row items-center justify-between ${
           predictionData ? 'gap-5' : 'gap-0'
