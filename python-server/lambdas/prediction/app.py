@@ -77,6 +77,8 @@ def lambda_detect_face(event, context):
         }
 
     except (NoFaceDetected, MultipleFacesDetected) as e:
+        s3_client.delete_s3_object(img_key)  # remove obj created with presigned url
+
         print(f"An error occurred with image: {e}")
         return {
             "statusCode": 500,

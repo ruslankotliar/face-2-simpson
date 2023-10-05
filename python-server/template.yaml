@@ -6,16 +6,16 @@ Resources:
   DetectFaceFunction:
     Type: AWS::Serverless::Function
     Properties:
-      MemorySize: 2048
-      Timeout: 30
+      MemorySize: 3008
+      Timeout: 60
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_detect_face']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
+          AMAZON_BUCKET: face-2-simpson-images
       Events:
         ApiEndpoint:
           Type: HttpApi
@@ -29,16 +29,16 @@ Resources:
   PredictImageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      MemorySize: 2048
-      Timeout: 45
+      MemorySize: 3008
+      Timeout: 60
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_predict_image']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
+          AMAZON_BUCKET: face-2-simpson-images
       Events:
         ApiEndpoint:
           Type: HttpApi
@@ -53,16 +53,16 @@ Resources:
   RetrainModelFunction:
     Type: AWS::Serverless::Function
     Properties:
-      MemorySize: 2048
+      MemorySize: 3008
       Timeout: 840
       PackageType: Image
       ImageConfig:
         Command: ['app.lambda_retrain_function']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
+          AMAZON_BUCKET: face-2-simpson-images
       Events:
         ApiEndpoint:
           Type: HttpApi
@@ -83,10 +83,10 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_generate_presigned_url']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
-          AMAZON_BUCKET: face-2-simpson-imgs
+          AMAZON_BUCKET: face-2-simpson-images
       Events:
         ApiEndpoint:
           Type: HttpApi

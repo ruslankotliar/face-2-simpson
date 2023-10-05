@@ -127,6 +127,7 @@ export default function Main() {
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
   const [isVisibleProgressBar, setIsVisibleProgressBar] = useState<boolean>(false);
   const [isVisibleAbout, setIsVisibleAbout] = useState<boolean>(true);
+  const [detectedFaceData, setDetectedFaceData] = useState<any>();
 
   const { createQueryString, updateQueryString, getQueryParam } = useQueryString();
 
@@ -185,11 +186,17 @@ export default function Main() {
         console.error('Key is missing!');
         return;
       }
-      const detectedFaceData = await detectFace(generateFetchURL('DETECT_FACE', {}, {}), key);
-      console.log(detectedFaceData);
+      const detectedFaceResponse = await detectFace(generateFetchURL('DETECT_FACE', {}, {}), key);
 
-      const data = await predictSimpson(generateFetchURL('REQUEST_PREDICTION', {}, {}), key);
-      receiveFeedback(data);
+      if (!detectedFaceResponse) {
+        console.error('Face is missing or there are several faces.');
+        return;
+      }
+      console.log(detectedFaceResponse);
+      setDetectedFaceData(detectedFaceResponse);
+
+      const predictionResponse = await predictSimpson(generateFetchURL('REQUEST_PREDICTION', {}, {}), key);
+      receiveFeedback(predictionResponse);
 
       return;
     } catch (e) {

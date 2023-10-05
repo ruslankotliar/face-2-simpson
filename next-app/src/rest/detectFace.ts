@@ -1,4 +1,4 @@
-import axios, { Axios, AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 
 import { PYTHON_API_ROUTES } from '@src/constants';
 
@@ -11,12 +11,6 @@ export const detectFace = async function (signedKey: string) {
 
     return data;
   } catch (e) {
-    const err = e as any;
-    console.log(e);
-    console.log(err.response);
-    console.log(err.response.data);
-    console.log(err.response.data.error);
-    if (e instanceof AxiosError)
-      throw new Error(`Error on python server: ${e.response?.data.error}`);
+    if (e instanceof AxiosError) throw new Error(e.response?.data.error);
   }
 };
