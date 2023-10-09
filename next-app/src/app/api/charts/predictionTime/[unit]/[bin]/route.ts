@@ -34,7 +34,7 @@ export async function GET(
     console.error(e);
     if (e instanceof Error)
       return NextResponse.json(
-        { message: e.message },
+        { error: e.message },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)

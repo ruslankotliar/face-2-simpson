@@ -7,13 +7,10 @@ import axios from 'axios';
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
 
-import SubmitButton from '@src/components/buttons/SubmitButton';
-import CheckboxInput from '@src/components/inputs/Checkbox';
-import FileInput from '@src/components/inputs/FileInput';
-import Loader from '@src/components/misc/Loader';
-
+// Styles
 import { akbar } from './fonts';
 
+// Constants
 import {
   ASK_FEEDBACK_TIMEOUT,
   DEFAULT_PREDICTION_DATA,
@@ -24,7 +21,8 @@ import {
   PROGRESS_BAR_COLORS,
   QUERY_KEYS
 } from '@src/constants';
-import { generateFetchURL, getMaxSimilarChar, isValidFileType } from '@src/helpers';
+
+// Types
 import {
   FeedbackData,
   PredictSimpsonData,
@@ -32,15 +30,33 @@ import {
   AlertOptions,
   AlertIconKeys,
   SimpsonCharacter,
-  CustomNotification
+  CustomNotification,
+  DetectFaceData
 } from '@src/types';
+
+// Components
 import Alert from '@src/components/misc/Alert';
 import ProgressBar from '@src/components/misc/ProgressBar';
 import LikeButton from '@src/components/buttons/LikeButton';
 import SpeechBubble from '@src/components/misc/SpeechBubble';
 import DislikeButton from '@src/components/buttons/DislikeButton';
+import SubmitButton from '@src/components/buttons/SubmitButton';
+import CheckboxInput from '@src/components/inputs/Checkbox';
+import FileInput from '@src/components/inputs/FileInput';
+import Loader from '@src/components/misc/Loader';
+
+// Helpers
 import float2int from '@src/helpers/float2int';
+import { generateFetchURL, getMaxSimilarChar, isValidFileType } from '@src/helpers';
+
+// Hooks
 import useQueryString from '@src/hooks/useQueryString';
+
+// Utils
+import { handleClientError } from '@src/utils/error';
+
+// dev only
+import faceDots from '@public/data.json';
 
 const uploadImage = async function (personImg: File): Promise<string | undefined> {
   try {
@@ -54,11 +70,11 @@ const uploadImage = async function (personImg: File): Promise<string | undefined
 
     return key;
   } catch (e) {
-    if (e instanceof Error) throw Error(e.message);
+    handleClientError(e);
   }
 };
 
-const detectFace = async function (url: string, key: string): Promise<any | undefined> {
+const detectFace = async function (url: string, key: string): Promise<DetectFaceData | undefined> {
   try {
     console.log('Detecting face...');
     const {
@@ -67,7 +83,7 @@ const detectFace = async function (url: string, key: string): Promise<any | unde
 
     return detectedFaceData;
   } catch (e) {
-    if (e instanceof Error) throw Error(e.message);
+    handleClientError(e);
   }
 };
 
@@ -82,7 +98,7 @@ const sendFeedback = async function (url: string, data: FeedbackData): Promise<v
       keepalive: true
     });
   } catch (e) {
-    if (e instanceof Error) throw Error(e.message);
+    handleClientError(e);
   }
 };
 
@@ -96,7 +112,7 @@ const predictSimpson = async function (
 
     return data;
   } catch (e) {
-    if (e instanceof Error) throw Error(e.message);
+    handleClientError(e);
   }
 };
 
@@ -127,7 +143,7 @@ export default function Main() {
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
   const [isVisibleProgressBar, setIsVisibleProgressBar] = useState<boolean>(false);
   const [isVisibleAbout, setIsVisibleAbout] = useState<boolean>(true);
-  const [detectedFaceData, setDetectedFaceData] = useState<any>();
+  const [detectedFaceData, setDetectedFaceData] = useState<DetectFaceData>();
 
   const { createQueryString, updateQueryString, getQueryParam } = useQueryString();
 
@@ -277,6 +293,7 @@ export default function Main() {
     setPredictionStored(false);
     setDisplaySpeechBubble(false);
     setCharactersRun(false);
+    setDetectedFaceData(undefined);
   };
 
   useEffect(() => {
@@ -321,7 +338,7 @@ export default function Main() {
       </div>
 
       <div
-        className={`h-[calc(100vh-3.5rem)] px-4 py-4 md:py-0 md:px-32 flex flex-col md:flex-row items-center justify-between ${
+        className={`h-[calc(100vh-3.5rem)] md:h-[calc(100vh-5rem)] px-4 py-4 md:py-0 md:px-32 flex flex-col md:flex-row items-center justify-between ${
           predictionData ? 'gap-5' : 'gap-0'
         }`}
       >
@@ -344,6 +361,7 @@ export default function Main() {
 
         <div className="flex flex-1 flex-grow items-center md:items-center justify-stretch md:justify-center w-full duration-500 min-h-0 h-full md:h-fit">
           <FileInputForm
+            detectedFaceData={detectedFaceData}
             resetPageData={resetPageData}
             setIsVisibleAbout={setIsVisibleAbout}
             handleSubmit={handleSubmit}
@@ -371,6 +389,7 @@ interface FileInputFormProps {
   setIsVisibleAbout: (isVisible: boolean) => void;
   resetPageData: () => void;
   isDataPredicted: boolean;
+  detectedFaceData?: DetectFaceData;
 }
 
 const FileInputForm: FC<FileInputFormProps> = ({
@@ -381,7 +400,8 @@ const FileInputForm: FC<FileInputFormProps> = ({
   setPermissionToStore,
   setIsVisibleAbout,
   isDataPredicted,
-  resetPageData
+  resetPageData,
+  detectedFaceData
 }) => (
   <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
     {({ setFieldValue, isSubmitting, errors, setFieldError }) => (
@@ -395,13 +415,7 @@ const FileInputForm: FC<FileInputFormProps> = ({
             setNotification(undefined);
           }}
         />
-        {isSubmitting && (
-          <Loader
-            width={'200'}
-            height={'200'}
-            wrapperClass={'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50'}
-          />
-        )}
+        {isSubmitting && !detectedFaceData ? <Loader /> : null}
         <Form
           className={`w-full h-full min-h-0 md:max-w-sm flex flex-col flex-1 justify-center ${
             isDataPredicted ? 'gap-6' : 'gap-4'
@@ -409,13 +423,14 @@ const FileInputForm: FC<FileInputFormProps> = ({
         >
           <div className="flex flex-1 min-h-0">
             <FileInput
+              detectedFaceData={detectedFaceData}
               name={FORM_KEYS.PERSON_IMG}
               accept={FORM_CONSTANTS.ACCEPT_PERSON_IMG_EXTENSIONS}
               setFieldValue={setFieldValue}
               setIsVisibleAbout={setIsVisibleAbout}
               resetPageData={resetPageData}
               isDataPredicted={isDataPredicted}
-              isSubmitting={isSubmitting}
+              isSubmitting={isSubmitting && !detectedFaceData}
             />
           </div>
           <div className="flex flex-none flex-row justify-between">

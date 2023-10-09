@@ -7,13 +7,8 @@ import { connectToDB, getStatusText } from '@src/utils';
 
 export async function POST(req: NextRequest) {
   try {
-    const {
-      userFeedback,
-      permissionToStore,
-      predictionData,
-      predictionTime,
-      imageBucketKey,
-    } = await req.json();
+    const { userFeedback, permissionToStore, predictionData, predictionTime, imageBucketKey } =
+      await req.json();
 
     const characterPredicted = getMaxSimilarChar(predictionData);
 
@@ -21,7 +16,7 @@ export async function POST(req: NextRequest) {
       await connectToDB();
       await ImageCounter.findByIdAndUpdate(
         {
-          _id: characterPredicted,
+          _id: characterPredicted
         },
         { $inc: { seq: 1 } },
         { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -31,7 +26,7 @@ export async function POST(req: NextRequest) {
         predictionTime,
         characterPredicted,
         imageBucketKey,
-        userFeedback,
+        userFeedback
       });
     }
 
@@ -40,10 +35,10 @@ export async function POST(req: NextRequest) {
     if (e instanceof Error) {
       console.error(e.message);
       return NextResponse.json(
-        { message: e.message },
+        { error: e.message },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
-          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
+          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)
         }
       );
     }

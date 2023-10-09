@@ -1,9 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { FC, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 import { FormikErrors } from 'formik';
 
-import { PredictInitialValues } from '@src/types';
+import { DetectFaceData, PredictInitialValues } from '@src/types';
 import CloseIcon from '@src/components/icons/Close';
+import dynamic from 'next/dynamic';
+import Loader from '@src/components/misc/Loader';
+
+const FaceScanner = dynamic(() => import('@src/components/animations/FaceScanner'), {
+  ssr: false
+});
 
 interface IUploadFile {
   name: string;
@@ -17,6 +23,7 @@ interface IUploadFile {
   resetPageData: () => void;
   isDataPredicted: boolean;
   isSubmitting: boolean;
+  detectedFaceData?: DetectFaceData;
 }
 
 const FileInput: FC<IUploadFile> = function ({
@@ -25,11 +32,15 @@ const FileInput: FC<IUploadFile> = function ({
   accept,
   setIsVisibleAbout,
   resetPageData,
-  isSubmitting
+  isSubmitting,
+  detectedFaceData
 }) {
+  const imgRef = useRef<HTMLDivElement>(null);
   const [previewURL, setPreviewURL] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChangeImage = function (e: any) {
+    setIsLoading(true);
     const file = e.currentTarget.files?.[0];
     if (file) {
       setFieldValue(name, file);
@@ -47,40 +58,51 @@ const FileInput: FC<IUploadFile> = function ({
   };
 
   return (
-    <div
-      className={`relative ${
-        !previewURL ? 'border-2 border-dashed' : ''
-      } border-neutral rounded-card hover:border-primary duration-200 cursor-pointer transition-colors flex flex-1 justify-center items-stretch min-h-0 w-full h-full`}
-    >
-      <input
-        type="file"
-        name={name}
-        className="absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer"
-        accept={accept}
-        onChange={handleChangeImage}
-      />
-      {!previewURL ? (
-        <div className="text-center text-neutral flex items-center justify-center">
-          <p className="text-lg md:text-xl mx-2 font-secondary p-6 py-8">Upload your picture</p>
-        </div>
-      ) : (
-        <div className="relative md:w-full flex items-center justify-center">
-          <img
-            src={previewURL}
-            alt="Preview"
-            className={`h-full md:w-full object-cover rounded-card shadow-image ${
-              isSubmitting ? 'blur-sm' : 'blur-none'
-            }`}
-          />
-          <button
-            onClick={removeImage}
-            className={`absolute top-2 left-2 flex items-center justify-center text-highlight font-bold text-sm md:text-lg focus:outline-none hover:text-primary active:bg-primary-dark`}
-          >
-            <CloseIcon />
-          </button>
-        </div>
-      )}
-    </div>
+    <>
+      {isLoading ? <Loader /> : null}
+      <div
+        className={`relative ${
+          !previewURL ? 'border-2 border-dashed' : ''
+        } border-neutral rounded-card hover:border-primary duration-200 cursor-pointer transition-colors flex flex-1 justify-center items-stretch min-h-0 w-full h-full`}
+      >
+        <input
+          type="file"
+          name={name}
+          className="absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer"
+          accept={accept}
+          onChange={handleChangeImage}
+        />
+        {!previewURL ? (
+          <div className="text-center text-neutral flex items-center justify-center">
+            <p className="text-lg md:text-xl mx-2 font-secondary p-6 py-8">Upload your picture</p>
+          </div>
+        ) : (
+          <div className="relative md:w-full flex items-center justify-center min-h-[118px]">
+            <div
+              ref={imgRef}
+              className={`md:w-full object-cover rounded-card shadow-image overflow-hidden ${
+                isSubmitting ? 'blur-sm' : 'blur-none'
+              }`}
+            >
+              <FaceScanner
+                previewURL={previewURL}
+                imgRef={imgRef}
+                detectedFaceData={detectedFaceData}
+                setIsLoading={setIsLoading}
+              />
+            </div>
+            {!isLoading ? (
+              <button
+                onClick={removeImage}
+                className={`absolute top-2 left-2 flex items-center justify-center text-highlight font-bold text-sm md:text-lg focus:outline-none hover:text-primary active:bg-primary-dark`}
+              >
+                <CloseIcon />
+              </button>
+            ) : null}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

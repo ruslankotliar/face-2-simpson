@@ -10,16 +10,16 @@ export async function POST() {
 
     return NextResponse.json({
       url,
-      key,
+      key
     });
   } catch (e) {
     if (e instanceof Error) {
       console.error(e.message);
       return NextResponse.json(
-        { message: e.message },
+        { error: e.message },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
-          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
+          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)
         }
       );
     }

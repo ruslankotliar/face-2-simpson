@@ -12,4 +12,7 @@ interface CustomNotification {
   iconKey?: AlertIconKeys;
 }
 
-export type { PredictInitialValues, CustomNotification };
+type DotCoordinates = [number, number];
+type DetectFaceData = [DotCoordinates[], DotCoordinates[]];
+
+export type { PredictInitialValues, CustomNotification, DetectFaceData };
