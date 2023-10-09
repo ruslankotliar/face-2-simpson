@@ -143,7 +143,7 @@ export default function Main() {
   const [predictionData, setPredictionData] = useState<PredictSimpsonData>();
   const [isVisibleProgressBar, setIsVisibleProgressBar] = useState<boolean>(false);
   const [isVisibleAbout, setIsVisibleAbout] = useState<boolean>(true);
-  const [detectedFaceData, setDetectedFaceData] = useState<DetectFaceData>();
+  const [detectedFaceData, setDetectedFaceData] = useState<DetectFaceData | undefined>();
 
   const { createQueryString, updateQueryString, getQueryParam } = useQueryString();
 

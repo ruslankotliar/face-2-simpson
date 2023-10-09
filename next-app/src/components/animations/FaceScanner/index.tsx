@@ -1,27 +1,33 @@
 'use client';
 
 /* eslint-disable @next/next/no-img-element */
+import { FC, RefObject, useEffect, useRef, useState } from 'react';
 import Konva from 'konva';
 import { Stage, Layer, Circle, Image as KonvaImage } from 'react-konva';
 
-import { FC, RefObject, useEffect, useRef, useState } from 'react';
 import { DetectFaceData } from '@src/types';
+import useThrottle from '@src/hooks/useThrottle';
+import useWindowSize from '@src/hooks/useWindowSize';
 
 interface FaceScannerProps {
   previewURL: string;
   imgRef: RefObject<HTMLDivElement>;
   detectedFaceData?: DetectFaceData;
   setIsLoading: (value: boolean) => void;
+  isDataPredicted: boolean;
 }
 
 const FaceScanner: FC<FaceScannerProps> = function ({
   previewURL,
   imgRef,
   detectedFaceData,
-  setIsLoading
+  setIsLoading,
+  isDataPredicted
 }) {
+  const { width, height } = useThrottle(useWindowSize());
   const [img, setImg] = useState<HTMLImageElement>();
   const [dimensions, setDimensions] = useState<[number, number]>([0, 0]);
+  const [dots, setDots] = useState<DetectFaceData>();
 
   const createHtmlImg = (url: string) => {
     const image = new Image();
@@ -32,12 +38,28 @@ const FaceScanner: FC<FaceScannerProps> = function ({
   };
 
   const calculateDimensions = () => {
-    const availableWidth = imgRef.current?.clientWidth || 0;
+    const isMobile = window.innerWidth < 768;
+    let availableWidth, availableHeight;
+
+    if (isMobile) {
+      if (isDataPredicted) {
+        availableWidth = 0;
+        availableHeight = imgRef.current?.clientHeight || 0;
+      } else {
+        availableWidth = window.innerWidth - 32;
+        availableHeight = 0;
+      }
+    } else {
+      availableWidth = imgRef.current?.clientWidth || 0;
+      availableHeight = 0;
+    }
+
     const aspectRatio = img ? img.naturalHeight / img.naturalWidth : 1;
-    const calculatedHeight = availableWidth * aspectRatio;
 
-    setDimensions([availableWidth, calculatedHeight]);
+    const calculatedHeight = availableHeight || availableWidth * aspectRatio;
+    const calculatedWidth = availableWidth || availableHeight * aspectRatio;
 
+    setDimensions([calculatedWidth, calculatedHeight]);
     setIsLoading(false);
   };
 
@@ -51,7 +73,19 @@ const FaceScanner: FC<FaceScannerProps> = function ({
     if (img) {
       calculateDimensions();
     }
-  }, [img]);
+  }, [img, isDataPredicted, detectedFaceData, width, height]);
+
+  useEffect(() => {
+    if (detectedFaceData && img) {
+      const modifiedData = detectedFaceData.map((dataSet) =>
+        dataSet.map(([x, y]) => [
+          x * (dimensions[0] / img.naturalWidth),
+          y * (dimensions[1] / img.naturalHeight)
+        ])
+      ) as DetectFaceData;
+      setDots(modifiedData);
+    }
+  }, [dimensions]);
 
   return (
     <>
@@ -65,15 +99,10 @@ const FaceScanner: FC<FaceScannerProps> = function ({
               alt={'User image preview'}
             />
 
-            {detectedFaceData
+            {dots
               ? ['red', 'blue'].map((color, index) =>
-                  detectedFaceData[index].map(([x, y], index) => (
-                    <AnimatedDot
-                      key={index}
-                      color={color}
-                      x={x * (dimensions[0] / img.naturalWidth)}
-                      y={y * (dimensions[1] / img.naturalHeight)}
-                    />
+                  dots[index].map(([x, y], index) => (
+                    <AnimatedDot key={index} color={color} x={x} y={y} />
                   ))
                 )
               : null}
