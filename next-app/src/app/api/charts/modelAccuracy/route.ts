@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     await connectToDB();
 
     const chartData = await Accuracy.find({}, 'accuracy createdAt -_id').sort({
-      createdAt: 1,
+      createdAt: 1
     });
 
     return NextResponse.json({ chartData });
@@ -17,10 +17,10 @@ export async function GET(req: NextRequest) {
     console.error(e);
     if (e instanceof Error)
       return NextResponse.json(
-        { message: e.message },
+        { error: e.message },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
-          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
+          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)
         }
       );
   }

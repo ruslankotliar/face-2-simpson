@@ -12,9 +12,9 @@ export async function GET() {
       {
         $group: {
           _id: '$characterPredicted',
-          count: { $sum: 1 },
-        },
-      },
+          count: { $sum: 1 }
+        }
+      }
     ]);
 
     return NextResponse.json({ chartData });
@@ -22,10 +22,10 @@ export async function GET() {
     console.error(e);
     if (e instanceof Error)
       return NextResponse.json(
-        { message: e.message },
+        { error: e.message },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
-          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
+          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)
         }
       );
   }

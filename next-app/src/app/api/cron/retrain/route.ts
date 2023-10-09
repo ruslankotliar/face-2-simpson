@@ -1,8 +1,4 @@
-import {
-  DB_COUNTER_CHARS,
-  ENOUGH_TRAIN_DATA,
-  StatusCodes,
-} from '@src/constants';
+import { DB_COUNTER_CHARS, ENOUGH_TRAIN_DATA, StatusCodes } from '@src/constants';
 import { ImageCounter, Accuracy } from '@src/models';
 import { retrainModel } from '@src/rest';
 import { connectToDB, getStatusText } from '@src/utils';
@@ -21,15 +17,12 @@ export async function POST(req: NextRequest) {
       {},
       {},
       {
-        sort: { createdAt: -1 },
+        sort: { createdAt: -1 }
       }
     );
 
     if (isEnoughData) {
-      const { model_accuracy: accuracy } = await retrainModel(
-        minQuantity,
-        oldAccuracy
-      );
+      const { model_accuracy: accuracy } = await retrainModel(minQuantity, oldAccuracy);
       if (accuracy > oldAccuracy) {
         await Accuracy.create({ accuracy });
         await ImageCounter.updateMany({}, { $inc: { seq: minQuantity * -1 } });
@@ -46,10 +39,10 @@ export async function POST(req: NextRequest) {
     console.error(e);
     if (e instanceof Error)
       return NextResponse.json(
-        { message: e.message },
+        { error: e.message },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
-          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR),
+          statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)
         }
       );
   }
