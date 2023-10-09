@@ -33,7 +33,8 @@ const FileInput: FC<IUploadFile> = function ({
   setIsVisibleAbout,
   resetPageData,
   isSubmitting,
-  detectedFaceData
+  detectedFaceData,
+  isDataPredicted
 }) {
   const imgRef = useRef<HTMLDivElement>(null);
   const [previewURL, setPreviewURL] = useState<string | null>(null);
@@ -61,9 +62,10 @@ const FileInput: FC<IUploadFile> = function ({
     <>
       {isLoading ? <Loader /> : null}
       <div
+        ref={imgRef}
         className={`relative ${
           !previewURL ? 'border-2 border-dashed' : ''
-        } border-neutral rounded-card hover:border-primary duration-200 cursor-pointer transition-colors flex flex-1 justify-center items-stretch min-h-0 w-full h-full`}
+        } border-neutral rounded-card hover:border-primary duration-200 cursor-pointer transition-colors flex flex-1 justify-center items-center min-h-0 w-full h-full`}
       >
         <input
           type="file"
@@ -77,10 +79,9 @@ const FileInput: FC<IUploadFile> = function ({
             <p className="text-lg md:text-xl mx-2 font-secondary p-6 py-8">Upload your picture</p>
           </div>
         ) : (
-          <div className="relative md:w-full flex items-center justify-center min-h-[118px]">
+          <div className="relative md:w-full h-fit flex items-center justify-center min-h-[118px]">
             <div
-              ref={imgRef}
-              className={`md:w-full object-cover rounded-card shadow-image overflow-hidden ${
+              className={`md:w-full h-auto object-cover rounded-card shadow-image overflow-hidden ${
                 isSubmitting ? 'blur-sm' : 'blur-none'
               }`}
             >
@@ -89,6 +90,7 @@ const FileInput: FC<IUploadFile> = function ({
                 imgRef={imgRef}
                 detectedFaceData={detectedFaceData}
                 setIsLoading={setIsLoading}
+                isDataPredicted={isDataPredicted}
               />
             </div>
             {!isLoading ? (
