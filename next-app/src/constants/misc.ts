@@ -10,16 +10,16 @@ const DEVELOPERS: DeveloperData[] = [
     buttons: [
       {
         href: 'https://www.linkedin.com/in/ruslan-kotliarenko/',
+        iconKey: 'linkedin',
+        newTab: true
+      },
+      {
+        href: 'https://www.linkedin.com/in/ruslan-kotliarenko/',
         iconKey: 'portfolio',
         newTab: true
       },
-      { href: 'mailto:ruslan.kotliarenko@gmail.com', iconKey: 'email', newTab: true },
       { href: 'https://github.com/ruslankotliar', iconKey: 'github', newTab: true },
-      {
-        href: 'https://www.linkedin.com/in/ruslan-kotliarenko/',
-        iconKey: 'linkedin',
-        newTab: true
-      }
+      { href: 'mailto:ruslan.kotliarenko@gmail.com', iconKey: 'email', newTab: true }
     ],
     name: 'Ruslan Kotliarenko',
     position: 'Full-Stack Engineer',
@@ -35,14 +35,14 @@ const DEVELOPERS: DeveloperData[] = [
   {
     img: avatarDanylo,
     buttons: [
+      { href: 'https://www.linkedin.com/in/danylo-sushko/', iconKey: 'linkedin', newTab: true },
       {
         href: 'https://daunyl.github.io/portfolio/index.html',
         iconKey: 'portfolio',
         newTab: true
       },
-      { href: 'mailto:danil.su04@gmail.com', iconKey: 'email', newTab: true },
       { href: 'https://github.com/daunyl', iconKey: 'github', newTab: true },
-      { href: 'https://www.linkedin.com/in/danylo-sushko/', iconKey: 'linkedin', newTab: true }
+      { href: 'mailto:danil.su04@gmail.com', iconKey: 'email', newTab: true }
     ],
     name: 'Sushko Danylo',
     position: 'Data Scientist',
