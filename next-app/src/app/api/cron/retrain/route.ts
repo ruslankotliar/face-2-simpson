@@ -1,4 +1,10 @@
-import { DB_COUNTER_CHARS, ENOUGH_TRAIN_DATA, StatusCodes } from '@src/constants';
+import {
+  DB_COUNTER_CHARS,
+  DEFAULT_ERROR_MESSAGE,
+  ENOUGH_TRAIN_DATA,
+  StatusCodes
+} from '@src/constants';
+import sendErrorMessage from '@src/helpers/sendErrorMessage';
 import { ImageCounter, Accuracy } from '@src/models';
 import { retrainModel } from '@src/rest';
 import { connectToDB, getStatusText } from '@src/utils';
@@ -39,7 +45,7 @@ export async function POST(req: NextRequest) {
     console.error(e);
     if (e instanceof Error)
       return NextResponse.json(
-        { error: e.message },
+        { message: sendErrorMessage(e.message) },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)
