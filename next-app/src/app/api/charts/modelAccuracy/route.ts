@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { StatusCodes } from '@src/constants';
+import { DEFAULT_ERROR_MESSAGE, StatusCodes } from '@src/constants';
 import { Accuracy } from '@src/models';
 import { connectToDB, getStatusText } from '@src/utils';
+import sendErrorMessage from '@src/helpers/sendErrorMessage';
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
     console.error(e);
     if (e instanceof Error)
       return NextResponse.json(
-        { error: e.message },
+        { message: sendErrorMessage(e.message) },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)
