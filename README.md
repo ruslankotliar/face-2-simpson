@@ -7,10 +7,10 @@ Discover which "The Simpsons" character you resemble with our state-of-the-art M
 ## Table of Contents
 
 - [Application Overview](#application-overview)
-- [AWS Infrastructure](#aws-infrastructure)
 - [Python ML Models](#python-ml-models)
-- [Getting Started](#getting-started)
+- [AWS Infrastructure](#aws-infrastructure)
 - [Developers](#developers)
+- [Getting Started](#getting-started)
 
 ## Application Overview
 
@@ -32,27 +32,6 @@ Crafted using Next.js 13 with TypeScript and supercharged by SSR, this applicati
 - **MongoDB**: Efficient data management with advanced retrieval.
 - **Tailwind CSS**: Responsive UI design.
 - **Chart.js**: Dashboard data visualization.
-
-## AWS Infrastructure
-
-Our setup uses AWS to create a seamless interaction between the ML model deployment and the user.
-
-### Core Components:
-
-1. **AWS Lambda**: Rapid ML model execution via Docker images from AWS ECR.
-2. **AWS API Gateway**: RESTful interface to Lambda functions, assuring scalability and security.
-3. **AWS ECR**: Docker image storage, integrated with GitHub Actions for automated CI/CD.
-4. **AWS S3**: Image storage with secure, direct client uploads via Presigned URLs.
-
-### CI/CD Workflow:
-
-1. GitHub Actions activate upon code pushes.
-2. Images are dockerized and pushed to ECR.
-3. Lambda functions are updated with the new images.
-
-### Security:
-
-- **Presigned URLs**: Temporary secured links ensuring safe S3 client operations.
 
 ## Python ML Models
 
@@ -90,6 +69,32 @@ In this project, a sophisticated retraining mechanism has been implemented to en
 - **Decision Making**: A decision-making mechanism is employed to assess whether the newly trained model is superior in terms of accuracy. If the new model exhibits higher accuracy, it replaces the old one as the current working model. Otherwise, the old model is retained.
 
 By implementing this retraining mechanism, this project ensures that the model's predictive capabilities remain robust and dependable, contributing to its long-term success in identifying individuals resembling characters from "The Simpsons."
+
+## AWS Infrastructure
+
+Our setup uses AWS to create a seamless interaction between the ML model deployment and the user.
+
+### Core Components:
+
+1. **AWS Lambda**: Rapid ML model execution via Docker images from AWS ECR.
+2. **AWS API Gateway**: RESTful interface to Lambda functions, assuring scalability and security.
+3. **AWS ECR**: Docker image storage, integrated with GitHub Actions for automated CI/CD.
+4. **AWS S3**: Image storage with secure, direct client uploads via Presigned URLs.
+
+### CI/CD Workflow:
+
+1. GitHub Actions activate upon code pushes.
+2. Images are dockerized and pushed to ECR.
+3. Lambda functions are updated with the new images.
+
+### Security:
+
+- **Presigned URLs**: Temporary secured links ensuring safe S3 client operations.
+
+## Developers
+
+- [Ruslan Kotliarenko](https://www.linkedin.com/in/ruslan-kotliarenko/) - Application & AWS Infrastructure
+- [Danylo Sushko](https://www.linkedin.com/in/danylo-sushko/) - Python ML Models
 
 ## Getting Started
 
@@ -142,8 +147,3 @@ Visit [`http://localhost:3000`](http://localhost:3000).
     ```bash
     sam local start-api -d 5858 --debug
     ```
-
-## Developers
-
-- [Ruslan Kotliarenko](https://www.linkedin.com/in/ruslan-kotliarenko/) - Application & AWS Infrastructure
-- [Danylo Sushko](https://www.linkedin.com/in/danylo-sushko/) - Python ML Models
