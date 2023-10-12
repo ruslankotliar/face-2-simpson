@@ -1,9 +1,4 @@
-import {
-  DB_COUNTER_CHARS,
-  DEFAULT_ERROR_MESSAGE,
-  ENOUGH_TRAIN_DATA,
-  StatusCodes
-} from '@src/constants';
+import { DB_COUNTER_CHARS, ENOUGH_TRAIN_DATA, StatusCodes } from '@src/constants';
 import sendErrorMessage from '@src/helpers/sendErrorMessage';
 import { ImageCounter, Accuracy } from '@src/models';
 import { retrainModel } from '@src/rest';

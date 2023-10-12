@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { DEFAULT_ERROR_MESSAGE, StatusCodes } from '@src/constants';
+import { StatusCodes } from '@src/constants';
 import { getMaxSimilarChar } from '@src/helpers';
 import { ImageCounter, Prediction } from '@src/models';
 import { connectToDB, getStatusText } from '@src/utils';

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { DEFAULT_ERROR_MESSAGE, StatusCodes } from '@src/constants';
+import { StatusCodes } from '@src/constants';
 import { signUrl } from '@src/rest';
 import { getStatusText } from '@src/utils';
 import sendErrorMessage from '@src/helpers/sendErrorMessage';
