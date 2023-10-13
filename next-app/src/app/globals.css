@@ -1,8 +1,0 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-    --orange: #ff6e42;
-    --white: #fffcfb;
-}
