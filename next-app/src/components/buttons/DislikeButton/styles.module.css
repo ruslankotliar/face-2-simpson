@@ -1,0 +1,81 @@
+.heart-dislike-svg {
+    cursor: pointer;
+    overflow: visible;
+    margin-top: 2px;
+}
+
+.heart-dislike-svg .heart-dislike {
+    transform-origin: center;
+    animation: animateHeartDislikeOut 0.3s linear forwards;
+}
+
+.checkbox-dislike {
+    display: none;
+}
+
+.checkbox-dislike:checked+label .heart-dislike-svg .heart-dislike {
+    fill: var(--orange);
+    animation: animateHeartDislike 0.5s ease-in-out forwards;
+}
+
+@keyframes animateHeartDislike {
+    0% {
+        transform: translateX(0);
+    }
+
+    10% {
+        transform: translateX(-15px);
+        /* shake left */
+    }
+
+    20% {
+        transform: translateX(15px);
+        /* shake right */
+    }
+
+    30% {
+        transform: translateX(-20px);
+        /* shake left */
+    }
+
+    40% {
+        transform: translateX(15px);
+        /* shake right */
+    }
+
+    50% {
+        transform: translateX(-15px);
+        /* shake left */
+    }
+
+    60% {
+        transform: translateX(20px);
+        /* shake right */
+    }
+
+    70% {
+        transform: translateX(-15px);
+        /* shake left */
+    }
+
+    80% {
+        transform: translateX(15px);
+        /* shake right */
+    }
+
+    100% {
+        transform: translateX(0);
+        /* come to rest */
+    }
+}
+
+
+@keyframes animateHeartDislikeOut {
+    0% {
+        transform: scale(1.4);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}

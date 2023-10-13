@@ -1,0 +1,107 @@
+.thought {
+    display: flex;
+    background-color: var(--orange);
+    width: max-content;
+    padding: 10px;
+    border-radius: 20px;
+    min-width: 30px;
+    max-width: 180px;
+    min-height: 30px;
+    margin: 10px;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    animation: 0.25s expand-bounce ease-in-out 0s, 0.5s shrink ease-in-out 4s;
+}
+
+.thought:before,
+.thought:after {
+    content: "";
+    background-color: var(--orange);
+    border-radius: 50%;
+    display: block;
+    position: absolute;
+    z-index: -1;
+}
+
+.thought:before {
+    width: 15px;
+    height: 15px;
+    top: -8px;
+    left: 26px;
+    box-shadow: -40px 20px 0 -10px var(--orange);
+}
+
+.thought:after {
+    bottom: -10px;
+    right: 25px;
+    width: 15px;
+    height: 15px;
+    box-shadow: 30px -24px 0 0 var(--orange),
+        -18px -4px 0 0 var(--orange),
+        -14px 10px 0 -4px var(--orange),
+        20px 20px 0 -8px var(--orange);
+}
+
+/* Larger screen adjustments using a media query */
+@media (min-width: 768px) {
+    .thought {
+        padding: 20px;
+        min-width: 40px;
+        max-width: 220px;
+        min-height: 40px;
+        margin: 20px;
+    }
+
+    .thought:before {
+        width: 44px;
+        height: 44px;
+        top: -12px;
+        left: 28px;
+        box-shadow: -50px 30px 0 -12px var(--orange);
+    }
+
+    .thought:after {
+        bottom: -10px;
+        right: 70px;
+        width: 30px;
+        height: 30px;
+        box-shadow: 80px -34px 0 0 var(--orange),
+            -28px -6px 0 -2px var(--orange),
+            -24px 17px 0 -6px var(--orange),
+            -35px 30px 0 -10px var(--orange);
+    }
+}
+
+
+@keyframes expand-bounce {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shrink {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    25% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
