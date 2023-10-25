@@ -5,7 +5,7 @@ import { retrainModel } from '@src/rest';
 import { connectToDB, getStatusText } from '@src/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     await connectToDB();
     const data = await ImageCounter.find({});
