@@ -1,4 +1,4 @@
-# Character Resemblance Predictor
+# Face-2-Simpson
 
 Discover which "The Simpsons" character you resemble with our state-of-the-art ML-powered Next.js application.
 
