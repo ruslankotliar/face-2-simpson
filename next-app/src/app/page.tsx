@@ -60,12 +60,10 @@ import faceDots from '@public/data.json';
 
 const uploadImage = async function (personImg: File): Promise<string | undefined> {
   try {
-    console.log('Generating presigned url...');
     const {
       data: { key, url }
     } = await axios.post(generateFetchURL('UPLOAD_IMAGE', {}, {}));
 
-    console.log('Uploading image...');
     await axios.put(url, personImg);
 
     return key;
@@ -76,7 +74,6 @@ const uploadImage = async function (personImg: File): Promise<string | undefined
 
 const detectFace = async function (url: string, key: string): Promise<DetectFaceData | undefined> {
   try {
-    console.log('Detecting face...');
     const {
       data: { detectedFaceData }
     } = await axios.post(url, { key });
@@ -107,7 +104,6 @@ const predictSimpson = async function (
   key: string
 ): Promise<PredictSimpsonData | undefined> {
   try {
-    console.log('Requesting prediction...');
     const { data } = await axios.post(url, { key });
 
     return data;
@@ -208,7 +204,7 @@ export default function Main() {
         console.error('Face is missing or there are several faces.');
         return;
       }
-      console.log(detectedFaceResponse);
+
       setDetectedFaceData(detectedFaceResponse);
 
       const predictionResponse = await predictSimpson(
@@ -284,7 +280,6 @@ export default function Main() {
   };
 
   const resetPageData = function (): void {
-    console.log('Resetting page data...');
     setIsVisibleProgressBar(false);
     setIsVisibleAbout(true);
     setPredictionData(undefined);
