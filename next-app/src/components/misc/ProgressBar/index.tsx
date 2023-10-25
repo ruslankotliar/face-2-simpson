@@ -29,7 +29,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
   charactersRun,
   label,
   isVisible,
-  delay,
+  delay
 }) => {
   const [currentWidth, setCurrentWidth] = useState<number>(0);
   const [isGreater, setIsGreater] = useState<boolean>(false);
@@ -39,7 +39,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
     homer_simpson: homerRunAnimation,
     marge_simpson: margeRunAnimation,
     bart_simpson: bartRunAnimation,
-    lisa_simpson: lisaRunAnimation,
+    lisa_simpson: lisaRunAnimation
   };
 
   const updateAccuracyInterval = function () {
@@ -71,17 +71,14 @@ const ProgressBar: FC<ProgressBarProps> = ({
   useEffect(() => {
     setIsGreater(width >= currentWidth);
     setCurrentWidth(width);
-    console.log(width);
   }, [width]);
 
   return (
     <div className={`${styles['chart']} text-[0.5rem] md:text-[0.7rem]`}>
-      <div className='w-full flex justify-between items-center absolute text-base'>
+      <div className="w-full flex justify-between items-center absolute text-base">
         <h5
           className={`${akbar.className} ${
-            isVisible
-              ? 'translate-x-0 opacity-1'
-              : '-translate-x-full opacity-0'
+            isVisible ? 'translate-x-0 opacity-1' : '-translate-x-full opacity-0'
           } transform transition-all duration-150`}
           style={{ transitionDelay: delay + 'ms' }}
         >
@@ -96,16 +93,14 @@ const ProgressBar: FC<ProgressBarProps> = ({
         </span>
       </div>
       <div
-        className={`${styles['bar']} ${
-          styles[`bar-${isVisible ? currentWidth : 0}`]
-        } ${styles[colorKey]}`}
+        className={`${styles['bar']} ${styles[`bar-${isVisible ? currentWidth : 0}`]} ${
+          styles[colorKey]
+        }`}
       >
         {['top', 'side-0', 'floor'].map((side) => (
           <div key={side} className={`${styles['face']} ${styles[side]}`}>
             <div
-              className={`${styles['growing-bar']} ${
-                width !== 0 ? 'duration-3000' : 'duration-0'
-              }`}
+              className={`${styles['growing-bar']} ${width !== 0 ? 'duration-3000' : 'duration-0'}`}
             ></div>
           </div>
         ))}
@@ -116,9 +111,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
 
         <div className={`${styles['face']} ${styles['side-1']}`}>
           <div
-            className={`${styles['growing-bar']} ${
-              width !== 0 ? 'duration-3000' : 'duration-300'
-            }`}
+            className={`${styles['growing-bar']} ${width !== 0 ? 'duration-3000' : 'duration-300'}`}
           ></div>
         </div>
         <div
@@ -129,12 +122,12 @@ const ProgressBar: FC<ProgressBarProps> = ({
             marginLeft: isVisible ? currentWidth + '%' : 0,
             transition: `margin-left ${
               width !== 0 ? '3s' : '0s'
-            } ease-in-out, opacity 500ms ease-in-out`,
+            } ease-in-out, opacity 500ms ease-in-out`
             // opacity: isVisible && charactersRun ? 1 : 0,
           }}
         >
           <Image
-            alt='Running Homer Simpson animation'
+            alt="Running Homer Simpson animation"
             src={icons[label]}
             fill
             style={{ objectFit: 'contain' }}

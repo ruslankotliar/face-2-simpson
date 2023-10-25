@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       DB_COUNTER_CHARS.forEach((char) =>
         console.log(char, data.find((c) => c._id === char)?.seq || 'not exist')
       );
+      console.groupEnd();
     }
 
     return NextResponse.json(null);
