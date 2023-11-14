@@ -79,8 +79,8 @@ const uploadImage = async function (personImg: File): Promise<string | undefined
 
 const detectFace = async (url: string, key: string): Promise<DetectFaceData | undefined> => {
   try {
-    const { data } = await makeApiCallWithRetry(url, key);
-    return data.detectedFaceData;
+    const { detectedFaceData } = await makeApiCallWithRetry(url, key);
+    return detectedFaceData
   } catch (e) {
     handleServerError(e);
   }
@@ -106,7 +106,7 @@ const predictSimpson = async (
   key: string
 ): Promise<PredictSimpsonData | undefined> => {
   try {
-    const { data } = await makeApiCallWithRetry(url, key);
+    const data = await makeApiCallWithRetry(url, key);
     return data;
   } catch (e) {
     handleServerError(e);
