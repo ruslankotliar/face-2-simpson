@@ -1,5 +1,6 @@
 import { PYTHON_API_ROUTES } from '@src/constants';
-import axios, { AxiosError } from 'axios';
+import { handleServerError } from '@src/utils/error';
+import axios from 'axios';
 
 export const predictSimpson = async function (signedKey: string) {
   try {
@@ -10,6 +11,6 @@ export const predictSimpson = async function (signedKey: string) {
 
     return data;
   } catch (e) {
-    if (e instanceof AxiosError) throw new Error(e.response?.data.error);
+    handleServerError(e);
   }
 };

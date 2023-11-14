@@ -8,16 +8,14 @@ import sendErrorMessage from '@src/helpers/sendErrorMessage';
 export async function POST() {
   try {
     const { url, key } = await signUrl();
-
     return NextResponse.json({
       url,
       key
     });
   } catch (e) {
     if (e instanceof Error) {
-      console.error(e.message);
       return NextResponse.json(
-        { message: sendErrorMessage(e.message) },
+        { error: sendErrorMessage(e.message) },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)

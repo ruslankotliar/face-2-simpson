@@ -62,4 +62,9 @@ const DEVELOPERS: DeveloperData[] = [
   }
 ];
 
-export { DEVELOPERS };
+const UNKNOWN_ERROR_MESSAGE = 'Unknown error occurred. Please try again later.';
+
+// fake high demands message
+const TIMEOUT_TRY_AGAIN = 'High demand! Please try again shortly. We appreciate your patience.';
+
+export { DEVELOPERS, UNKNOWN_ERROR_MESSAGE, TIMEOUT_TRY_AGAIN };

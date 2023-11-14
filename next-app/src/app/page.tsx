@@ -47,16 +47,21 @@ import Loader from '@src/components/misc/Loader';
 
 // Helpers
 import float2int from '@src/helpers/float2int';
-import { generateFetchURL, getMaxSimilarChar, isValidFileType } from '@src/helpers';
+import {
+  generateFetchURL,
+  getMaxSimilarChar,
+  isValidFileType,
+  makeApiCallWithRetry
+} from '@src/helpers';
 
 // Hooks
 import useQueryString from '@src/hooks/useQueryString';
 
 // Utils
-import { handleClientError } from '@src/utils/error';
+import { handleServerError } from '@src/utils/error';
 
 // dev only
-import faceDots from '@public/data.json';
+// import faceDots from '@public/data.json';
 
 const uploadImage = async function (personImg: File): Promise<string | undefined> {
   try {
@@ -68,19 +73,16 @@ const uploadImage = async function (personImg: File): Promise<string | undefined
 
     return key;
   } catch (e) {
-    handleClientError(e);
+    handleServerError(e);
   }
 };
 
-const detectFace = async function (url: string, key: string): Promise<DetectFaceData | undefined> {
+const detectFace = async (url: string, key: string): Promise<DetectFaceData | undefined> => {
   try {
-    const {
-      data: { detectedFaceData }
-    } = await axios.post(url, { key });
-
-    return detectedFaceData;
+    const { data } = await makeApiCallWithRetry(url, key);
+    return data.detectedFaceData;
   } catch (e) {
-    handleClientError(e);
+    handleServerError(e);
   }
 };
 
@@ -95,20 +97,19 @@ const sendFeedback = async function (url: string, data: FeedbackData): Promise<v
       keepalive: true
     });
   } catch (e) {
-    handleClientError(e);
+    handleServerError(e);
   }
 };
 
-const predictSimpson = async function (
+const predictSimpson = async (
   url: string,
   key: string
-): Promise<PredictSimpsonData | undefined> {
+): Promise<PredictSimpsonData | undefined> => {
   try {
-    const { data } = await axios.post(url, { key });
-
+    const { data } = await makeApiCallWithRetry(url, key);
     return data;
   } catch (e) {
-    handleClientError(e);
+    handleServerError(e);
   }
 };
 
@@ -172,6 +173,7 @@ export default function Main() {
         submitFeedbackToServer(predictionData, null);
       }
 
+      // dev testing
       // receiveFeedback({
       //   predictionData: {
       //     lisa_simpson: Math.random(),
@@ -198,6 +200,7 @@ export default function Main() {
         console.error('Key is missing!');
         return;
       }
+
       const detectedFaceResponse = await detectFace(generateFetchURL('DETECT_FACE', {}, {}), key);
 
       if (!detectedFaceResponse) {

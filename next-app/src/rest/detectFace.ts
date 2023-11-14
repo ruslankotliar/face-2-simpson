@@ -1,6 +1,7 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 import { PYTHON_API_ROUTES } from '@src/constants';
+import { handleServerError } from '@src/utils/error';
 
 export const detectFace = async function (signedKey: string) {
   try {
@@ -11,6 +12,6 @@ export const detectFace = async function (signedKey: string) {
 
     return data;
   } catch (e) {
-    if (e instanceof AxiosError) throw new Error(e.response?.data.error);
+    handleServerError(e);
   }
 };

@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     console.error(e);
     if (e instanceof Error)
       return NextResponse.json(
-        { message: sendErrorMessage(e.message) },
+        { error: sendErrorMessage(e.message) },
         {
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           statusText: getStatusText(StatusCodes.INTERNAL_SERVER_ERROR)

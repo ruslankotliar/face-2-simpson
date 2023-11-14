@@ -14,6 +14,7 @@
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
     "axios": "^1.4.0",
+    "axios-retry": "^3.8.1",
     "chart.js": "^4.4.0",
     "chartjs-adapter-dayjs-4": "^1.0.4",
     "dayjs": "^1.11.9",
@@ -33,6 +34,5 @@
     "tailwindcss": "3.3.3",
     "typescript": "5.1.6",
     "yup": "^1.2.0"
-  },
-  "devDependencies": {}
+  }
 }
