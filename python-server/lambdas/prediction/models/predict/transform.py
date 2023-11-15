@@ -5,6 +5,7 @@ import cv2
 
 from .exceptions import NoFaceDetected, MultipleFacesDetected
 
+
 class Transforms():
     def __init__(self, model_kind='classification'):
         model_kind_dict = {'classification', 'facial_markings'}
@@ -26,9 +27,6 @@ class Transforms():
 
         if len(faces) == 0:
             raise NoFaceDetected()
-
-        elif len(faces) > 1:
-            raise MultipleFacesDetected()
 
         left, top, width, height = faces[0]
 
