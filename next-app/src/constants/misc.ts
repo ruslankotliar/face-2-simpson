@@ -9,20 +9,20 @@ const DEVELOPERS: DeveloperData[] = [
     img: avatarRuslan,
     buttons: [
       {
-        href: 'https://www.linkedin.com/in/ruslan-kotliarenko/',
+        href: 'https://www.linkedin.com/in/russell-kot/',
         iconKey: 'linkedin',
         newTab: true
       },
       {
-        href: 'https://www.linkedin.com/in/ruslan-kotliarenko/',
+        href: 'https://www.linkedin.com/in/russell-kot/',
         iconKey: 'portfolio',
         newTab: true
       },
       { href: 'https://github.com/ruslankotliar', iconKey: 'github', newTab: true },
-      { href: 'mailto:ruslan.kotliarenko@gmail.com', iconKey: 'email', newTab: true }
+      { href: 'mailto:ruslankot101@gmail.com', iconKey: 'email', newTab: true }
     ],
-    name: 'Ruslan Kotliarenko',
-    position: 'Full-Stack Engineer',
+    name: 'Russell Kot',
+    position: 'Software Engineer',
     area: [
       'Frontend Design',
       'Backend Systems',
