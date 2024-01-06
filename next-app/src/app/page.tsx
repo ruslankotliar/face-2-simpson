@@ -60,9 +60,6 @@ import useQueryString from '@src/hooks/useQueryString';
 // Utils
 import { handleServerError } from '@src/utils/error';
 
-// dev only
-// import faceDots from '@public/data.json';
-
 const uploadImage = async function (personImg: File): Promise<string | undefined> {
   try {
     const {
@@ -80,7 +77,7 @@ const uploadImage = async function (personImg: File): Promise<string | undefined
 const detectFace = async (url: string, key: string): Promise<DetectFaceData | undefined> => {
   try {
     const { detectedFaceData } = await makeApiCallWithRetry(url, key);
-    return detectedFaceData
+    return detectedFaceData;
   } catch (e) {
     handleServerError(e);
   }
@@ -172,18 +169,6 @@ export default function Main() {
       if (predictionData && !predictionStored) {
         submitFeedbackToServer(predictionData, null);
       }
-
-      // dev testing
-      // receiveFeedback({
-      //   predictionData: {
-      //     lisa_simpson: Math.random(),
-      //     homer_simpson: Math.random(),
-      //     bart_simpson: Math.random(),
-      //     marge_simpson: Math.random()
-      //   },
-      //   predictionTime: 10,
-      //   imageBucketKey: ''
-      // });
 
       if (!personImg) {
         setNotification({
