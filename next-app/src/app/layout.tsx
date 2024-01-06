@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/react';
+
 import { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -36,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="min-h-[calc(100vh-3.5rem)] md:min-h-[calc(100vh-5rem)] h-full overflow-hidden">
           {children}
         </main>
+        <Analytics />
       </body>
     </html>
   );
