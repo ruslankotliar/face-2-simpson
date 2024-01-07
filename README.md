@@ -93,7 +93,7 @@ Our setup uses AWS to create a seamless interaction between the ML model deploym
 
 ## Developers
 
-- [Ruslan Kotliarenko](https://www.linkedin.com/in/ruslan-kotliarenko/) - Application & AWS Infrastructure
+- [Russell Kotliarenko](https://www.linkedin.com/in/russell-kotliarenko/) - Application & AWS Infrastructure
 - [Danylo Sushko](https://www.linkedin.com/in/danylo-sushko/) - Python ML Models
 
 ## Getting Started
