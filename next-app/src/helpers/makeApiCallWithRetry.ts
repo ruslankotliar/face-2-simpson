@@ -2,13 +2,20 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
 import { handleServerError } from '@src/utils/error';
-import { StatusCodes } from '@src/constants';
+import { RETRY_MESSAGES, StatusCodes } from '@src/constants';
+import { toast } from 'react-toastify';
+import { AlertIconKeys, AlertOptions } from '@src/types';
 
 // this is done to handle AWS Lambda cold start
 axiosRetry(axios, {
-  retries: 2,
+  retries: 4,
   retryDelay: (retryCount) => {
     console.log(`retry attempt: ${retryCount}`);
+    toast[AlertOptions.info](RETRY_MESSAGES[retryCount - 1], {
+      position: toast.POSITION.TOP_CENTER,
+      icon: AlertIconKeys.homerError,
+      autoClose: 2000
+    });
     return retryCount * 1000; // time interval between retries
   },
   retryCondition: (e) => {
