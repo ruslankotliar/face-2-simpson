@@ -13,23 +13,18 @@ interface AlertProps extends CustomNotification {
   closeOnClick?: boolean;
 }
 
-const Alert: FC<AlertProps> = function ({
-  content,
-  type,
-  iconKey,
-  onAlertClose,
-}) {
+const icons: Record<AlertIconKeys, ReactNode> = {
+  homerError: <HomerErrorAnimation />
+};
+
+const Alert: FC<AlertProps> = function ({ content, type, iconKey, onAlertClose }) {
   const notify = function () {
     if (!content || !type) return;
-
-    const icons: Record<AlertIconKeys, ReactNode> = {
-      homerError: <HomerErrorAnimation />,
-    };
 
     toast[type](content, {
       position: toast.POSITION.TOP_CENTER,
       icon: iconKey ? icons[iconKey] : undefined,
-      autoClose: ALERT_TIMEOUT,
+      autoClose: ALERT_TIMEOUT
     });
 
     setTimeout(() => {
@@ -43,10 +38,12 @@ const Alert: FC<AlertProps> = function ({
   }, [content, type, iconKey]);
 
   return (
-    <div className='absolute'>
+    <div className="absolute">
       <ToastContainer />
     </div>
   );
 };
+
+export { icons };
 
 export default Alert;
