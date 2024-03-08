@@ -48,6 +48,12 @@ def lambda_detect_face(event, context):
         body_str = base64.b64decode(body_encoded).decode("utf-8")
         body_obj = json.loads(body_str)
 
+        if is_warmup_event(body_obj):
+            return {
+                "statusCode": 200,
+                "body": json.dumps("Warm-up successful for lambda_detect_face"),
+            }
+
         img_key = body_obj.get("signedKey", None)
 
         if not img_key:
@@ -107,6 +113,12 @@ def lambda_predict_image(event, context):
         body_encoded = event["body"]
         body_str = base64.b64decode(body_encoded).decode("utf-8")
         body_obj = json.loads(body_str)
+
+        if is_warmup_event(body_obj):
+            return {
+                "statusCode": 200,
+                "body": json.dumps("Warm-up successful for lambda_predict_image"),
+            }
 
         img_key = body_obj.get("signedKey", None)
 
@@ -269,3 +281,9 @@ def delete_images_from_s3(keys_dict):
     for character, keys in keys_dict.items():
         for key in keys:
             s3_client.delete_s3_object(key)
+
+
+def is_warmup_event(body):
+    from constants import WARM_UP_KEY, WARM_UP_VALUE
+
+    return body.get(WARM_UP_KEY, None) == WARM_UP_VALUE
