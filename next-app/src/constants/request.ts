@@ -8,7 +8,8 @@ const REQUEST_URL_KEYS: StringMap = {
   RETRAIN_MODEL: '/cron/retrain',
   PREDICTION_TIME_CHART: '/charts/predictionTime/:unit/:bin',
   CHARACTER_PREDICTED_CHART: '/charts/characterPredicted',
-  MODEL_ACCURACY_CHART: '/charts/modelAccuracy'
+  MODEL_ACCURACY_CHART: '/charts/modelAccuracy',
+  WARMUP: '/warmup'
 };
 
 export { REQUEST_URL_KEYS };

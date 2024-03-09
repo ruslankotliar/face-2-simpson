@@ -69,4 +69,12 @@ const TIMEOUT_TRY_AGAIN = 'High demand! Please try again shortly. We appreciate 
 
 const RETRY_MESSAGES = ['Hang tight', 'Almost there', 'One more second', 'Almost done'];
 
-export { DEVELOPERS, UNKNOWN_ERROR_MESSAGE, TIMEOUT_TRY_AGAIN, RETRY_MESSAGES };
+const WARMUP_SESSION_STORAGE_KEY = 'warmupCalled';
+
+export {
+  DEVELOPERS,
+  UNKNOWN_ERROR_MESSAGE,
+  TIMEOUT_TRY_AGAIN,
+  RETRY_MESSAGES,
+  WARMUP_SESSION_STORAGE_KEY
+};

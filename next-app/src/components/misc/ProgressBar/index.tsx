@@ -11,7 +11,7 @@ import bartRunAnimation from '@public/animations/run/bart_simpson.gif';
 import lisaRunAnimation from '@public/animations/run/lisa_simpson.gif';
 import margeRunAnimation from '@public/animations/run/marge_simpson.gif';
 
-import float2int from '@src/helpers/float2int';
+import { float2int } from '@src/helpers';
 import formatCharacterName from '@src/helpers/formatCharacterName';
 
 interface ProgressBarProps {
