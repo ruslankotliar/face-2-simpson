@@ -3,6 +3,31 @@ Transform: AWS::Serverless-2016-10-31
 Description: Python 3.10 based SAM Template for PyTorch ML Prediction Model Server
 
 Resources:
+  WarmupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 128
+      Timeout: 15
+      PackageType: Image
+      ImageConfig:
+        Command: ['app.lambda_warmup']
+      # need this to run docker on mac
+      Architectures: ['arm64']
+      Environment:
+        Variables:
+          PREDICT_IMAGE_ARN: !GetAtt PredictImageFunction.Arn
+          DETECT_FACE_ARN: !GetAtt DetectFaceFunction.Arn
+      Events:
+        ApiEndpoint:
+          Type: HttpApi
+          Properties:
+            Path: /warmup
+            Method: post
+    Metadata:
+      Dockerfile: ./lambdas/warmup/Dockerfile
+      DockerContext: ./
+      DockerTag: python3.10-v1-1
+
   DetectFaceFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -12,7 +37,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_detect_face']
       # need this to run docker on mac
-      # Architectures: ['arm64']
+      Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-images
@@ -26,6 +51,7 @@ Resources:
       Dockerfile: ./lambdas/prediction/Dockerfile
       DockerContext: ./
       DockerTag: python3.10-v1-1
+
   PredictImageFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -35,7 +61,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_predict_image']
       # need this to run docker on mac
-      # Architectures: ['arm64']
+      Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-images
@@ -59,7 +85,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_retrain_function']
       # need this to run docker on mac
-      # Architectures: ['arm64']
+      Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-images
@@ -83,7 +109,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_generate_presigned_url']
       # need this to run docker on mac
-      # Architectures: ['arm64']
+      Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-images
@@ -99,6 +125,9 @@ Resources:
       DockerTag: python3.10-v1-1
 
 Outputs:
+  WarmupApi:
+    Description: 'API Gateway endpoint URL for Prod stage for warmup function'
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/warmup'
   DetectFaceApi:
     Description: 'API Gateway endpoint URL for Prod stage for detect-face function'
     Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/detect-face'
