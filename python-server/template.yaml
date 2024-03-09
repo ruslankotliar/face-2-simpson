@@ -12,7 +12,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_warmup']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
           PREDICT_IMAGE_ARN: !GetAtt PredictImageFunction.Arn
@@ -37,7 +37,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_detect_face']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-images
@@ -61,7 +61,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_predict_image']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-images
@@ -85,7 +85,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_retrain_function']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-images
@@ -109,7 +109,7 @@ Resources:
       ImageConfig:
         Command: ['app.lambda_generate_presigned_url']
       # need this to run docker on mac
-      Architectures: ['arm64']
+      # Architectures: ['arm64']
       Environment:
         Variables:
           AMAZON_BUCKET: face-2-simpson-images

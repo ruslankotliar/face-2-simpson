@@ -13,7 +13,8 @@ let PYTHON_API_ROUTES: StringMap = {
   PREDICT_SIMPSON: '/predict',
   RETRAIN_MODEL: '/retrain',
   GENERATE_PRESIGNED_URL: '/generate-presigned-url',
-  DETECT_FACE: '/detect-face'
+  DETECT_FACE: '/detect-face',
+  WARMUP: '/warmup'
 };
 
 PYTHON_API_ROUTES = Object.keys(PYTHON_API_ROUTES).reduce(

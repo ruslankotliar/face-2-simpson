@@ -1,4 +1,5 @@
 'use client';
+
 export const revalidate = 0;
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -19,7 +20,8 @@ import {
   FORM_KEYS,
   HOMER_RUN_TIMEOUT,
   PROGRESS_BAR_COLORS,
-  QUERY_KEYS
+  QUERY_KEYS,
+  WARMUP_SESSION_STORAGE_KEY
 } from '@src/constants';
 
 // Types
@@ -46,12 +48,13 @@ import FileInput from '@src/components/inputs/FileInput';
 import Loader from '@src/components/misc/Loader';
 
 // Helpers
-import float2int from '@src/helpers/float2int';
+
 import {
   generateFetchURL,
   getMaxSimilarChar,
   isValidFileType,
-  makeApiCallWithRetry
+  makeApiCallWithRetry,
+  float2int
 } from '@src/helpers';
 
 // Hooks
@@ -59,6 +62,14 @@ import useQueryString from '@src/hooks/useQueryString';
 
 // Utils
 import { handleServerError } from '@src/utils/error';
+
+const warmup = async function () {
+  try {
+    await axios.post(generateFetchURL('WARMUP', {}, {}));
+  } catch (e) {
+    handleServerError(e);
+  }
+};
 
 const uploadImage = async function (personImg: File): Promise<string | undefined> {
   try {
@@ -267,6 +278,22 @@ export default function Main() {
     return;
   };
 
+  const handleWarmup = async function () {
+    try {
+      // Check if the warmup has been called before
+      const warmupCalled = sessionStorage.getItem(WARMUP_SESSION_STORAGE_KEY);
+
+      if (!warmupCalled) {
+        // Call your warmup function here
+        await warmup();
+        // Store the key in session storage to indicate that the warmup has been called
+        sessionStorage.setItem(WARMUP_SESSION_STORAGE_KEY, String(true));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const resetPageData = function (): void {
     setIsVisibleProgressBar(false);
     setIsVisibleAbout(true);
@@ -313,6 +340,10 @@ export default function Main() {
       resetPageData();
     }
   }, [getQueryParam(QUERY_KEYS.WITH_PROGRESS_BAR)]);
+
+  useEffect(() => {
+    handleWarmup();
+  }, []);
 
   return (
     <>

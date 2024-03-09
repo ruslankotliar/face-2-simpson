@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { StatusCodes } from '@src/constants';
-import { detectFace } from '@src/rest/detectFace';
+import { detectFace } from '@src/rest';
 import { getStatusText } from '@src/utils';
 import sendErrorMessage from '@src/helpers/sendErrorMessage';
 
