@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.10
+FROM public.ecr.aws/lambda/python:3.11
 
 COPY ./lambdas/presigned_url .
 COPY ./utils/s3_client/app.py ./utils/s3_client.py
